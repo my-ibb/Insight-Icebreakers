@@ -1,6 +1,9 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\HomeController;
+use App\Http\Controllers\QuestionController;
+use App\Http\Controllers\AuthController;
 
 /*
 |--------------------------------------------------------------------------
@@ -13,6 +16,16 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
-Route::get('/', function () {
-    return view('welcome');
-});
+Route::get('/', [HomeController::class, 'index'])->name('home');
+
+Route::get('/questions', [QuestionController::class, 'index'])->name('questions.index');
+
+Route::get('/login', [AuthController::class, 'showLoginForm'])->name('login.show');
+
+Route::get('/questions/create', [QuestionController::class, 'create'])->name('questions.create');
+
+Route::get('/questions/{id}', [QuestionController::class, 'show'])->name('questions.show');
+
+Route::get('/questions/{id}/check', [QuestionController::class, 'checkAnswer'])->name('questions.check');
+
+Route::get('/login', [AuthController::class, 'showLoginForm'])->name('login.show');
