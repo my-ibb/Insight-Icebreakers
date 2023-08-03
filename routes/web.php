@@ -4,6 +4,8 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\HomeController;
 use App\Http\Controllers\QuestionController;
 use App\Http\Controllers\AuthController;
+use App\Http\Controllers\MyPageController;
+use App\Http\Controllers\RankingController;  // 追加した行
 
 /*
 |--------------------------------------------------------------------------
@@ -28,4 +30,20 @@ Route::get('/questions/{id}', [QuestionController::class, 'show'])->name('questi
 
 Route::get('/questions/{id}/check', [QuestionController::class, 'checkAnswer'])->name('questions.check');
 
+Route::get('/questions/{id}/detail', [QuestionController::class, 'detail'])->name('questions.detail');
+
 Route::get('/login', [AuthController::class, 'showLoginForm'])->name('login.show');
+
+Route::get('/mypage', [MyPageController::class, 'index'])->name('mypage');
+
+Route::get('/register', [AuthController::class, 'showRegistrationForm'])->name('register.show');
+
+Route::get('/password/reset', [AuthController::class, 'showPasswordResetForm'])->name('password.request');
+
+Route::get('/questions/{id}/question', [QuestionController::class, 'showQuestionForm'])->name('questions.question_form');
+
+Route::get('/questions/{id}/hint', [QuestionController::class, 'showHintForm'])->name('questions.hint_form');
+
+Route::get('/rankings', [RankingController::class, 'index'])->name('rankings.index'); // ここでRankingControllerを使用
+
+Route::get('/questions/{id}/edit', [QuestionController::class, 'edit'])->name('questions.edit');
