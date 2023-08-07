@@ -14,15 +14,17 @@ return new class extends Migration
     public function up()
     {
         Schema::create('users', function (Blueprint $table) {
-            $table->integer('id', true)->unique(); // AUTO_INCREMENT & PK & UK
-            $table->string('username', 30)->nullable(false);
-            $table->string('password', 15)->nullable(false);
-            $table->string('email', 100)->unique()->nullable(false); // UK
-            $table->dateTime('created_at')->nullable();
-            $table->dateTime('updated_at')->nullable();
+            $table->increments('id'); // 主キーであり、AUTO_INCREMENT
+            $table->string('username', 30)->unique(); // バイト数を50に設定
+            $table->string('email', 100)->unique(); // バイト数を100に設定（例として）
+            $table->timestamp('email_verified_at')->nullable();
+            $table->string('password', 15); // バイト数を255に設定（例として）
+            $table->rememberToken();
+            $table->timestamps();
         });
     }
-        /**
+
+    /**
      * Reverse the migrations.
      *
      * @return void
