@@ -5,9 +5,7 @@ use App\Http\Controllers\HomeController;
 use App\Http\Controllers\QuestionController;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\MyPageController;
-use App\Http\Controllers\RankingController;
-use App\Http\Controllers\Auth\LoginController; 
-use App\Http\Controllers\Auth\RegisterController;
+use App\Http\Controllers\RankingController;  // 追加した行
 
 /*
 |--------------------------------------------------------------------------
@@ -49,16 +47,3 @@ Route::get('/questions/{id}/hint', [QuestionController::class, 'showHintForm'])-
 Route::get('/rankings', [RankingController::class, 'index'])->name('rankings.index'); // ここでRankingControllerを使用
 
 Route::get('/questions/{id}/edit', [QuestionController::class, 'edit'])->name('questions.edit');
-
-Route::get('login', [LoginController::class, 'showLoginForm'])->name('login');
-
-// ログイン処理
-Route::post('login', [LoginController::class, 'login']);
-
-// ログアウト処理
-Route::post('logout', [LoginController::class, 'logout'])->name('logout');
-
-// この部分を変更
-Route::get('register', [RegisterController::class, 'showRegistrationForm'])->name('register');
-
-Route::post('register', [RegisterController::class, 'register']);
