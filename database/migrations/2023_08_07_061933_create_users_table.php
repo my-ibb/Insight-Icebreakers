@@ -18,7 +18,7 @@ return new class extends Migration
             $table->string('username', 30)->unique(); // バイト数を50に設定
             $table->string('email', 100)->unique(); // バイト数を100に設定（例として）
             $table->timestamp('email_verified_at')->nullable();
-            $table->string('password', 15); // バイト数を255に設定（例として）
+            $table->string('password'); // バイト数の制限を削除
             $table->rememberToken();
             $table->timestamps();
         });
