@@ -3,6 +3,8 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
+
 
 class QuestionController extends Controller
 {
@@ -46,6 +48,10 @@ class QuestionController extends Controller
 }
     public function detail($id)
 {
+     // ログインしていなければログインページへリダイレクト
+    if (Auth::guest()) {
+        return redirect()->route('login.show');
+    }
     // 仮のデータ。実際にはデータベース等から問題の詳細を取得
     $questionDetail = [
         'id' => $id,
