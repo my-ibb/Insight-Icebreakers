@@ -3,6 +3,8 @@
 
 <!-- ここにログインフォームのHTMLを記述します -->
 <form method="post" action="/login">
+    @csrf
+
     <label for="username">ユーザー名またはメールアドレス:</label>
     <input type="text" id="username" name="username" required>
     <br>

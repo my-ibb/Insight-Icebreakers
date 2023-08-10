@@ -24,8 +24,6 @@ Route::get('/', [HomeController::class, 'index'])->name('home');
 
 Route::get('/questions', [QuestionController::class, 'index'])->name('questions.index');
 
-Route::get('/login', [AuthController::class, 'showLoginForm'])->name('login.show');
-
 Route::get('/questions/create', [QuestionController::class, 'create'])->name('questions.create');
 
 Route::get('/questions/{id}', [QuestionController::class, 'show'])->name('questions.show');
