@@ -1,4 +1,6 @@
 <form method="post" action="{{ route('register') }}">
+    <h1>Register Form</h1>
+
     @csrf
     <label for="username">ユーザー名:</label>
     <input type="text" id="username" name="username" required>
