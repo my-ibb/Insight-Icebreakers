@@ -14,13 +14,13 @@ class LoginController extends Controller
 
     public function login(Request $request)
     {
-        $credentials = $request->only('username', 'password');
+        $credentials = $request->only('email', 'password');
     
         if (Auth::attempt($credentials)) {
             return redirect()->to('/questions/create'); // ログイン成功時のリダイレクト先
         }
     
-        return back()->withErrors(['username' => '認証に失敗しました。']); // ログイン失敗時のエラーメッセージ
+        return back()->withErrors(['email' => '認証に失敗しました。']); // ログイン失敗時のエラーメッセージ
     }
     
     public function logout()

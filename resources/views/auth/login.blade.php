@@ -1,12 +1,21 @@
 <!-- resources/views/auth/login.blade.php -->
 <h1>Login Form</h1>
 
-<!-- ここにログインフォームのHTMLを記述します -->
+<!-- エラーメッセージの表示 -->
+@if ($errors->any())
+    <div>
+        @foreach ($errors->all() as $error)
+            <p>{{ $error }}</p>
+        @endforeach
+    </div>
+@endif
+
+<!-- ログインフォームのHTML -->
 <form method="post" action="/login">
     @csrf
 
-    <label for="username">ユーザー名またはメールアドレス:</label>
-    <input type="text" id="username" name="username" required>
+    <label for="email">メールアドレス:</label>
+    <input type="text" id="email" name="email" required>
     <br>
     <label for="password">パスワード:</label>
     <input type="password" id="password" name="password" required>

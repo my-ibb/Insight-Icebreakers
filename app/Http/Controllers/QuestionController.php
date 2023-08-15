@@ -50,7 +50,7 @@ class QuestionController extends Controller
 {
      // ログインしていなければログインページへリダイレクト
     if (Auth::guest()) {
-        return redirect()->route('login.show');
+        return redirect()->route('login');
     }
     // 仮のデータ。実際にはデータベース等から問題の詳細を取得
     $questionDetail = [
