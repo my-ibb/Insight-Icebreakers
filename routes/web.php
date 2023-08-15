@@ -3,7 +3,7 @@
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\HomeController;
 use App\Http\Controllers\QuestionController;
-use App\Http\Controllers\AuthController;
+// use App\Http\Controllers\AuthController;
 use App\Http\Controllers\MyPageController;
 use App\Http\Controllers\RankingController;
 use App\Http\Controllers\Auth\LoginController; 
@@ -33,11 +33,7 @@ Route::get('/questions/{id}/check', [QuestionController::class, 'checkAnswer'])-
 
 Route::get('/questions/{id}/detail', [QuestionController::class, 'detail'])->name('questions.detail');
 
-Route::get('/login', [AuthController::class, 'showLoginForm'])->name('login.show');
-
 Route::get('/mypage', [MyPageController::class, 'index'])->name('mypage');
-
-Route::get('/register', [AuthController::class, 'showRegistrationForm'])->name('register.show');
 
 Route::get('/password/reset', [AuthController::class, 'showPasswordResetForm'])->name('password.request');
 
@@ -53,9 +49,6 @@ Route::get('login', [LoginController::class, 'showLoginForm'])->name('login');
 
 // ログイン処理
 Route::post('login', [LoginController::class, 'login']);
-
-// ログアウト処理
-Route::post('logout', [LoginController::class, 'logout'])->name('logout');
 
 // この部分を変更
 Route::get('register', [RegisterController::class, 'showRegistrationForm'])->name('register');

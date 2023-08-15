@@ -7,12 +7,14 @@ use App\Models\User;
 use Illuminate\Foundation\Auth\RegistersUsers;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Validator;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 
 class RegisterController extends Controller
 {
-    use RegistersUsers;
+    // use RegistersUsers;
 
-    protected $redirectTo = RouteServiceProvider::HOME;
+    // protected $redirectTo = RouteServiceProvider::HOME;
 
     public function __construct()
     {
@@ -28,6 +30,23 @@ class RegisterController extends Controller
         ]);
     }
 
+    public function showRegistrationForm()
+    {
+        return view('auth.register'); // ログインフォームのビュー
+    }
+
+    public function register(Request $request)
+    {
+        $data = $request->all(); // リクエストからすべてのデータを取得
+        $this->validator($data)->validate(); // データのバリデーション
+        
+        $user = $this->create($data); // ユーザーの作成
+    
+        // ユーザーのログインとホームページへのリダイレクト
+        Auth::login($user);
+        return redirect()->to('/questions/create'); 
+    }
+    
     protected function create(array $data)
     {
         return User::create([
