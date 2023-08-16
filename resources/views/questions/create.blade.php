@@ -5,24 +5,24 @@
     @csrf
 
     <div>
-        <label for="genre">Genre:</label>
+        <label for="genre">ジャンル:</label>
         <select name="genre" id="genre">
-            <option value="history">History</option>
-            <option value="science">Science</option>
-            <option value="math">Math</option>
-            <option value="literature">Literature</option>
-            <!-- 他のジャンルを追加してもよい -->
+            <option value="面白い">面白い</option>
+            <option value="怖い">怖い</option>
+            <option value="ほっこり">ほっこり</option>
+            <option value="日常">日常</option>
+            <option value="ファンタジー">ファンタジー</option>
         </select>
-    </div>
+            </div>
 
     <div>
-        <label for="difficulty">Difficulty:</label>
+        <label for="difficulty">難易度:</label>
         <select name="difficulty" id="difficulty">
-            <option value="easy">Easy</option>
-            <option value="medium">Medium</option>
-            <option value="hard">Hard</option>
+            <option value="簡単">簡単</option>
+            <option value="普通">普通</option>
+            <option value="難しい">難しい</option>
         </select>
-    </div>
+            </div>
 
     <div>
         <button type="submit">Generate Question</button>
@@ -33,5 +33,5 @@
 <!-- 生成された質問を表示するための領域 -->
 @if(session('question'))
     <h2>Generated Question:</h2>
-    <p>{{ session('question') }}</p>
+    <div>{{ session('question') }}</div>
 @endif
