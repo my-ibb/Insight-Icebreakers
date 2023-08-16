@@ -8,5 +8,9 @@
     <h2>Select a Game</h2>
     <a href="{{ route('questions.index') }}" class="btn btn-primary">ウミガメのスープ</a><br>
     <a href="#" class="btn btn-secondary mt-2">自己紹介嘘当てゲーム (Coming Soon)</a>
+    <form method="POST" action="{{ route('logout') }}">
+        @csrf
+        <button type="submit">Logout</button>
+    </form>
 </div>
 @endsection

@@ -59,3 +59,5 @@ Route::post('/logout', function () {
     Auth::logout();
     return redirect('/login');
 })->name('logout');
+
+Route::post('/generate-question', [QuestionController::class, 'generateQuestion'])->name('generate-question');
