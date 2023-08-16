@@ -71,14 +71,14 @@ class QuestionController extends Controller
     {
         $genre = $request->input('genre');
         $difficulty = $request->input('difficulty');
-
+    
         // OpenAI APIのエンドポイントとパラメータを設定
-        $endpoint = "https://api.openai.com/v1/chat/completions"; // 例としてdavinciエンジンを使用
+        $endpoint = "https://api.openai.com/v1/chat/completions";
         $prompt = "あなたは、水平思考ゲームのゲームマスターです。今から問題を作成していただきたいです。";
         $content = "Create a {$difficulty} question about {$genre}.";
-
+    
         $client = new Client();
-
+    
         $response = $client->post($endpoint, [
             'headers' => [
                 'Authorization' => 'Bearer ' . env('OPENAI_API_KEY'),
@@ -98,11 +98,17 @@ class QuestionController extends Controller
                 ]
             ]
         ]);
-
+    
         $data = json_decode($response->getBody(), true);
-        dd($data);
-        $question = $data['choices'][0]['text'] ?? 'Failed to generate question';
-
-        return redirect()->route('questions.create')->with('question', $question); // ルート名を適切に設定し
+        //dd($data['choices'][0]['message']['content']);
+        // dd($data); 
+        $questionContent = $data['choices'][0]['message']['content'] ?? 'Failed to generate question';
+    
+        return redirect()->route('questions.create')->with('question', $questionContent);
     }
+    public function showGenerated()
+{
+    $question = session('question', 'No question generated');
+    return view('questions.generated', compact('question'));
 }
+    }

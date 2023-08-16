@@ -61,3 +61,5 @@ Route::post('/logout', function () {
 })->name('logout');
 
 Route::post('/generate-question', [QuestionController::class, 'generateQuestion'])->name('generate-question');
+
+Route::get('/questions/generated', 'QuestionController@showGenerated')->name('questions.generated');
