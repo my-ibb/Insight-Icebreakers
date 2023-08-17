@@ -12,3 +12,4 @@
     <a href="{{ route('questions.create') }}">Back to Create Question</a>
 </body>
 </html>
+

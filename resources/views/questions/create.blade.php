@@ -7,11 +7,16 @@
     <div>
         <label for="genre">ジャンル:</label>
         <select name="genre" id="genre">
-            <option value="面白い">面白い</option>
+            <option value="ビジネス">ビジネス</option>
+            <option value="学校">学校</option>
             <option value="怖い">怖い</option>
-            <option value="ほっこり">ほっこり</option>
+            <option value="恋愛">恋愛</option>
             <option value="日常">日常</option>
-            <option value="ファンタジー">ファンタジー</option>
+            <option value="非日常">非日常</option>
+            <option value="スポーツ">スポーツ</option>
+            <option value="サスペンス">サスペンス</option>
+
+
         </select>
             </div>
 
