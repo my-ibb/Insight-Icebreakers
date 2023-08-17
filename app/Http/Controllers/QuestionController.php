@@ -7,6 +7,8 @@ use Illuminate\Support\Facades\Auth;
 use GuzzleHttp\Client;
 
 
+
+
 class QuestionController extends Controller
 {
     public function index()
@@ -49,7 +51,6 @@ class QuestionController extends Controller
     {
             return view('questions.edit', compact('id'));
     }
-
     public function detail($id)
     {
          // ログインしていなければログインページへリダイレクト
@@ -57,21 +58,38 @@ class QuestionController extends Controller
             return redirect()->route('login');
         }
         // 仮のデータ。実際にはデータベース等から問題の詳細を取得
-        $questionDetail = [
+        $question = [
             'id' => $id,
             'title' => 'Question ' . $id,
             'content' => 'This is a detail of question ' . $id,
             // 必要なだけ追加
         ];
 
-            return view('questions.detail', compact('questionDetail'));
+            return view('questions.detail', compact('question'));
     }
 
+    // generateQuestion メソッドを削除または完成させる
+
+    public function inputQuestion($id)
+    {
+        $question = [
+            'id' => $id,
+            'title' => 'Question ' . $id,
+            'content' => 'This is a detail of question ' . $id,
+        ];
+    
+        return view('questions.input', compact('question'));
+    }
+
+    public function storeQuestion(Request $request, $id)
+    {
+        // ここでデータベースに質問内容を保存する処理を追加します
+        // ...
+    
+        return redirect()->route('questions.index');
+    }
     public function generateQuestion(Request $request)
     {
-        $genre = $request->input('genre');
-        $difficulty = $request->input('difficulty');
-    
         // OpenAI APIのエンドポイントとパラメータを設定
         $endpoint = "https://api.openai.com/v1/chat/completions";
         $prompt = "#命令文
@@ -157,6 +175,8 @@ class QuestionController extends Controller
 
         ";
 
+        $genre = $request->input('genre');
+        $difficulty = $request->input('difficulty');
         $content = "ジャンルとしては{$genre}系の問題で、難易度は{$difficulty}くらいの質問を作成してください。";            
         $client = new Client();
     
@@ -190,4 +210,18 @@ class QuestionController extends Controller
     $question = session('question', 'No question generated');
     return view('questions.generated', compact('question'));
 }
+
+public function store(Request $request)
+{
+    // ここで質問のロジックを処理します。
+    // 簡単のため、ランダムにイエスorノーを答えるようにします。
+    $answers = ['イエス', 'ノー'];
+    $randomAnswer = $answers[array_rand($answers)];
+
+    // 生成された答えをセッションに保存します。
+    session()->flash('answer', $randomAnswer);
+
+    return redirect()->route('questions.create');
+}
+
     }

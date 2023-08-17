@@ -35,3 +35,21 @@
     <h2>Generated Question:</h2>
     <div>{{ session('question') }}</div>
 @endif
+
+<div>
+    <label for="questionText">質問を入力:</label>
+    <textarea name="questionText" id="questionText" rows="4" cols="50"></textarea>
+</div>
+
+<div>
+    <button type="submit">質問する</button>
+</div>
+
+</form>
+
+<!-- 生成された答えを表示するための領域 -->
+@if(session('answer'))
+    <h2>答え:</h2>
+    <div>{{ session('answer') }}</div>
+@endif
+

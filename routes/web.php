@@ -25,10 +25,6 @@ Route::get('/', [HomeController::class, 'index'])->name('home');
 
 Route::get('/questions', [QuestionController::class, 'index'])->name('questions.index');
 
-Route::get('/questions/create', [QuestionController::class, 'create'])->name('questions.create');
-
-Route::get('/questions/{id}', [QuestionController::class, 'show'])->name('questions.show');
-
 Route::get('/questions/{id}/check', [QuestionController::class, 'checkAnswer'])->name('questions.check');
 
 Route::get('/questions/{id}/detail', [QuestionController::class, 'detail'])->name('questions.detail');
@@ -67,3 +63,15 @@ Route::get('/questions/generated', 'QuestionController@showGenerated')->name('qu
 Route::get('/generate-question-form', function () {
     return view('questions.generate_form');
 });
+
+Route::get('/questions/create', [QuestionController::class, 'create'])->name('questions.create');
+
+Route::post('/questions/create', [QuestionController::class, 'store'])->name('questions.store');
+
+Route::get('/questions/{id}', [QuestionController::class, 'show'])->name('questions.show');
+
+Route::post('/questions/storeAnswer', [QuestionController::class, 'storeAnswer'])->name('questions.storeAnswer');
+
+Route::get('/questions/{id}/input', [QuestionController::class, 'inputQuestion'])->name('questions.input');
+
+Route::post('/questions/{id}/storeQuestion', [QuestionController::class, 'storeQuestion'])->name('questions.storeQuestion');
