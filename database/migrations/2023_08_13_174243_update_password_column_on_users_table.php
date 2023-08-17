@@ -26,7 +26,7 @@ return new class extends Migration
     public function down()
     {
         Schema::table('users', function (Blueprint $table) {
-            $table->string('password', 15)->change(); // 元の長さに戻します。
+            $table->string('password', 255)->change(); // 元の長さに戻します。
         });
     }
 };

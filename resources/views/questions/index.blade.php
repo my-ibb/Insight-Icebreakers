@@ -9,3 +9,4 @@
     </li>
     @endforeach
 </ul>
+<a href="{{ route('questions.create') }}">Question Create</a>

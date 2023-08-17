@@ -3,8 +3,7 @@
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\HomeController;
 use App\Http\Controllers\QuestionController;
-// use App\Http\Controllers\AuthController;
-use App\Http\Controllers\MyPageController;
+use App\Http\Controllers\UserController;
 use App\Http\Controllers\RankingController;
 use App\Http\Controllers\Auth\LoginController; 
 use App\Http\Controllers\Auth\RegisterController;
@@ -21,57 +20,60 @@ use Illuminate\Support\Facades\Auth;
 |
 */
 
+//　トップページ
 Route::get('/', [HomeController::class, 'index'])->name('home');
 
+//　ーーーここからウミガメの問題関連ーーー
+
+// ウミガメの問題一覧ページは下記
 Route::get('/questions', [QuestionController::class, 'index'])->name('questions.index');
+
+// 新規問題作成ページは下記
+Route::get('/questions/create', [QuestionController::class, 'create'])->name('questions.create');
+
+// 問題文をGPTのAPIを叩いて作成しているのは下記
+// create.bladeのフォームからPOST送信される
+Route::post('/generate-question', [QuestionController::class, 'generateQuestion'])->name('generate-question');
+
+// 生成した問題のプレビュー画面（DB保存前）
+Route::get('/questions/generated',  [QuestionController::class, 'showGenerated'])->name('questions.generated');
+
 
 Route::get('/questions/{id}/check', [QuestionController::class, 'checkAnswer'])->name('questions.check');
 
+// 下記あとで消すかも（detail or question）
 Route::get('/questions/{id}/detail', [QuestionController::class, 'detail'])->name('questions.detail');
-
-Route::get('/mypage', [MyPageController::class, 'index'])->name('mypage');
-
-Route::get('/password/reset', [AuthController::class, 'showPasswordResetForm'])->name('password.request');
-
 Route::get('/questions/{id}/question', [QuestionController::class, 'showQuestionForm'])->name('questions.question_form');
+
 
 Route::get('/questions/{id}/hint', [QuestionController::class, 'showHintForm'])->name('questions.hint_form');
 
-Route::get('/rankings', [RankingController::class, 'index'])->name('rankings.index'); // ここでRankingControllerを使用
-
 Route::get('/questions/{id}/edit', [QuestionController::class, 'edit'])->name('questions.edit');
 
-Route::get('login', [LoginController::class, 'showLoginForm'])->name('login');
+//
+Route::post('/questions/storeAnswer', [QuestionController::class, 'storeAnswer'])->name('questions.storeAnswer');
 
-// ログイン処理
-Route::post('login', [LoginController::class, 'login']);
+Route::get('/questions/{id}/input', [QuestionController::class, 'inputQuestion'])->name('questions.input');
 
-// この部分を変更
+Route::post('/questions/{id}/storeQuestion', [QuestionController::class, 'storeQuestion'])->name('questions.storeQuestion');
+
+//　ランキング関連
+Route::get('/rankings', [RankingController::class, 'index'])->name('rankings.index'); // ここでRankingControllerを使用
+
+//　ユーザー関連
+Route::get('/mypage', [UserController::class, 'index'])->name('mypage');
+//　新規登録
 Route::get('register', [RegisterController::class, 'showRegistrationForm'])->name('register');
 
 Route::post('register', [RegisterController::class, 'register']);
+
+Route::get('login', [LoginController::class, 'showLoginForm'])->name('login');
+// ログイン処理
+Route::post('login', [LoginController::class, 'login']);
 
 Route::post('/logout', function () {
     Auth::logout();
     return redirect('/login');
 })->name('logout');
 
-Route::post('/generate-question', [QuestionController::class, 'generateQuestion'])->name('generate-question');
 
-Route::get('/questions/generated', 'QuestionController@showGenerated')->name('questions.generated');
-
-Route::get('/generate-question-form', function () {
-    return view('questions.generate_form');
-});
-
-Route::get('/questions/create', [QuestionController::class, 'create'])->name('questions.create');
-
-Route::post('/questions/create', [QuestionController::class, 'store'])->name('questions.store');
-
-Route::get('/questions/{id}', [QuestionController::class, 'show'])->name('questions.show');
-
-Route::post('/questions/storeAnswer', [QuestionController::class, 'storeAnswer'])->name('questions.storeAnswer');
-
-Route::get('/questions/{id}/input', [QuestionController::class, 'inputQuestion'])->name('questions.input');
-
-Route::post('/questions/{id}/storeQuestion', [QuestionController::class, 'storeQuestion'])->name('questions.storeQuestion');

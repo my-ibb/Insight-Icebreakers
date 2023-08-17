@@ -15,7 +15,8 @@ return new class extends Migration
     {
         Schema::create('soup_game_questions', function (Blueprint $table) {
             $table->increments('id'); // 主キーであり、AUTO_INCREMENT
-            $table->string('content', 2000)->nullable(false);
+            $table->string('question_content', 2000)->nullable(false);
+            $table->string('answer_content', 2000)->nullable(false);
             $table->string('genre', 50)->nullable(false);
             $table->string('difficulty', 50)->nullable(false);
             $table->unsignedInteger('user_id');

@@ -27,11 +27,6 @@ class QuestionController extends Controller
         return view('questions.create');
     }
 
-    public function show($id)
-    {
-        return view('questions.show', compact('id'));
-    }
-
     public function checkAnswer($id)
     {
         return view('questions.check', compact('id'));
@@ -51,6 +46,7 @@ class QuestionController extends Controller
     {
             return view('questions.edit', compact('id'));
     }
+
     public function detail($id)
     {
          // ログインしていなければログインページへリダイレクト
@@ -232,6 +228,7 @@ class QuestionController extends Controller
     
         return redirect()->route('questions.create')->with('question', $questionContent);
     }
+
     public function showGenerated()
 {
     $question = session('question', 'No question generated');
