@@ -84,6 +84,7 @@ class QuestionController extends Controller
     
         return redirect()->route('questions.index');
     }
+
     public function generateQuestion(Request $request)
     {
         // OpenAI APIのエンドポイントとパラメータを設定
@@ -203,6 +204,7 @@ class QuestionController extends Controller
         $content = "ジャンルとしては{$genre}系の問題で、難易度は「{$difficulty}」レベルとして作成してください。";            
         $client = new Client();
     
+        // GPTにAPI連携して問題文を生成したものを$responseとして受け取っている
         $response = $client->post($endpoint, [
             'headers' => [
                 'Authorization' => 'Bearer ' . env('OPENAI_API_KEY'),
@@ -225,18 +227,27 @@ class QuestionController extends Controller
     
         $data = json_decode($response->getBody(), true);
         $questionContent = $data['choices'][0]['message']['content'] ?? 'Failed to generate question';
+
+        // ここで正規表現を使って $question_content と $answer_content を抜き出す
+        if (preg_match('/\[問題文\]：(.*?)\[答え\]：/su', $questionContent, $matches)) {
+        $question_content = trim($matches[1]);
+        }
+
+        if (preg_match('/\[答え\]：(.*)$/su', $questionContent, $matches)) {
+        $answer_content = trim($matches[1]);
+        }
     
         return redirect()->route('questions.create')->with('question', $questionContent);
     }
 
     public function showGenerated()
-{
+    {
     $question = session('question', 'No question generated');
     return view('questions.generated', compact('question'));
-}
+    }
 
-public function store(Request $request)
-{
+    public function store(Request $request)
+    {
     // ここで質問のロジックを処理します。
     // 簡単のため、ランダムにイエスorノーを答えるようにします。
     $answers = ['イエス', 'ノー'];
@@ -246,6 +257,6 @@ public function store(Request $request)
     session()->flash('answer', $randomAnswer);
 
     return redirect()->route('questions.create');
-}
+    }
 
     }
