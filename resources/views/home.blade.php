@@ -1,5 +1,3 @@
-<link rel="stylesheet" href="{{ asset('css/styles.css') }}">
-
 @extends('layouts.app')
 
 @section('title', 'Home Page')
