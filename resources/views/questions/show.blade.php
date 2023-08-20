@@ -1,3 +1,9 @@
+@extends('layouts.app')
+
+@section('title', 'Question and Answer Page')
+
+@section('content')
+
 <!-- resources/views/questions/show.blade.php -->
 <h1>Question and Answer Page</h1>
 
@@ -26,3 +32,4 @@
 <p>{{ $question['content'] }}</p>
 // 必要に応じてその他の情報も表示
 
+@endsection

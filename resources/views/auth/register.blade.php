@@ -1,5 +1,11 @@
+@extends('layouts.app')
+
+@section('title', 'Register Page')
+
+@section('content')
+
 <form method="post" action="{{ route('register') }}">
-    <h1>Register Form</h1>
+    <h1 class="text-red-500">Register Form</h1>
 
     @csrf
     <label for="username">ユーザー名:</label>
@@ -16,3 +22,5 @@
     <br>
     <input type="submit" value="登録">
 </form>
+
+@endsection

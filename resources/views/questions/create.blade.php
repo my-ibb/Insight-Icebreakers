@@ -1,3 +1,10 @@
+@extends('layouts.app')
+
+@section('title', 'Create a Question Page')
+
+@section('content')
+
+
 <!-- resources/views/questions/create.blade.php -->
 <h1>Create a Question</h1>
 
@@ -58,3 +65,4 @@
     <div>{{ session('answer') }}</div>
 @endif
 
+@endsection

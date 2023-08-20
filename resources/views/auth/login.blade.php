@@ -1,4 +1,10 @@
 <!-- resources/views/auth/login.blade.php -->
+@extends('layouts.app')
+
+@section('title', 'Login Page')
+
+@section('content')
+
 <h1>Login Form</h1>
 
 <!-- エラーメッセージの表示 -->
@@ -25,3 +31,5 @@
 <p>
     <a href="{{ url('/register') }}">新規登録</a>
 </p>
+
+@endsection

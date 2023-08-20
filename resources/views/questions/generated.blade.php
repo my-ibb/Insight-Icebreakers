@@ -1,3 +1,9 @@
+@extends('layouts.app')
+
+@section('title', 'Generated Question Page')
+
+@section('content')
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -12,4 +18,5 @@
     <a href="{{ route('questions.create') }}">Back to Create Question</a>
 </body>
 </html>
+@endsection
 
