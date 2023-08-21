@@ -35,7 +35,7 @@
         <div class="col-md-4">
             <a href="{{ route('questions.index') }}" class="btn turtle-btn custom-btn">
                 <!-- ウミガメのスープのイラスト追加 -->
-                <img src="{{ asset('images/23048191.jpg') }}" alt="ウミガメのスープ" class="img-fluid">
+                <img src="{{ asset('images/23048191.jpg') }}" alt="ウミガメのスープ" class="img-fluid"width="170">
                 ウミガメのスープ
             </a>
         </div>
