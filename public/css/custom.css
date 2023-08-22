@@ -1,7 +1,10 @@
 .adjust-text {
     margin-top: 20px !important; /* または適当な値 */
 }
-/* custom.css */
 .bg-light-cyan {
     background-color: #E0F7FA;
 }  
+.deep-cyan-btn {
+    background-color: #17a2b8; /* この色はBootstrapの水色（cyan）より少し濃い色です */
+    color: white;
+}
