@@ -5,7 +5,7 @@
 
 <!-- カスタムCSSスタイル -->
 <style>
-    /* 背景色とヘッダーのスタイル */
+    /* 既存のスタイル */
     body {
         background-color: lightblue;
     }
@@ -13,7 +13,6 @@
         color: blue;
         font-weight: bold;
     }
-    /* ボタンのスタイル */
     .turtle-btn {
         background-color: lightgreen;
     }
@@ -35,15 +34,16 @@
         <div class="col-md-4">
             <a href="{{ route('questions.index') }}" class="btn turtle-btn custom-btn">
                 <!-- ウミガメのスープのイラスト追加 -->
-                <img src="{{ asset('images/23048191.jpg') }}" alt="ウミガメのスープ" class="img-fluid"width="170">
-                ウミガメのスープ
+                <img src="{{ asset('images/23048191.jpg') }}" alt="ウミガメのスープ" class="img-fluid" width="170">
+                <span class="adjust-text">ウミガメのスープ</span>
             </a>
+                        </a>
         </div>
         <div class="col-md-4">
             <a href="#" class="btn lie-btn custom-btn">
                 <!-- 自己紹介嘘当てゲームのイラスト追加 -->
                 <img src="{{ asset('images/24220784.jpg') }}" alt="自己紹介嘘当てゲーム" class="img-fluid">
-                自己紹介嘘当てゲーム (Coming Soon)
+                <span class="adjust-text">自己紹介嘘当てゲーム (Coming Soon)</span>
             </a>
         </div>
     </div>
