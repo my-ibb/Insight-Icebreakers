@@ -52,7 +52,7 @@
     <div class="mt-4">
         <form method="POST" action="{{ route('logout') }}" class="mt-2">
             @csrf
-            <button type="submit" class="btn btn-danger">Logout</button>
+            <button type="submit" class="btn btn-success">Logout</button>
         </form>
     </div>
     @endif
