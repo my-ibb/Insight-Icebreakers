@@ -38,6 +38,10 @@ Route::post('/generate-question', [QuestionController::class, 'generateQuestion'
 // 生成した問題のプレビュー画面（DB保存前）
 Route::get('/questions/generated',  [QuestionController::class, 'showGenerated'])->name('questions.generated');
 
+//質問のチャット、ヒントのページ
+Route::get('/chat-page', 'QuestionController@chatPage')->name('chat-page');
+Route::get('/hint-page', 'QuestionController@hintPage')->name('hint-page');
+
 
 Route::get('/questions/{id}/check', [QuestionController::class, 'checkAnswer'])->name('questions.check');
 

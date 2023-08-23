@@ -41,25 +41,17 @@
         </div>
     </form>
 
-    <!-- 生成された質問を表示 -->
+<!-- 既存の生成された質問を表示 -->
     @if(session('question'))
         <h2>Generated Question:</h2>
         <div class="alert alert-info">{{ session('question') }}</div>
+    
+    <!-- 質問ボタン -->
+        <a href="{{ route('chat-page') }}" class="btn btn-primary">質問する</a>
+    
+    <!-- ヒントボタン -->
+        <a href="{{ route('hint-page') }}" class="btn btn-secondary">ヒントをもらう</a>
     @endif
-
-    <!-- 質問入力エリア -->
-    <form method="post" action="ここに適切なルートを指定">
-        @csrf
-
-        <div class="form-group">
-            <label for="questionText">質問を入力:</label>
-            <textarea name="questionText" id="questionText" rows="4" class="form-control"></textarea>
-        </div>
-
-        <div class="text-center">
-            <button type="submit" class="btn btn-primary">質問する</button>
-        </div>
-    </form>
 
     <!-- 生成された答えを表示 -->
     @if(session('answer'))

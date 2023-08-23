@@ -27,22 +27,34 @@ class QuestionController extends Controller
         return view('questions.create');
     }
 
-    public function checkAnswer($id)
+    public function chatPage()//質問ボタン押してからのチャット形式
+    {
+    return view('questions.chat');
+    }
+
+    public function hintPage()//ヒント
+    {
+    // ここでGPTからヒントを取得
+    $hint = "This is a hint"; // GPTから取得したヒント
+    return view('questions.hint', compact('hint'));
+    }
+
+    public function checkAnswer($id)//いらんかも
     {
         return view('questions.check', compact('id'));
     }
 
-    public function showQuestionForm()
+    public function showQuestionForm()//いらんかも
     {
         return view('questions.question_form');
     }
 
-    public function showHintForm()
-    {
-            return view('questions.hint_form');
-    }
+    //public function showHintForm()
+    //{
+      //      return view('questions.hint_form');
+    //}
 
-    public function edit($id)
+    public function edit($id)//多分あとでいる
     {
             return view('questions.edit', compact('id'));
     }
@@ -259,4 +271,45 @@ class QuestionController extends Controller
     return redirect()->route('questions.create');
     }
 
-    }
+    public function generateChatResponse(Request $request)
+{
+    $question = $request->input('chatQuestion');
+    // GPT APIを使ってイエス/ノーの回答を取得するロジック
+    $client = new Client();
+    $response = $client->post("YOUR_GPT_API_ENDPOINT_HERE",  [
+        'headers' => [
+            'Authorization' => 'Bearer ' . env('OPENAI_API_KEY'),
+            'Content-Type' => 'application/json'
+        ],
+        'json' => [
+            'model' => "gpt-3.5-turbo-0613",
+            'prompt' => $question,
+            'max_tokens' => 5 // この部分は調整が必要かもしれません
+        ]
+    ]);
+    $data = json_decode($response->getBody(), true);
+    $answer = $data['choices'][0]['text'] ?? 'Failed to generate answer';
+    return redirect()->route('questions.chat')->with('answer', $answer);
+}
+
+public function generateHint(Request $request)
+{
+    $questionID = $request->input('questionID');
+    // GPT APIを使ってヒントを取得するロジック
+    $client = new Client();
+    $response = $client->post("YOUR_GPT_API_ENDPOINT_HERE",  [
+        'headers' => [
+            'Authorization' => 'Bearer ' . env('OPENAI_API_KEY'),
+            'Content-Type' => 'application/json'
+        ],
+        'json' => [
+            'model' => "gpt-3.5-turbo-0613",
+            'prompt' => "Provide a hint for the question with ID: $questionID",
+            'max_tokens' => 50 // この部分は調整が必要かもしれません
+        ]
+    ]);
+    $data = json_decode($response->getBody(), true);
+    $hint = $data['choices'][0]['text'] ?? 'Failed to generate hint';
+    return redirect()->route('questions.hint')->with('hint', $hint);
+}
+}
