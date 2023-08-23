@@ -298,7 +298,8 @@ public function generateHint(Request $request)
     $questionID = $request->input('questionID');
     // GPT APIを使ってヒントを取得するロジック
     $client = new Client();
-    $response = $client->post("YOUR_GPT_API_ENDPOINT_HERE",  [
+    $endpoint = "https://api.openai.com/v1/engines/gpt-3.5-turbo/completions";
+    $response = $client->post($endpoint,  [  // この行を修正しました
         'headers' => [
             'Authorization' => 'Bearer ' . env('OPENAI_API_KEY'),
             'Content-Type' => 'application/json'
