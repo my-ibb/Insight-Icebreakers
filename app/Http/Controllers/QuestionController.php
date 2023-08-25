@@ -5,6 +5,8 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use GuzzleHttp\Client;
+use App\Models\SoupGameQuestion;
+
 
 
 
@@ -40,11 +42,13 @@ class QuestionController extends Controller
     return view('questions.hint', compact('hint'));
     }
 
-    public function checkAnswer($id)//いらんかも
+    public function checkAnswer($id)
     {
-        return view('questions.check', compact('id'));
+        $question = Question::find($id); // Questionモデルを使ってIDで問題を取得
+        $answer = $question->answer; // 問題から答えを取得
+        return view('check', ['answer' => $answer]); // 答えをビューに渡す
     }
-
+    
     public function showQuestionForm()//いらんかも
     {
         return view('questions.question_form');
@@ -255,63 +259,90 @@ class QuestionController extends Controller
 
     public function showGenerated()
     {
-    $question = session('question', 'No question generated');
-    return view('questions.generated', compact('question'));
+        $question = session('question', 'No question generated');
+        return view('questions.generated', compact('question'));
     }
 
     public function store(Request $request)
     {
-    // ここで質問のロジックを処理します。
-    // 簡単のため、ランダムにイエスorノーを答えるようにします。
-    $answers = ['イエス', 'ノー'];
-    $randomAnswer = $answers[array_rand($answers)];
+        // 新規質問と回答をデータベースに保存するロジック
+        $newQuestion = new SoupGameQuestion();
+        $newQuestion->question_content = 'Your Question Content Here';
+        $newQuestion->answer_content = 'Your Answer Content Here';
+        $newQuestion->genre = 'Your Genre Here';
+        $newQuestion->difficulty = 'Your Difficulty Level Here';
+        $newQuestion->user_id = 1; // 例: Auth::id() などで取得する
+        $newQuestion->save();
 
-    // 生成された答えをセッションに保存します。
-    session()->flash('answer', $randomAnswer);
-
-    return redirect()->route('questions.create');
+        return redirect()->route('questions.create');
     }
 
     public function generateChatResponse(Request $request)
-{
-    $question = $request->input('chatQuestion');
-    // GPT APIを使ってイエス/ノーの回答を取得するロジック
-    $client = new Client();
-    $response = $client->post("YOUR_GPT_API_ENDPOINT_HERE",  [
-        'headers' => [
-            'Authorization' => 'Bearer ' . env('OPENAI_API_KEY'),
-            'Content-Type' => 'application/json'
-        ],
-        'json' => [
-            'model' => "gpt-3.5-turbo-0613",
-            'prompt' => $question,
-            'max_tokens' => 5 // この部分は調整が必要かもしれません
-        ]
-    ]);
-    $data = json_decode($response->getBody(), true);
-    $answer = $data['choices'][0]['text'] ?? 'Failed to generate answer';
-    return redirect()->route('questions.chat')->with('answer', $answer);
-}
+    {
+        $questionID = $request->input('chatQuestionID');
 
-public function generateHint(Request $request)
+        // 質問をデータベースから取得
+        $question = SoupGameQuestion::find($questionID);
+        if (!$question) {
+            return redirect()->route('questions.chat')->with('answer', 'Question not found');
+        }
+
+        $client = new Client();
+        $response = $client->post("https://api.openai.com/v1/chat/completions", [
+            'headers' => [
+                'Authorization' => 'Bearer ' . env('OPENAI_API_KEY'),
+                'Content-Type' => 'application/json'
+            ],
+            'json' => [
+                'model' => "gpt-3.5-turbo-0613",
+                'prompt' => $question->question_content,
+                'max_tokens' => 5
+            ]
+        ]);
+        $data = json_decode($response->getBody(), true);
+        $answer = $data['choices'][0]['text'] ?? 'Failed to generate answer';
+
+        return redirect()->route('questions.chat')->with('answer', $answer);
+    }
+
+    public function storeGeneratedQuestion(Request $request)
+    {
+    $data = $request->all();
+    SoupGameQuestion::storeNewQuestion($data);
+
+    return redirect()->route('questions.index');
+    }
+
+
+
+    public function generateHint(Request $request)
 {
     $questionID = $request->input('questionID');
+
+    // 質問内容をデータベースから取得
+    $question = SoupGameQuestion::find($questionID);
+    if (!$question) {
+        // 質問が見つからない場合の処理
+        return redirect()->route('questions.hint')->with('hint', 'Question not found');
+    }
+
     // GPT APIを使ってヒントを取得するロジック
     $client = new Client();
-    $endpoint = "https://api.openai.com/v1/engines/gpt-3.5-turbo/completions";
-    $response = $client->post($endpoint,  [  // この行を修正しました
+    $endpoint = "https://api.openai.com/v1/chat/completions";
+    $response = $client->post($endpoint, [
         'headers' => [
             'Authorization' => 'Bearer ' . env('OPENAI_API_KEY'),
             'Content-Type' => 'application/json'
         ],
         'json' => [
             'model' => "gpt-3.5-turbo-0613",
-            'prompt' => "Provide a hint for the question with ID: $questionID",
+            'prompt' => "Provide a hint for the following question: " . $question->question_content,
             'max_tokens' => 50 // この部分は調整が必要かもしれません
         ]
     ]);
     $data = json_decode($response->getBody(), true);
     $hint = $data['choices'][0]['text'] ?? 'Failed to generate hint';
+
     return redirect()->route('questions.hint')->with('hint', $hint);
 }
 }

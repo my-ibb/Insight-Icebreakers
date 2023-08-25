@@ -43,8 +43,14 @@ Route::get('/chat-page', [QuestionController::class, 'chatPage'])->name('chat-pa
 Route::get('/hint-page', [QuestionController::class, 'hintPage'])->name('hint-page');
 Route::post('/generate-hint', [QuestionController::class, 'generateHint'])->name('generate-hint');
 Route::post('/generate-chat-response', [QuestionController::class, 'generateChatResponse'])->name('generate-chat-response');
+Route::get('/questions/chat', [QuestionController::class, 'generateChatResponse'])->name('questions.chat');
 
-Route::get('/questions/{id}/check', [QuestionController::class, 'checkAnswer'])->name('questions.check');
+
+//新しくつくった正解確認画面
+Route::get('/check/{id}', 'QuestionController@checkAnswer')->name('check-answer');
+
+
+Route::get('/questions/{id}/check', [QuestionController::class, 'checkAnswer'])->name('questions.check');//問題一覧の問題のこたえのやつ？？
 
 // 下記あとで消すかも（detail or question）
 Route::get('/questions/{id}/detail', [QuestionController::class, 'detail'])->name('questions.detail');

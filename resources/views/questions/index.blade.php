@@ -7,7 +7,6 @@
 @section('content')
 <h1>Question List</h1>
 
-<!-- 追加 -->
 <div class="container">
     <div class="row">
         @foreach ($questions as $question)
@@ -15,13 +14,14 @@
             <div class="card">
                 <div class="card-body">
                     <a href="{{ route('questions.detail', ['id' => $question['id']]) }}">{{ $question['title'] }}</a>
+                    <!-- 答えを確認するリンクを追加 -->
+                    <a href="{{ route('check-answer', $question['id']) }}" class="btn btn-secondary ml-2">答えを確認する</a>
                 </div>
             </div>
         </div>
         @endforeach
     </div>
 </div>
-<!-- 追加終わり -->
 
 <a href="{{ route('questions.create') }}" class="btn btn-primary">Question Create</a>
 @endsection
