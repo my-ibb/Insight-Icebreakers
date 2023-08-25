@@ -9,7 +9,7 @@
 @section('content')
 
 <div class="container">
-    <h1 class="text-center mb-4">Create a Question</h1>
+    <h1 class="text-center mb-4">問題作成</h1>
 
     <!-- ジャンルと難易度を選択するためのフォーム -->
     <form method="post" action="{{ route('generate-question') }}" class="mb-4">
@@ -42,13 +42,13 @@
         </div>
         <!-- 送信ボタン -->
         <div class="text-center">
-            <button type="submit" class="btn btn-primary">Generate Question</button>
+            <button type="submit" class="btn btn-primary">ChatGPTで問題を作る</button>
         </div>
     </form>
 
 <!-- 既存の生成された質問を表示 -->
     @if(session('question'))
-        <h2>Generated Question:</h2>
+        <h2>作られた問題:</h2>
         <div class="alert alert-info">{{ session('question') }}</div>
     
     <!-- 質問ボタン -->
