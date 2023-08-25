@@ -1,31 +1,44 @@
 <?php
+
+// 名前空間と依存関係を定義
 namespace App\Http\Controllers\Auth;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
+// LoginControllerクラスの定義
 class LoginController extends Controller
 {
+    // ログインフォームを表示するためのメソッド
     public function showLoginForm()
     {
-        return view('auth.login'); // ログインフォームのビュー
+        return view('auth.login'); // ログインフォームのビューを返す
     }
 
+    // ログイン処理を行うメソッド
     public function login(Request $request)
     {
+        // リクエストからメールアドレスとパスワードを取得
         $credentials = $request->only('email', 'password');
     
+        // 認証試行
         if (Auth::attempt($credentials)) {
-            return redirect()->to('/questions/create'); // ログイン成功時のリダイレクト先
+            // 認証成功：質問作成ページへリダイレクト
+            return redirect()->to('/questions/create');
         }
     
-        return back()->withErrors(['email' => '認証に失敗しました。']); // ログイン失敗時のエラーメッセージ
+        // 認証失敗：エラーメッセージとともに前のページへ戻る
+        return back()->withErrors(['email' => '認証に失敗しました。']);
     }
     
+    // ログアウト処理を行うメソッド
     public function logout()
     {
+        // ログアウト
         Auth::logout();
-        return redirect('/'); // ログアウト後のリダイレクト先
+        
+        // トップページへリダイレクト
+        return redirect('/');
     }
 }

@@ -1,6 +1,7 @@
-<!-- resources/views/mypage.blade.php -->
+<!-- ベースとなるlayouts.appテンプレートを拡張 -->
 @extends('layouts.app')
 
+<!-- ページタイトルをセット -->
 @section('title', 'マイページ')
 
 @section('content')
@@ -8,11 +9,13 @@
 <div class="container my-5">
     <div class="row">
         <div class="col-12">
+        <!-- ページのタイトル -->
             <h1 class="display-4">My page</h1>
         </div>
     </div>
 
     <div class="row mt-4">
+        <!-- ユーザー情報カードのセクション -->
         <div class="col-3">
             <div class="card">
                 <div class="card-header">
@@ -25,6 +28,7 @@
             </div>
         </div>
 
+        <!-- アクティビティカードのセクション -->
         <div class="col-9">
             <div class="card">
                 <div class="card-header">
@@ -38,4 +42,5 @@
     </div>
 </div>
 
+<!-- メインコンテンツの終了 -->
 @endsection

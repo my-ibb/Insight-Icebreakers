@@ -1,17 +1,22 @@
+<!-- layouts.appというBladeテンプレートを拡張しています -->
 @extends('layouts.app')
 
+<!-- ページのタイトルを設定 -->
 @section('title', 'Create a Question Page')
 
+
+<!-- contentセクションを開始 -->
 @section('content')
 
 <div class="container">
     <h1 class="text-center mb-4">Create a Question</h1>
 
-    <!-- ジャンルと難易度の選択 -->
+    <!-- ジャンルと難易度を選択するためのフォーム -->
     <form method="post" action="{{ route('generate-question') }}" class="mb-4">
-        @csrf
+        @csrf<!-- CSRF対策用のトークン -->
 
 <!-- ...前略... -->
+<!-- ジャンル選択のドロップダウン -->
 <div class="form-group">
     <label for="genre">ジャンル:</label>
     <select name="genre" id="genre" class="form-control">
@@ -26,7 +31,7 @@
     </select>
 </div>
 <!-- ...後略... -->
-
+<!-- 難易度選択のドロップダウン -->
         <div class="form-group">
             <label for="difficulty">難易度:</label>
             <select name="difficulty" id="difficulty" class="form-control">
@@ -35,7 +40,7 @@
                 <option value="難しい">難しい</option>
             </select>
         </div>
-
+        <!-- 送信ボタン -->
         <div class="text-center">
             <button type="submit" class="btn btn-primary">Generate Question</button>
         </div>
@@ -59,5 +64,5 @@
         <div class="alert alert-success">{{ session('answer') }}</div>
     @endif
 </div>
-
+<!-- contentセクションの終了 -->
 @endsection

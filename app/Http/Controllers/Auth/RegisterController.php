@@ -1,4 +1,5 @@
 <?php
+// 名前空間と依存関係を定義
 namespace App\Http\Controllers\Auth;
 
 use App\Http\Controllers\Controller;
@@ -10,17 +11,16 @@ use Illuminate\Support\Facades\Validator;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
+// RegisterControllerクラスの定義
 class RegisterController extends Controller
 {
-    // use RegistersUsers;
-
-    // protected $redirectTo = RouteServiceProvider::HOME;
-
+    // コンストラクタ：未ログインユーザーのみがこのコントローラを使えるようにする
     public function __construct()
     {
         $this->middleware('guest');
     }
 
+    // 入力データのバリデーションルール
     protected function validator(array $data)
     {
         return Validator::make($data, [
@@ -30,23 +30,29 @@ class RegisterController extends Controller
         ]);
     }
 
+    // 登録フォームを表示するためのメソッド
     public function showRegistrationForm()
     {
-        return view('auth.register'); // ログインフォームのビュー
+        return view('auth.register');
     }
 
+    // ユーザー登録処理を行うメソッド
     public function register(Request $request)
     {
-        $data = $request->all(); // リクエストからすべてのデータを取得
-        $this->validator($data)->validate(); // データのバリデーション
+        // リクエストから全データを取得
+        $data = $request->all();
+        // バリデーション
+        $this->validator($data)->validate();
         
-        $user = $this->create($data); // ユーザーの作成
+        // ユーザー作成
+        $user = $this->create($data);
     
-        // ユーザーのログインとホームページへのリダイレクト
+        // ユーザーをログインさせて質問作成ページへリダイレクト
         Auth::login($user);
-        return redirect()->to('/questions/create'); 
+        return redirect()->to('/questions/create');
     }
-    
+
+    // ユーザーデータをDBに保存するためのメソッド
     protected function create(array $data)
     {
         return User::create([

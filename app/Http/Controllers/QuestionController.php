@@ -2,87 +2,80 @@
 
 namespace App\Http\Controllers;
 
+// 必要なクラスをインポート
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use GuzzleHttp\Client;
 use App\Models\SoupGameQuestion;
 
-
-
-
-
-
+// QuestionController クラスの定義。Controller クラスを継承。
 class QuestionController extends Controller
 {
+    // 問題一覧ページを表示
     public function index()
     {
-      // 仮のデータ。実際にはデータベース等から問題のリストを取得
-    $questions = [
-        ['id' => 1, 'title' => 'Question 1'],
-        ['id' => 2, 'title' => 'Question 2'],
-        // 必要なだけ追加
-    ];
-    return view('questions.index', compact('questions'));
+        // 仮のデータ。本当はデータベースから取得。
+        $questions = [
+            ['id' => 1, 'title' => 'Question 1'],
+            ['id' => 2, 'title' => 'Question 2']
+        ];
+        return view('questions.index', compact('questions'));
     }
 
+    // 新しい問題を作成するフォームを表示
     public function create()
     {
         return view('questions.create');
     }
 
-    public function chatPage()//質問ボタン押してからのチャット形式
+    // チャット形式の質問ページを表示
+    public function chatPage()
     {
-    return view('questions.chat');
+        return view('questions.chat');
     }
 
-    public function hintPage()//ヒント
+    // ヒントページを表示
+    public function hintPage()
     {
-    // ここでGPTからヒントを取得
-    $hint = "This is a hint"; // GPTから取得したヒント
-    return view('questions.hint', compact('hint'));
+        $hint = "This is a hint";
+        return view('questions.hint', compact('hint'));
     }
 
+    // 特定のIDの問題の答えをチェック
     public function checkAnswer($id)
     {
-        $question = Question::find($id); // Questionモデルを使ってIDで問題を取得
-        $answer = $question->answer; // 問題から答えを取得
-        return view('check', ['answer' => $answer]); // 答えをビューに渡す
+        $question = Question::find($id);
+        $answer = $question->answer;
+        return view('check', ['answer' => $answer]);
     }
-    
-    public function showQuestionForm()//いらんかも
+
+    // 問題フォームを表示（使わないかも）
+    public function showQuestionForm()
     {
         return view('questions.question_form');
     }
 
-    //public function showHintForm()
-    //{
-      //      return view('questions.hint_form');
-    //}
-
-    public function edit($id)//多分あとでいる
+    // 問題を編集するためのフォームを表示
+    public function edit($id)
     {
-            return view('questions.edit', compact('id'));
+        return view('questions.edit', compact('id'));
     }
 
+    // 問題の詳細ページを表示
     public function detail($id)
     {
-         // ログインしていなければログインページへリダイレクト
         if (Auth::guest()) {
             return redirect()->route('login');
         }
-        // 仮のデータ。実際にはデータベース等から問題の詳細を取得
         $question = [
             'id' => $id,
             'title' => 'Question ' . $id,
             'content' => 'This is a detail of question ' . $id,
-            // 必要なだけ追加
         ];
-
-            return view('questions.detail', compact('question'));
+        return view('questions.detail', compact('question'));
     }
 
-    // generateQuestion メソッドを削除または完成させる
-
+    // 問題を入力するページを表示
     public function inputQuestion($id)
     {
         $question = [
@@ -90,22 +83,23 @@ class QuestionController extends Controller
             'title' => 'Question ' . $id,
             'content' => 'This is a detail of question ' . $id,
         ];
-    
         return view('questions.input', compact('question'));
     }
 
+    // 問題をデータベースに保存
     public function storeQuestion(Request $request, $id)
     {
-        // ここでデータベースに質問内容を保存する処理を追加します
-        // ...
-    
+        // ここでDBに保存する処理を書く
         return redirect()->route('questions.index');
     }
 
+    // 問題を生成（このメソッドは未完成または削除される）
     public function generateQuestion(Request $request)
     {
         // OpenAI APIのエンドポイントとパラメータを設定
+        //OpenAI APIのエンドポイントURLを保持
         $endpoint = "https://api.openai.com/v1/chat/completions";
+        //APIに送信する命令文または質問を保持
         $prompt = "#命令文
         水平思考クイズをしましょう。
         
@@ -215,10 +209,11 @@ class QuestionController extends Controller
         {答えを表示}
 
         ";
-
+        // フォームからジャンルと難易度を取得
         $genre = $request->input('genre');
         $difficulty = $request->input('difficulty');
-        $content = "ジャンルとしては{$genre}系の問題で、難易度は「{$difficulty}」レベルとして作成してください。";            
+        $content = "ジャンルとしては{$genre}系の問題で、難易度は「{$difficulty}」レベルとして作成してください。"; 
+        // GuzzleHTTPクライアントのインスタンスを作成           
         $client = new Client();
     
         // GPTにAPI連携して問題文を生成したものを$responseとして受け取っている
@@ -227,6 +222,7 @@ class QuestionController extends Controller
                 'Authorization' => 'Bearer ' . env('OPENAI_API_KEY'),
                 'Content-Type' => 'application/json'
             ],
+            
             'json' => [
                 'model' => "gpt-3.5-turbo-0613",
                 "messages" => [
@@ -241,7 +237,8 @@ class QuestionController extends Controller
                 ]
             ]
         ]);
-    
+        
+        // JSONレスポンスをデコードして問題文を抽出
         $data = json_decode($response->getBody(), true);
         $questionContent = $data['choices'][0]['message']['content'] ?? 'Failed to generate question';
 
@@ -253,16 +250,18 @@ class QuestionController extends Controller
         if (preg_match('/\[答え\]：(.*)$/su', $questionContent, $matches)) {
         $answer_content = trim($matches[1]);
         }
-    
+
+        // 生成された問題を次のページで表示するためにリダイレクト
         return redirect()->route('questions.create')->with('question', $questionContent);
     }
-
+        // 生成された問題を表示するメソッド
     public function showGenerated()
     {
+        // セッションから問題を取得してビューに渡す
         $question = session('question', 'No question generated');
         return view('questions.generated', compact('question'));
     }
-
+    // 新規の問題をデータベースに保存するメソッド
     public function store(Request $request)
     {
         // 新規質問と回答をデータベースに保存するロジック
@@ -276,7 +275,7 @@ class QuestionController extends Controller
 
         return redirect()->route('questions.create');
     }
-
+    // OpenAI APIを使って問題に対する回答を生成するメソッド
     public function generateChatResponse(Request $request)
     {
         $questionID = $request->input('chatQuestionID');
@@ -304,7 +303,7 @@ class QuestionController extends Controller
 
         return redirect()->route('questions.chat')->with('answer', $answer);
     }
-
+    // 生成された問題をデータベースに保存するメソッド
     public function storeGeneratedQuestion(Request $request)
     {
     $data = $request->all();
@@ -314,7 +313,7 @@ class QuestionController extends Controller
     }
 
 
-
+    // OpenAI APIを使って問題に対するヒントを生成するメソッド
     public function generateHint(Request $request)
 {
     $questionID = $request->input('questionID');
