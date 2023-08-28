@@ -61,6 +61,7 @@
 
     <!-- 答え表示エリア（最初は非表示） -->
     <div id="answerArea" style="display:none;">
+        <br>
         <h2>答え:</h2>
         <div class="alert alert-success">{{ session('answer_content') }}</div>
     </div>
