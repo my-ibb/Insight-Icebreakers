@@ -47,22 +47,29 @@
     </form>
 
 <!-- 既存の生成された質問を表示 -->
-    @if(session('question'))
-        <h2>作られた問題:</h2>
-        <div class="alert alert-info">{{ session('question') }}</div>
+@if(session('question_content'))
+    <h2>作られた問題:</h2>
+    <div class="alert alert-info">{{ session('question_content') }}</div>
     
     <!-- 質問ボタン -->
-        <a href="{{ route('chat-page') }}" class="btn btn-primary">質問する</a>
+    <a href="{{ route('chat-page') }}" class="btn btn-primary">質問する</a>
     
     <!-- ヒントボタン -->
-        <a href="{{ route('hint-page') }}" class="btn btn-secondary">ヒントをもらう</a>
-    @endif
+    <a href="{{ route('hint-page') }}" class="btn btn-secondary">ヒントをもらう</a>
 
-    <!-- 生成された答えを表示 -->
-    @if(session('answer'))
+    <!-- 答えを見るボタン -->
+    <button id="showAnswerButton" class="btn btn-warning">答えを見る</button>
+
+    <!-- 答え表示エリア（最初は非表示） -->
+    <div id="answerArea" style="display:none;">
         <h2>答え:</h2>
-        <div class="alert alert-success">{{ session('answer') }}</div>
-    @endif
+        <div class="alert alert-success">{{ session('answer_content') }}</div>
+    </div>
+@endif
 </div>
 <!-- contentセクションの終了 -->
+@endsection
+
+@section('scripts')
+    <script src="{{ asset('js/toggleAnswer.js') }}"></script>
 @endsection

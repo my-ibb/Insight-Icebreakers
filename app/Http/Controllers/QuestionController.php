@@ -196,16 +196,20 @@ class QuestionController extends Controller
         $questionContent = $data['choices'][0]['message']['content'] ?? 'Failed to generate question';
 
         // ここで正規表現を使って $question_content と $answer_content を抜き出す
-        if (preg_match('/\[問題文\]：(.*?)\[答え\]：/su', $questionContent, $matches)) {
+        if (preg_match('/\[Question\]:(.*?)\[Answer\]:/su', $questionContent, $matches)) {
         $question_content = trim($matches[1]);
         }
 
-        if (preg_match('/\[答え\]：(.*)$/su', $questionContent, $matches)) {
+        if (preg_match('/\[Answer\]:(.*)$/su', $questionContent, $matches)) {
         $answer_content = trim($matches[1]);
         }
 
         // 生成された問題を次のページで表示するためにリダイレクト
-        return redirect()->route('questions.create')->with('question', $questionContent);
+        // Controller
+        return redirect()->route('questions.create')
+            ->with('question_content', $question_content)
+            ->with('answer_content', $answer_content);
+
     }
         // 生成された問題を表示するメソッド
     public function showGenerated()
