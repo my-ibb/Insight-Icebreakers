@@ -7,7 +7,7 @@
 <!-- メインコンテンツの開始 -->
 @section('content')
 <!-- ページのタイトル -->  
-<h1>Question List</h1>  
+<h1>問題一覧ページ</h1>  
 
 <div class="container">
     <div class="row">
@@ -29,5 +29,5 @@
 </div>
 
 <!-- 問題作成ページへのリンク -->
-<a href="{{ route('questions.create') }}" class="btn btn-primary">Question Create</a>
+<a href="{{ route('questions.create') }}" class="btn btn-primary">問題を作成する</a>
 @endsection  <!-- メインコンテンツの終了 -->

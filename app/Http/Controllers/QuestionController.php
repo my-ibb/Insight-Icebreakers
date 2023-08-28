@@ -24,9 +24,13 @@ class QuestionController extends Controller
 
     // 新しい問題を作成するフォームを表示
     public function create()
-    {
-        return view('questions.create');
+{
+    //未ログインだとログインフォームにリダイレクトされる
+    if (Auth::guest()) {
+        return redirect()->route('login');
     }
+    return view('questions.create');
+}
 
     // チャット形式の質問ページを表示
     public function chatPage()
