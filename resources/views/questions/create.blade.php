@@ -4,7 +4,6 @@
 <!-- ページのタイトルを設定 -->
 @section('title', '問題作成ページ')
 
-
 <!-- contentセクションを開始 -->
 @section('content')
 
@@ -68,8 +67,4 @@
 @endif
 </div>
 <!-- contentセクションの終了 -->
-@endsection
-
-@section('scripts')
-    <script src="{{ asset('js/toggleAnswer.js') }}"></script>
 @endsection
