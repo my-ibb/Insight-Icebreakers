@@ -2,7 +2,7 @@
 @extends('layouts.app')
 
 <!-- ページタイトルを設定 -->
-@section('title', 'Chat Page')
+@section('title', '質問ページ')
 
 <!-- contentセクションを開始 -->
 @section('content')
@@ -11,7 +11,7 @@
 <div class="container">
 
     <!-- ページのタイトル -->
-    <h1 class="text-center mb-4">Ask a Question</h1>
+    <h1 class="text-center mb-4">質問するページ</h1>
     
     <!-- チャットの質問を送信するためのフォーム -->
     <form method="post" action="{{ route('generate-chat-response') }}">
@@ -21,7 +21,7 @@
         
         <!-- 質問入力欄 -->
         <div class="form-group">
-            <label for="chatQuestion">Your Question:</label>
+            <label for="chatQuestion">質問:</label>
             <input type="text" name="chatQuestion" id="chatQuestion" class="form-control">
         </div>
 

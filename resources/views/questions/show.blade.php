@@ -1,4 +1,4 @@
- <!-- ベースとなるlayouts.appテンプレートを拡張 -->
+<!-- ベースとなるlayouts.appテンプレートを拡張 -->
 @extends('layouts.app') 
 
 <!-- ページタイトルをセット -->
@@ -7,7 +7,7 @@
 <!-- メインコンテンツの開始 -->
 @section('content')  
 
-<h1>Question and Answer Page</h1>
+<h1>質問と回答ページ</h1>
 
 <!-- セッションから取得した質問を表示 -->
 <h1>{{ session('question') }}</h1>

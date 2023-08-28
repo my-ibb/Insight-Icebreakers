@@ -1,13 +1,13 @@
 <!-- ベースとなるlayouts.appテンプレートを拡張 -->
 @extends('layouts.app') 
 <!-- ページタイトルをセット -->
-@section('title', 'Hint Page')  
+@section('title', 'ヒントページ')  
 
 <!-- メインコンテンツの開始 -->
 @section('content')  
 <div class="container">
 <!-- ページのタイトル -->
-    <h1 class="text-center mb-4">Get a Hint</h1> 
+    <h1 class="text-center mb-4">ヒントページ</h1> 
     
     <!-- ヒントを取得するためのフォーム -->
     <form method="post" action="{{ route('generate-hint') }}">
@@ -17,7 +17,7 @@
             <input type="text" name="questionID" id="questionID" class="form-control">
         </div>
         <div class="text-center">
-            <button type="submit" class="btn btn-primary">Get Hint</button>  <!-- ヒントを取得するボタン -->
+            <button type="submit" class="btn btn-primary">ヒントをもらう</button>  <!-- ヒントを取得するボタン -->
         </div>
     </form>
 

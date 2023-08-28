@@ -2,7 +2,7 @@
 @extends('layouts.app')
 
 <!-- ページのタイトルを設定 -->
-@section('title', 'Question detail Page')
+@section('title', '問題詳細ページ')
 
 <!-- contentセクションを開始 -->
 @section('content')

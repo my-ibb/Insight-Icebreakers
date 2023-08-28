@@ -10,7 +10,7 @@
     <div class="row">
         <div class="col-12">
         <!-- ページのタイトル -->
-            <h1 class="display-4">My page</h1>
+            <h1 class="display-4">マイページ</h1>
         </div>
     </div>
 
