@@ -92,5 +92,4 @@ Route::post('/logout', function () {
     return redirect('/login');
 })->name('logout');
 
-Route::get('save-question', [QuestionController::class, 'yourMethod'])->name('some_route_name');
 

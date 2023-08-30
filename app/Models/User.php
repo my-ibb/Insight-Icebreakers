@@ -3,6 +3,7 @@
 // 名前空間の定義
 namespace App\Models;
 
+
 // 必要なクラス・トレイトのインポート
 use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
@@ -13,6 +14,11 @@ use Laravel\Sanctum\HasApiTokens;
 // Userクラスの定義。Authenticatableクラスを継承。
 class User extends Authenticatable
 {
+     // SoupGameQuestionへのリレーション
+    public function soupGameQuestions()
+    {
+        return $this->hasMany(SoupGameQuestion::class);
+    }
     // トレイトの使用
     use HasApiTokens, HasFactory, Notifiable;
 

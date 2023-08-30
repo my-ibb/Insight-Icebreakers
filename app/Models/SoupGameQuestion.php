@@ -1,12 +1,18 @@
 <?php
 
 namespace App\Models;
+use App\Models\User;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Http;
 
 class SoupGameQuestion extends Model
 {
+    // ユーザーへのリレーション
+    public function user()
+    {
+        return $this->belongsTo(User::class);
+    }
     // $fillable プロパティを追加
     protected $fillable = ['question_content', 'answer_content', 'genre', 'difficulty', 'user_id'];
     

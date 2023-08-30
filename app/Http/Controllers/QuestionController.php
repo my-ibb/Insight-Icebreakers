@@ -14,14 +14,12 @@ class QuestionController extends Controller
     // 問題一覧ページを表示
     public function index()
     {
-        // 仮のデータ。本当はデータベースから取得。
-        $questions = [
-            ['id' => 1, 'title' => 'Question 1'],
-            ['id' => 2, 'title' => 'Question 2']
-        ];
+        // SoupGameQuestion モデルを使用してデータベースから全ての問題を取得
+        // データベースから新着順でデータを取得
+        $questions = SoupGameQuestion::orderBy('created_at', 'desc')->get();    
         return view('questions.index', compact('questions'));
     }
-
+    
     // 新しい問題を作成するフォームを表示
     public function create()
 {
