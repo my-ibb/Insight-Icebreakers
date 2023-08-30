@@ -1,7 +1,6 @@
 <?php
 
-namespace Tests\Unit;
-
+namespace Tests\Feature;
 use PHPUnit\Framework\TestCase;
 
 class RegexTest extends TestCase

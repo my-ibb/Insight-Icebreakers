@@ -14,6 +14,7 @@ class SoupGameQuestion extends Model
     // 新しい質問をデータベースに保存するための静的メソッド
     public static function storeNewQuestion($data)
     {
+        //\Log::info('storeNewQuestion is called');
         // 新しいSoupGameQuestionオブジェクトを作成
         $newQuestion = new self();
 
