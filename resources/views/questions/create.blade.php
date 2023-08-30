@@ -57,7 +57,6 @@
     <input type="hidden" name="answer_content" value="{{ session('answer_content') }}">
     <input type="hidden" name="genre" value="{{ session('genre') }}">
     <input type="hidden" name="difficulty" value="{{ session('difficulty') }}">
-    <input type="hidden" name="user_id" value="{{ session('user_id') }}">
 
     <button type="submit">この問題であそぶ</button>
 </form>

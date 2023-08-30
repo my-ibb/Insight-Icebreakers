@@ -1,33 +1,53 @@
 <?php
 
-// 名前空間を定義
 namespace App\Models;
 
-// Eloquentモデルを使用
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Facades\Http;
 
-// SoupGameQuestionクラスの定義
 class SoupGameQuestion extends Model
 {
-    // 他のコード（フィールド定義、リレーションなど）がここに来ます...
-
-    // 新しい質問をデータベースに保存するための静的メソッド
+    // $fillable プロパティを追加
+    protected $fillable = ['question_content', 'answer_content', 'genre', 'difficulty', 'user_id'];
+    
     public static function storeNewQuestion($data)
-    {
-        //\Log::info('storeNewQuestion is called');
-        // 新しいSoupGameQuestionオブジェクトを作成
+    {        
+        // 新しい SoupGameQuestion オブジェクトを作成
         $newQuestion = new self();
-
+        
         // 各プロパティにデータをセット
         $newQuestion->question_content = $data['generated_question'];
         $newQuestion->answer_content = $data['generated_answer'];
         $newQuestion->genre = $data['genre'];
         $newQuestion->difficulty = $data['difficulty'];
-        
         // 現在認証されているユーザーのIDをセット
-        $newQuestion->user_id = auth()->user()->id;
+        if (auth()->check()) {  // ユーザーがログインしているか確認
+            $newQuestion->user_id = auth()->user()->id;
+        } else {
+            return false;
+        }
+        
+        try {
+            // データベースに保存
+            $result = $newQuestion->save();
+                        
+            return $result;
+        } catch (\Exception $e) {
+            return false;
+        }
+    }
+    public function fetchAndStoreQuestion() {
+        $response = Http::get("https://api.openai.com/v1/chat/completions");
 
-        // データベースに保存して、成功か失敗かを返す
-        return $newQuestion->save();
+        if($response->failed()) {
+            return false; // または何らかのエラー処理
+        }
+        $data = $response->json();
+            
+        // $dataの中身をデバッグ（オプション）
+        //dd($data);
+    
+        // この$dataを用いて問題をデータベースに保存
+        SoupGameQuestion::storeNewQuestion($data);
     }
 }

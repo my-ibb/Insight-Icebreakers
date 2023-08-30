@@ -212,7 +212,10 @@ class QuestionController extends Controller
         // Controller
         return redirect()->route('questions.create')
             ->with('question_content', $question_content)
-            ->with('answer_content', $answer_content);
+            ->with('answer_content', $answer_content)
+            ->with('genre', $genre)
+            ->with('difficulty', $difficulty);
+
 
     }
         // 生成された問題を表示するメソッド
@@ -242,29 +245,26 @@ class QuestionController extends Controller
         $questionID = $request->input('chatQuestionID');
     }
     
-    public function saveQuestion(Request $request)
-    {
-        // Laravelのバリデーションを使用して、データが正しいかどうかをチェック。
-        $request->validate([
-            'question_content' => 'required',
-            'answer_content' => 'required',
-            'genre' => 'required',
-            'difficulty' => 'required',
-        ]);
-        
-        // 保存処理。Eloquentモデル（Question）を使用。
-        $question = new Question;
-        $question->content = $request->question_content;
-        $question->answer = $request->answer_content;
-        $question->genre = $request->genre;
-        $question->difficulty = $request->difficulty;
-        $question->user_id = Auth::id();
-        $question->save();
-        
-        return redirect()->route('questions.index');
-    }
+    public function saveQuestion(Request $request) {
+        $data = [
+            'generated_question' => $request->input('question_content'),
+            'generated_answer' => $request->input('answer_content'),
+            'genre' => $request->input('genre'),
+            'difficulty' => $request->input('difficulty'),
+        ];
     
-    // コメントアウトされている部分
+        // モデルを通してデータベースに保存
+        $result = SoupGameQuestion::storeNewQuestion($data);
+    
+        // 保存成功時の処理
+        if($result) {
+            return redirect()->route('questions.index')->with('success', 'Question saved successfully.');
+        }
+    
+        // 保存失敗時の処理
+        return redirect()->route('questions.index')->with('error', 'Failed to save the question.');
+    }
+        // コメントアウトされている部分
     /*
     public function fetchQuestion()
     {
