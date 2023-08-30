@@ -50,9 +50,17 @@
     <h2>作られた問題:</h2>
     <div class="alert alert-info">{{ session('question_content') }}</div>
     
-    <!-- 質問ボタン -->
-    <a href="{{ route('chat-page') }}" class="btn btn-primary">質問する</a>
-    
+<!-- 問題保存ボタン -->
+<form method="post" action="{{ route('save-question') }}" class="mb-4">
+    @csrf
+    <input type="hidden" name="question_content" value="{{ session('question_content') }}">
+    <input type="hidden" name="answer_content" value="{{ session('answer_content') }}">
+    <input type="hidden" name="genre" value="{{ session('genre') }}">
+    <input type="hidden" name="difficulty" value="{{ session('difficulty') }}">
+    <input type="hidden" name="user_id" value="{{ session('user_id') }}">
+
+    <button type="submit">この問題であそぶ</button>
+</form>
     <!-- ヒントボタン -->
     <a href="{{ route('hint-page') }}" class="btn btn-secondary">ヒントをもらう</a>
 

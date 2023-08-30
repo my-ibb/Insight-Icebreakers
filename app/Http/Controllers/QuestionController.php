@@ -240,13 +240,43 @@ class QuestionController extends Controller
     public function generateChatResponse(Request $request)
     {
         $questionID = $request->input('chatQuestionID');
-
-        // 質問をデータベースから取得
+    }
+    
+    public function saveQuestion(Request $request)
+    {
+        // Laravelのバリデーションを使用して、データが正しいかどうかをチェック。
+        $request->validate([
+            'question_content' => 'required',
+            'answer_content' => 'required',
+            'genre' => 'required',
+            'difficulty' => 'required',
+        ]);
+        
+        // 保存処理。Eloquentモデル（Question）を使用。
+        $question = new Question;
+        $question->content = $request->question_content;
+        $question->answer = $request->answer_content;
+        $question->genre = $request->genre;
+        $question->difficulty = $request->difficulty;
+        $question->user_id = Auth::id();
+        $question->save();
+        
+        return redirect()->route('questions.index');
+    }
+    
+    // コメントアウトされている部分
+    /*
+    public function fetchQuestion()
+    {
         $question = SoupGameQuestion::find($questionID);
         if (!$question) {
             return redirect()->route('questions.chat')->with('answer', 'Question not found');
         }
-
+    }
+    */
+    
+    public function generateAnswer()
+    {
         $client = new Client();
         $response = $client->post("https://api.openai.com/v1/chat/completions", [
             'headers' => [
@@ -261,48 +291,38 @@ class QuestionController extends Controller
         ]);
         $data = json_decode($response->getBody(), true);
         $answer = $data['choices'][0]['text'] ?? 'Failed to generate answer';
-
         return redirect()->route('questions.chat')->with('answer', $answer);
     }
-    // 生成された問題をデータベースに保存するメソッド
+    
     public function storeGeneratedQuestion(Request $request)
     {
-    $data = $request->all();
-    SoupGameQuestion::storeNewQuestion($data);
-
-    return redirect()->route('questions.index');
+        $data = $request->all();
+        SoupGameQuestion::storeNewQuestion($data);
+        return redirect()->route('questions.index');
     }
-
-
-    // OpenAI APIを使って問題に対するヒントを生成するメソッド
+    
     public function generateHint(Request $request)
-{
-    $questionID = $request->input('questionID');
-
-    // 質問内容をデータベースから取得
-    $question = SoupGameQuestion::find($questionID);
-    if (!$question) {
-        // 質問が見つからない場合の処理
-        return redirect()->route('questions.hint')->with('hint', 'Question not found');
+    {
+        $questionID = $request->input('questionID');
+        $question = SoupGameQuestion::find($questionID);
+        if (!$question) {
+            return redirect()->route('questions.hint')->with('hint', 'Question not found');
+        }
+        $client = new Client();
+        $endpoint = "https://api.openai.com/v1/chat/completions";
+        $response = $client->post($endpoint, [
+            'headers' => [
+                'Authorization' => 'Bearer ' . env('OPENAI_API_KEY'),
+                'Content-Type' => 'application/json'
+            ],
+            'json' => [
+                'model' => "gpt-3.5-turbo-0613",
+                'prompt' => "Provide a hint for the following question: " . $question->question_content,
+                'max_tokens' => 50
+            ]
+        ]);
+        $data = json_decode($response->getBody(), true);
+        $hint = $data['choices'][0]['text'] ?? 'Failed to generate hint';
+        return redirect()->route('questions.hint')->with('hint', $hint);
     }
-
-    // GPT APIを使ってヒントを取得するロジック
-    $client = new Client();
-    $endpoint = "https://api.openai.com/v1/chat/completions";
-    $response = $client->post($endpoint, [
-        'headers' => [
-            'Authorization' => 'Bearer ' . env('OPENAI_API_KEY'),
-            'Content-Type' => 'application/json'
-        ],
-        'json' => [
-            'model' => "gpt-3.5-turbo-0613",
-            'prompt' => "Provide a hint for the following question: " . $question->question_content,
-            'max_tokens' => 50 // この部分は調整が必要かもしれません
-        ]
-    ]);
-    $data = json_decode($response->getBody(), true);
-    $hint = $data['choices'][0]['text'] ?? 'Failed to generate hint';
-
-    return redirect()->route('questions.hint')->with('hint', $hint);
-}
-}
+}    

@@ -35,6 +35,11 @@ Route::get('/questions/create', [QuestionController::class, 'create'])->name('qu
 // create.bladeのフォームからPOST送信される
 Route::post('/generate-question', [QuestionController::class, 'generateQuestion'])->name('generate-question');
 
+//　作られた問題をデータベースに保存するのは下記
+// create.bladeのボタンからPOST送信される
+Route::post('/save-question', [QuestionController::class, 'saveQuestion'])->name('save-question');
+
+
 // 生成した問題のプレビュー画面（DB保存前）
 Route::get('/questions/generated',  [QuestionController::class, 'showGenerated'])->name('questions.generated');
 
