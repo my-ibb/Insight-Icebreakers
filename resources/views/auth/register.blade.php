@@ -1,5 +1,7 @@
 @extends('layouts.app')
 
+@extends('layouts.app')
+
 @section('title', 'Register Page')
 
 @section('content')
@@ -11,26 +13,42 @@
                 <h1 class="text-center">新規登録</h1>
             </div>
             <div class="card-body">
-                <form method="post" action="{{ route('register') }}">
+                <!-- エラーメッセージの表示 -->
+                @if ($errors->any())
+                    <div class="alert alert-danger">
+                        <ul>
+                            @foreach ($errors->all() as $error)
+                                <li>{{ $error }}</li>
+                            @endforeach
+                        </ul>
+                    </div>
+                @endif
+
+                <!-- フォーム -->
+                <form method="POST" action="{{ route('register') }}">
                     @csrf
                     <div class="mb-3">
-                        <label for="username" class="form-label">ユーザー名:</label>
-                        <input type="text" class="form-control" id="username" name="username" required>
+                        <label for="username" class="form-label">ユーザーネーム</label>
+                        <input type="text" name="username" class="form-control" id="username" required>
                     </div>
+
                     <div class="mb-3">
-                        <label for="email" class="form-label">メールアドレス:</label>
-                        <input type="email" class="form-control" id="email" name="email" required>
+                        <label for="email" class="form-label">メールアドレス</label>
+                        <input type="email" name="email" class="form-control" id="email" required>
                     </div>
+
                     <div class="mb-3">
-                        <label for="password" class="form-label">パスワード:</label>
-                        <input type="password" class="form-control" id="password" name="password" required>
+                        <label for="password" class="form-label">パスワード</label>
+                        <input type="password" name="password" class="form-control" id="password" required>
                     </div>
+
                     <div class="mb-3">
-                        <label for="password_confirmation" class="form-label">パスワードの確認:</label>
-                        <input type="password" class="form-control" id="password_confirmation" name="password_confirmation" required>
+                        <label for="password-confirm" class="form-label">パスワード（確認用）</label>
+                        <input type="password" name="password_confirmation" class="form-control" id="password-confirm" required>
                     </div>
+
                     <div class="text-center">
-                        <input type="submit" class="btn btn-primary" value="登録">
+                        <button type="submit" class="btn btn-primary">登録</button>
                     </div>
                 </form>
             </div>

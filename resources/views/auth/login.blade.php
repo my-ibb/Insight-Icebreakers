@@ -31,6 +31,7 @@
                     </div>
                     <div class="text-center">
                         <input type="submit" class="btn btn-primary" value="ログイン">
+                        <a href="{{ route('register') }}" class="btn btn-secondary ml-2">新規登録</a>
                     </div>
                 </form>
             </div>
