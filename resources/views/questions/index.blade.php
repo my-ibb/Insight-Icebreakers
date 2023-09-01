@@ -22,9 +22,16 @@
                     <p class="card-subtitle mb-2 text-muted">作成者：{{ $question->user ? $question->user->username : '名無しの太郎' }}</p>
                     <p class="card-text">{{ $question->question_content }}</p>
                     <!-- 問題の詳細ページへのリンク -->
-                    <a href="{{ route('questions.detail', ['id' => $question->id]) }}" class="btn btn-primary">詳細を見る</a>
-                    <!-- 答えを確認するリンク -->
-                    <a href="{{ route('check-answer', $question->id) }}" class="btn btn-secondary ml-2">答えを確認する</a>
+                    <a href="{{ route('questions.detail', ['id' => $question->id]) }}" class="btn btn-primary">この問題であそぶ</a>
+                    <!-- 答えを見るボタン -->
+                    <button id="showAnswerButton-{{ $question->id }}" class="btn btn-warning" onclick="showAnswer({{ $question->id }})">答えを見る</button>
+
+                    <!-- 答え表示エリア（最初は非表示） -->
+                    <div id="answerArea-{{ $question->id }}" style="display:none;">
+                    <br>
+                    <h2>答え:</h2>
+                    <div class="alert alert-success">{{ $question->answer_content }}</div>
+                    </div>
                 </div>
             </div>
         </div>
@@ -34,4 +41,23 @@
 
 <!-- 問題作成ページへのリンク -->
 <a href="{{ route('questions.create') }}" class="btn btn-primary">問題を作成する</a>
+
+<!-- ボタンをクリックしたときに答えを表示するスクリプト -->
+<script>
+function showAnswer(id) {
+    // 各問題に対応する答えエリアを見つける
+    var answerArea = document.getElementById('answerArea-' + id);
+        // 答えエリアが現在表示されているかどうかをチェック
+        //もし答えが表示されていたら非表示にし、非表示だったら表示にする
+        if (answerArea.style.display === 'block') {
+        // 答えエリアを非表示にする
+        answerArea.style.display = 'none';
+    } else {
+
+    // 答えエリアを表示
+    answerArea.style.display = 'block';
+    }
+}
+</script>
+
 @endsection  <!-- メインコンテンツの終了 -->

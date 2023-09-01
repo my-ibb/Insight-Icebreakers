@@ -11,8 +11,30 @@
 <h1>{{ $question['title'] }}</h1>
 <p>{{ $question['content'] }}</p>
 
-<!-- 回答するためのボタン。現在はログインページへ遷移するように設定 -->
-<a href="{{ route('login') }}" class="btn btn-primary">回答する</a>
+<!-- 質問、ヒントをもらうボタン -->
+<a href="{{ route('questions.question_form', ['id' => $question['id']]) }}" class="btn btn-secondary">質問をする</a>
+<a href="javascript:void(0);" onclick="showHint()" class="btn btn-info">ヒントをもらう</a>
+
+<!-- これはヒントを表示するための要素です。デフォルトでは非表示（display: none） -->
+<div id="hint" style="display: none;"></div>
 
 <!-- contentセクションの終了 -->
+@endsection
+
+@section('scripts')
+<script>
+    function showHint() {
+        // ここでAjax通信を行ってサーバーからヒントを取得するか、
+        // JavaScriptで直接ヒントを生成します。
+
+        // 以下はサンプルヒントとしての文字列です。
+        const hint = "これはヒントです。";
+
+        // ヒントを表示するHTML要素を指定
+        const hintElement = document.getElementById("hint");
+        // ヒントを表示
+        hintElement.textContent = hint;
+        hintElement.style.display = "block";
+    }
+</script>
 @endsection

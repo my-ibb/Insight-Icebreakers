@@ -28,6 +28,10 @@ Route::get('/', [HomeController::class, 'index'])->name('home');
 // ウミガメの問題一覧ページは下記
 Route::get('/questions', [QuestionController::class, 'index'])->name('questions.index');
 
+// 問題詳細画面からヒント
+Route::get('/questions/{id}/hint', [QuestionController::class, 'getHint'])->name('questions.hint');
+
+
 // 新規問題作成ページは下記
 Route::get('/questions/create', [QuestionController::class, 'create'])->name('questions.create');
 
