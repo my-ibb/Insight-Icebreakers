@@ -15,6 +15,14 @@
 <a href="{{ route('questions.question_form', ['id' => $question['id']]) }}" class="btn btn-secondary">質問をする</a>
 <a href="javascript:void(0);" onclick="showHint()" class="btn btn-info">ヒントをもらう</a>
 
+<script>
+    function showHint() {
+        const hint = "これはヒントです。";
+        const hintElement = document.getElementById("hint");
+        hintElement.textContent = hint;
+        hintElement.style.display = "block";
+    }
+</script>
 <!-- これはヒントを表示するための要素です。デフォルトでは非表示（display: none） -->
 <div id="hint" style="display: none;"></div>
 
@@ -22,6 +30,7 @@
 @endsection
 
 @section('scripts')
+<!-- この部分がHTMLの最後に読み込まれます -->
 <script>
     function showHint() {
         // ここでAjax通信を行ってサーバーからヒントを取得するか、
