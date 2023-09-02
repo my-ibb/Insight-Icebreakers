@@ -66,14 +66,18 @@ class QuestionController extends Controller
     // 問題の詳細ページを表示
     public function detail($id)
     {
-        if (Auth::guest()) {
+        // ゲストユーザーはログインページにリダイレクト
+        if (Auth::guest()) 
+        {
             return redirect()->route('login');
         }
-        $question = [
-            'id' => $id,
-            'title' => 'Question ' . $id,
-            'content' => 'This is a detail of question ' . $id,
-        ];
+    // SoupGameQuestion モデルを使用して、指定されたIDに対応する問題を取得
+        $question = SoupGameQuestion::find($id);
+    // もし問題が存在しなければ、404エラーを返す
+        if (!$question) 
+        {
+            abort(404, 'The specified question does not exist.');
+        }
         return view('questions.detail', compact('question'));
     }
 
