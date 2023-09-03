@@ -26,7 +26,13 @@
             </div>
         </div>
     </div>
-</div>
+</div>    
+<!-- 質問、ヒントをもらうボタン -->
+<a href="{{ route('questions.question_form', ['id' => $question['id']]) }}" class="btn btn-secondary">質問をする</a>
+<a href="javascript:void(0);" onclick="showHint()" class="btn btn-info">ヒントをもらう</a>
+<div id="hint" style="display: none;"></div>
+
+<!-- この部分がHTMLの最後に読み込まれます -->
 <!-- ボタンをクリックしたときに答えを表示するスクリプト -->
 <script>
     function showAnswer(id) {
@@ -42,42 +48,19 @@
         // 答えエリアを表示
         answerArea.style.display = 'block';
         }
-    }
-    </script>
+    };
+    async function showHint() {
+            const questionId = {{ $question->id }};  // Bladeテンプレートから問題IDを取得
     
-<!-- 質問、ヒントをもらうボタン -->
-<a href="{{ route('questions.question_form', ['id' => $question['id']]) }}" class="btn btn-secondary">質問をする</a>
-<a href="javascript:void(0);" onclick="showHint()" class="btn btn-info">ヒントをもらう</a>
+            // API呼び出し
+            const response = await fetch(`/getHint/${questionId}`);
+            const data = await response.json();
+    
+            // ヒントを表示
+            const hintElement = document.getElementById("hint");
+            hintElement.textContent = data.hint;
+            hintElement.style.display = "block";
+        }
 
-<script>
-    function showHint() {
-        const hint = "これはヒントです。";
-        const hintElement = document.getElementById("hint");
-        hintElement.textContent = hint;
-        hintElement.style.display = "block";
-    }
-</script>
-<!-- これはヒントを表示するための要素です。デフォルトでは非表示（display: none） -->
-<div id="hint" style="display: none;"></div>
-
-<!-- contentセクションの終了 -->
-@endsection
-
-@section('scripts')
-<!-- この部分がHTMLの最後に読み込まれます -->
-<script>
-    function showHint() {
-        // ここでAjax通信を行ってサーバーからヒントを取得するか、
-        // JavaScriptで直接ヒントを生成します。
-
-        // 以下はサンプルヒントとしての文字列です。
-        const hint = "これはヒントです。";
-
-        // ヒントを表示するHTML要素を指定
-        const hintElement = document.getElementById("hint");
-        // ヒントを表示
-        hintElement.textContent = hint;
-        hintElement.style.display = "block";
-    }
-</script>
+    </script>
 @endsection

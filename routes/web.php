@@ -29,8 +29,8 @@ Route::get('/', [HomeController::class, 'index'])->name('home');
 Route::get('/questions', [QuestionController::class, 'index'])->name('questions.index');
 
 // 問題詳細画面からヒント
-Route::get('/questions/{id}/hint', [QuestionController::class, 'getHint'])->name('questions.hint');
-
+//Route::get('/questions/{id}/hint', [QuestionController::class, 'getHint'])->name('questions.hint');
+Route::get('/getHint/{id}', [QuestionController::class, 'getHint'])->name('questions.hint');
 
 // 新規問題作成ページは下記
 Route::get('/questions/create', [QuestionController::class, 'create'])->name('questions.create');
@@ -95,5 +95,6 @@ Route::post('/logout', function () {
     Auth::logout();
     return redirect('/login');
 })->name('logout');
+
 
 

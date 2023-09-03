@@ -303,28 +303,66 @@ class QuestionController extends Controller
         return redirect()->route('questions.index');
     }
     
-    public function generateHint(Request $request)
+    public function getHint($questionId)
     {
-        $questionID = $request->input('questionID');
-        $question = SoupGameQuestion::find($questionID);
+        $question = SoupGameQuestion::find($questionId); // DBから問題を取得
+    
         if (!$question) {
-            return redirect()->route('questions.hint')->with('hint', 'Question not found');
+            // 404 Not Found レスポンスなど
+            return response()->json(['error' => 'Question not found'], 404);
         }
-        $client = new Client();
+        //　ヒントのプロンプト
+        // OpenAI APIのエンドポイントとパラメータを設定
+        //OpenAI APIのエンドポイントURLを保持
         $endpoint = "https://api.openai.com/v1/chat/completions";
+
+        $prompt =         
+        "#Instructions
+        You're an AI trained to provide hints for lateral thinking puzzles. The player is stuck and needs a subtle hint to move forward.    
+        #Procedure
+        1. Provide a hint that nudges the player in the right direction but doesn't give away the answer.
+        2. The hint must be concise and not more than one or two sentences.
+        3. The hint must be relevant to the puzzle.
+        4. Output in Japanese.
+        #Please provide a hint
+        ";
+
+        $content = "#Puzzle: {$question->question_content}
+                    #Answer: {$question->answer_content}"; 
+        // GuzzleHTTPクライアントのインスタンスを作成           
+        $client = new Client();
+    
+        // GPTにAPI連携して問題文を生成したものを$responseとして受け取っている
         $response = $client->post($endpoint, [
             'headers' => [
                 'Authorization' => 'Bearer ' . env('OPENAI_API_KEY'),
                 'Content-Type' => 'application/json'
             ],
+            
             'json' => [
                 'model' => "gpt-3.5-turbo-0613",
-                'prompt' => "Provide a hint for the following question: " . $question->question_content,
-                'max_tokens' => 50
+                "messages" => [
+                    [
+                        "role" => "system",
+                        "content" => $prompt
+                    ],
+                    [
+                        "role" => "user",
+                        "content" => $content
+                    ]
+                ]
             ]
         ]);
+        
+        // JSONレスポンスをデコードしてヒントを抽出
         $data = json_decode($response->getBody(), true);
-        $hint = $data['choices'][0]['text'] ?? 'Failed to generate hint';
-        return redirect()->route('questions.hint')->with('hint', $hint);
+        $generated_hint = $data['choices'][0]['message']['content'] ?? 'Failed to generate question';
+
+    
+        // API呼び出しを行い、ヒントを生成（この部分はOpenAI APIと通信する実際のコードに置き換えてください）
+        //$generated_hint = "これは生成されたヒントです";
+    
+        // JSONとしてヒントを返す（フロントエンドのJavaScriptで受け取る）
+        return response()->json(['hint' => $generated_hint]);
     }
 }    
