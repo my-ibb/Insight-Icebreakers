@@ -165,9 +165,52 @@ class QuestionController extends Controller
         {Display the question}
     
         [Answer]:
-        {Display the answer}
-    
-        ";
+        {Display the answer}";
+
+    // $prompt = "#指示
+    // 水平思考クイズを遊びましょう。
+
+    // 水平思考ゲームでは、参加者は「はい」「いいえ」「関係ない」のいずれかだけで答えられる質問を出して、クイズマスターが出す謎を解明します。あなたは水平思考ゲームの問題作成のプロであり、指定されたジャンルと難易度に合わせて、問題文を最適化してください。
+
+    // --------------
+    // 以下は一例です。参考にしてください。
+
+    // #例1
+    // ある男が海の近くのレストランで亀のスープを頼みました。一口飲んでからシェフに「これは本当に亀のスープですか？」と尋ねました。シェフは「はい、あなたが食べているのは間違いなく亀のスープです」と答えました。その男は料金を支払い、帰宅して自らの命を絶った。なぜそんな極端な行動をとったのでしょうか？
+
+    // #例1の答え
+    // このクイズの答えは、その男が以前、何人かの仲間と海で遭難していたということです。食べ物がなく、死んだ者の肉を食べ始めましたが、その男は頑としてそれを食べないでいました。仲間の一人が「これは亀のスープだ」と嘘をついて、彼が生き延びることができました。レストランで「本物の」亀のスープを味わったとき、彼は真実を悟り、絶望から自らの命を絶ったのです。
+
+    // #例2
+    // (以下、他の例も続く)
+    // --------------
+    // #ゲームの楽しみ方
+    // 亀のスープについての例の質問のように、一連の質問と回答を通じて真実を解き明かす楽しみがあります。したがって、答えは現実離れしているわけでも、あまりにも直訳ではなく、ゲームの楽しさを保つべきです。
+
+    // #手順
+    // 1. #制約 と #禁止事項 に従い、#表示形式に従って質問と対応する答えを作成してください。
+
+    // #制約
+    // * [質問] は70文字から250文字の間でなければならない
+    // * [答え] は論理的な流れに従ったストーリーでなければならない
+    // * 例の質問を参考にしてください
+    // * 登場人物や場面が生き生きとしていること
+    // * [質問] は一見すると逆説的に見えるべき
+    // * [答え] は一般的な道徳観や倫理観に合致するものでなければならない
+    // * 出力は日本語で
+    // * [質問] は疑問形で終わる（なぜそうしたのか？など）
+
+    // #禁止事項
+    // * [答え] の結末で「それは夢だった」としないこと
+    // * [答え] で現実離れした設定を使わないこと
+
+    // #表示形式
+    // [質問]:
+    // {質問を表示}
+
+    // [答え]:
+    // {答えを表示}";
+
             // フォームからジャンルと難易度を取得
         $genre = $request->input('genre');
         $difficulty = $request->input('difficulty');
@@ -266,16 +309,6 @@ class QuestionController extends Controller
         // 保存失敗時の処理
         return redirect()->route('questions.index')->with('error', 'Failed to save the question.');
     }
-        // コメントアウトされている部分
-    /*
-    public function fetchQuestion()
-    {
-        $question = SoupGameQuestion::find($questionID);
-        if (!$question) {
-            return redirect()->route('questions.chat')->with('answer', 'Question not found');
-        }
-    }
-    */
     
     public function generateAnswer()
     {
@@ -318,14 +351,32 @@ class QuestionController extends Controller
 
         $prompt =         
         "#Instructions
-        You're an AI trained to provide hints for lateral thinking puzzles. The player is stuck and needs a subtle hint to move forward.    
+        You are an AI trained to provide subtle hints for lateral thinking puzzles. The player is stuck and needs a hint to move forward.
+        
         #Procedure
-        1. Provide a hint that nudges the player in the right direction but doesn't give away the answer.
-        2. The hint must be concise and not more than one or two sentences.
+        1. Provide a hint that subtly guides the player in the right direction without giving away the answer.
+        2. The hint must be concise, limited to one or two sentences.
         3. The hint must be relevant to the puzzle.
         4. Output in Japanese.
-        #Please provide a hint
-        ";
+        
+        #Restrictions
+        Do not include text that is identical to the content of the answer.
+        
+        #Please provide a hint";
+
+    // #指示
+    // あなたは水平思考パズルに対するヒントを提供する訓練を受けたAIです。プレイヤーは行き詰っていて、前に進むための微妙なヒントが必要です。
+
+    // #手順
+    // 1. 答えを明かさないように、プレイヤーを正しい方向に微妙に導くヒントを提供してください。
+    // 2. ヒントは簡潔で、一つまたは二つの文でなければなりません。
+    // 3. ヒントはパズルに関連していなければなりません。
+    // 4. 出力は日本語で行ってください。
+
+    // #禁止事項
+    // 答えの内容と全く同じ文章を入れない
+
+    // #ヒントを提供してください
 
         $content = "#Puzzle: {$question->question_content}
                     #Answer: {$question->answer_content}"; 
