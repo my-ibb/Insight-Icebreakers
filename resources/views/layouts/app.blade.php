@@ -11,7 +11,6 @@
     <link rel="stylesheet" href="{{ asset('css/custom.css') }}">
 
     <script src="{{ asset('/js/toggleAnswer.js') }}"></script>
-    <script src="{{ asset('/js/showHint.js') }}"></script>
 
 </head>
 <body class="bg-light-cyan"> <!-- 背景色を設定するカスタムクラス -->

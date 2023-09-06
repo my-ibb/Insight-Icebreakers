@@ -22,13 +22,13 @@ class QuestionController extends Controller
     
     // 新しい問題を作成するフォームを表示
     public function create()
-{
-    //未ログインだとログインフォームにリダイレクトされる
-    if (Auth::guest()) {
-        return redirect()->route('login');
+    {
+        //未ログインだとログインフォームにリダイレクトされる
+        if (Auth::guest()) {
+            return redirect()->route('login');
+        }
+        return view('questions.create');
     }
-    return view('questions.create');
-}
 
     // チャット形式の質問ページを表示
     public function chatPage()
@@ -36,17 +36,10 @@ class QuestionController extends Controller
         return view('questions.chat');
     }
 
-    // ヒントページを表示
-    public function hintPage()
-    {
-        $hint = "This is a hint";
-        return view('questions.hint', compact('hint'));
-    }
-
     // 特定のIDの問題の答えをチェック
     public function checkAnswer($id)
     {
-        $question = Question::find($id);
+        $question = SoupGameQuestion::find($id);
         $answer = $question->answer;
         return view('check', ['answer' => $answer]);
     }
@@ -211,7 +204,7 @@ class QuestionController extends Controller
     // [答え]:
     // {答えを表示}";
 
-            // フォームからジャンルと難易度を取得
+        // フォームからジャンルと難易度を取得
         $genre = $request->input('genre');
         $difficulty = $request->input('difficulty');
         $content = "ジャンルとしては{$genre}系の問題で、難易度は「{$difficulty}」レベルとして作成してください。"; 
@@ -260,8 +253,6 @@ class QuestionController extends Controller
             ->with('answer_content', $answer_content)
             ->with('genre', $genre)
             ->with('difficulty', $difficulty);
-
-
     }
         // 生成された問題を表示するメソッド
     public function showGenerated()
@@ -310,43 +301,18 @@ class QuestionController extends Controller
         return redirect()->route('questions.index')->with('error', 'Failed to save the question.');
     }
     
-    public function generateAnswer()
+    public function getHint(Request $request, $questionId)
     {
-        $client = new Client();
-        $response = $client->post("https://api.openai.com/v1/chat/completions", [
-            'headers' => [
-                'Authorization' => 'Bearer ' . env('OPENAI_API_KEY'),
-                'Content-Type' => 'application/json'
-            ],
-            'json' => [
-                'model' => "gpt-3.5-turbo-0613",
-                'prompt' => $question->question_content,
-                'max_tokens' => 5
-            ]
-        ]);
-        $data = json_decode($response->getBody(), true);
-        $answer = $data['choices'][0]['text'] ?? 'Failed to generate answer';
-        return redirect()->route('questions.chat')->with('answer', $answer);
-    }
+        // クエリパラメータからこれまでのヒントを取得
+        $previousHints = $request->query('previousHints', '');
+        $hintCount = $request->query('hintCount', 1);
     
-    public function storeGeneratedQuestion(Request $request)
-    {
-        $data = $request->all();
-        SoupGameQuestion::storeNewQuestion($data);
-        return redirect()->route('questions.index');
-    }
-    
-    public function getHint($questionId)
-    {
-        $question = SoupGameQuestion::find($questionId); // DBから問題を取得
-    
+        // 既存のコード：問題の取得など
+        $question = SoupGameQuestion::find($questionId);
         if (!$question) {
-            // 404 Not Found レスポンスなど
             return response()->json(['error' => 'Question not found'], 404);
         }
-        //　ヒントのプロンプト
-        // OpenAI APIのエンドポイントとパラメータを設定
-        //OpenAI APIのエンドポイントURLを保持
+    
         $endpoint = "https://api.openai.com/v1/chat/completions";
 
         $prompt =         
@@ -380,6 +346,12 @@ class QuestionController extends Controller
 
         $content = "#Puzzle: {$question->question_content}
                     #Answer: {$question->answer_content}"; 
+
+         // hintCountが1より大きい場合、前回のヒントをcontentに追加
+        if ($hintCount > 1) {
+        $content .= "\n#Previous Hints: {$previousHints}";
+    }
+
         // GuzzleHTTPクライアントのインスタンスを作成           
         $client = new Client();
     

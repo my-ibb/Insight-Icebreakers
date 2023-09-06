@@ -31,6 +31,11 @@
 <a href="{{ route('questions.question_form', ['id' => $question['id']]) }}" class="btn btn-secondary">質問をする</a>
 <a href="javascript:void(0);" onclick="showHint()" class="btn btn-info">ヒントをもらう</a>
 <div id="hint" style="display: none;"></div>
+<div id="hintContainer"></div>
+
+<!-- このエレメントはhintCountの値を表示するためのものです -->
+<div id="hintCountContainer">ヒント使用回数： 未使用</div>
+
 
 <!-- この部分がHTMLの最後に読み込まれます -->
 <!-- ボタンをクリックしたときに答えを表示するスクリプト -->
@@ -49,18 +54,41 @@
         answerArea.style.display = 'block';
         }
     };
-    async function showHint() {
-            const questionId = {{ $question->id }};  // Bladeテンプレートから問題IDを取得
-    
-            // API呼び出し
-            const response = await fetch(`/getHint/${questionId}`);
-            const data = await response.json();
-    
-            // ヒントを表示
-            const hintElement = document.getElementById("hint");
-            hintElement.textContent = data.hint;
-            hintElement.style.display = "block";
-        }
 
-    </script>
+    //let hintCount = 0;  // ヒントを出した回数を保持する変数
+
+    // ... (showAnswer関数はそのまま)
+
+    let hintCount = 0;  // ヒントの回数を保存する変数
+    let previousHints = [];  // これまでのヒントを保存する配列
+
+    async function showHint() {
+        hintCount++;  // ヒントボタンが押されたらインクリメント
+        const questionId = {{ $question->id }};  // Bladeテンプレートから問題IDを取得
+
+        // これまでのヒントを文字列で送信可能な形に変換（例えばカンマ区切りなど）
+        const previousHintsString = previousHints.join(',');
+
+        // API呼び出し
+        const response = await fetch(`/getHint/${questionId}?previousHints=${previousHintsString}&hintCount=${hintCount}`);
+        const data = await response.json();
+
+        // 新しいヒントをpreviousHintsに追加
+        previousHints.push(data.hint);
+
+        // ヒントを表示するエリアを取得
+        const hintContainer = document.getElementById("hintContainer");
+
+        // 新しいヒントエレメントを作成
+        const newHintElement = document.createElement("div");
+        newHintElement.textContent = data.hint;
+
+        // ヒントエレメントをコンテナに追加
+        hintContainer.appendChild(newHintElement);
+
+        // hintCountの値をHTMLに表示
+        const hintCountContainer = document.getElementById("hintCountContainer");
+        hintCountContainer.textContent = "ヒント使用回数： " + hintCount + "回目";
+    }
+</script>
 @endsection

@@ -28,10 +28,6 @@ Route::get('/', [HomeController::class, 'index'])->name('home');
 // ウミガメの問題一覧ページは下記
 Route::get('/questions', [QuestionController::class, 'index'])->name('questions.index');
 
-// 問題詳細画面からヒント
-//Route::get('/questions/{id}/hint', [QuestionController::class, 'getHint'])->name('questions.hint');
-Route::get('/getHint/{id}', [QuestionController::class, 'getHint'])->name('questions.hint');
-
 // 新規問題作成ページは下記
 Route::get('/questions/create', [QuestionController::class, 'create'])->name('questions.create');
 
@@ -49,7 +45,6 @@ Route::get('/questions/generated',  [QuestionController::class, 'showGenerated']
 
 //質問のチャット、ヒントのページ
 Route::get('/chat-page', [QuestionController::class, 'chatPage'])->name('chat-page');
-Route::get('/hint-page', [QuestionController::class, 'hintPage'])->name('hint-page');
 Route::post('/generate-hint', [QuestionController::class, 'generateHint'])->name('generate-hint');
 Route::post('/generate-chat-response', [QuestionController::class, 'generateChatResponse'])->name('generate-chat-response');
 Route::get('/questions/chat', [QuestionController::class, 'generateChatResponse'])->name('questions.chat');
@@ -67,6 +62,7 @@ Route::get('/questions/{id}/question', [QuestionController::class, 'showQuestion
 
 
 Route::get('/questions/{id}/hint', [QuestionController::class, 'showHintForm'])->name('questions.hint_form');
+Route::get('/getHint/{questionId}', [QuestionController::class, 'getHint'])->name('questions.hint');
 
 Route::get('/questions/{id}/edit', [QuestionController::class, 'edit'])->name('questions.edit');
 
