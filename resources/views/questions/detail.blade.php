@@ -104,10 +104,22 @@
         hintCountContainer.textContent = "ヒント使用回数： " + hintCount + "回目";
     }
 
+    let questionCount = 0;  // 質問の回数をカウントする変数
+    let previousQuestions = [];  // これまでの質問を保存する配列
+
     async function sendQuestion() {
         // ユーザーが入力した質問を取得
         const userQuestion = document.getElementById("userQuestion").value;
         const questionId = {{ $question->id }};  // Bladeテンプレートから問題IDを取得
+        // 質問の回数を増やす
+        questionCount++;
+
+        // この回の質問を保存する
+        previousQuestions.push(userQuestion);
+
+        // 質問回数と過去の質問をローカルストレージに保存
+        localStorage.setItem('questionCount', questionCount);
+        localStorage.setItem('previousQuestions', JSON.stringify(previousQuestions));
 
         // APIに送信
         const response = await fetch('/generate-chat-response', {

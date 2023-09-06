@@ -388,6 +388,9 @@ public function generateChatResponse(Request $request)
 {
     $chatQuestionContent = $request->input('chatQuestionContent');
     $questionId = $request->input('questionId');  // 質問IDも取得
+    // 質問回数をセッションから取得、もしくは初期化
+    $questionCount = $request->session()->get('question_count', 0);
+    $questionCount++;
 
     // 問題の取得
     $question = SoupGameQuestion::find($questionId);
@@ -397,7 +400,12 @@ public function generateChatResponse(Request $request)
 
     $endpoint = "https://api.openai.com/v1/chat/completions";
     
-    // あなたのプロンプト。これは問題やユーザーからの質問に応じて変更できます。
+    // プロンプト
+    // 1回目の質問、2回目の質問、3回目の質問...と追加情報をプロンプトに含める
+    $prompt = "1st Question: {$request->session()->get('1st_question', 'N/A')}
+            2nd Question: {$request->session()->get('2nd_question', 'N/A')}
+            ...";
+
     $prompt =
     "1.The answer to the question should be 'イエス', 'ノー', or 'どちらでもない'.
     2.If the content of the question is linked to the answer, respond with 'イエス'. 
@@ -441,7 +449,15 @@ public function generateChatResponse(Request $request)
     // JSONレスポンスをデコードして回答を抽出
     $data = json_decode($response->getBody(), true);
     $generated_answer = $data['choices'][0]['message']['content'] ?? 'Failed to generate answer';
-    
+    // 最新の質問をセッションに保存
+    $request->session()->put("{$questionCount}th_question", $chatQuestionContent);
+
+    // 過去の質問をセッションに保存（配列として）
+    $previousQuestions = $request->session()->get('previous_questions', []);
+    $previousQuestions[] = $chatQuestionContent;
+    $request->session()->put('previous_questions', $previousQuestions);
+
+
     // JSONとして回答を返す
     return response()->json(['answer' => $generated_answer]);
 }
