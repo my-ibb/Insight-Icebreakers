@@ -30,12 +30,6 @@ class QuestionController extends Controller
         return view('questions.create');
     }
 
-    // チャット形式の質問ページを表示
-    public function chatPage()
-    {
-        return view('questions.chat');
-    }
-
     // 特定のIDの問題の答えをチェック
     public function checkAnswer($id)
     {
@@ -275,12 +269,7 @@ class QuestionController extends Controller
 
         return redirect()->route('questions.create');
     }
-    // OpenAI APIを使って問題に対する回答を生成するメソッド
-    public function generateChatResponse(Request $request)
-    {
-        $questionID = $request->input('chatQuestionID');
-    }
-    
+
     public function saveQuestion(Request $request) {
         $data = [
             'generated_question' => $request->input('question_content'),
@@ -301,6 +290,7 @@ class QuestionController extends Controller
         return redirect()->route('questions.index')->with('error', 'Failed to save the question.');
     }
     
+    // ーーーーーーーーーーーヒント関連はここからーーーーーーーーーーー
     public function getHint(Request $request, $questionId)
     {
         // クエリパラメータからこれまでのヒントを取得
@@ -388,4 +378,72 @@ class QuestionController extends Controller
         // JSONとしてヒントを返す（フロントエンドのJavaScriptで受け取る）
         return response()->json(['hint' => $generated_hint]);
     }
+    // ーーーーーーーーーーーヒント関連はここまでーーーーーーーーーーー
+
+
+    // ーーーーーーーーーーー質問関連はここからーーーーーーーーーーー
+    // OpenAI APIを使って問題に対する回答を生成するメソッド
+// OpenAI APIを使って問題に対する回答を生成するメソッド
+public function generateChatResponse(Request $request)
+{
+    $chatQuestionContent = $request->input('chatQuestionContent');
+    $questionId = $request->input('questionId');  // 質問IDも取得
+
+    // 問題の取得
+    $question = SoupGameQuestion::find($questionId);
+    if (!$question) {
+        return response()->json(['error' => 'Question not found'], 404);
+    }
+
+    $endpoint = "https://api.openai.com/v1/chat/completions";
+    
+    // あなたのプロンプト。これは問題やユーザーからの質問に応じて変更できます。
+    $prompt =
+    "1.The answer to the question should be 'イエス', 'ノー', or 'どちらでもない'.
+    2.If the content of the question is linked to the answer, respond with 'イエス'. 
+    3.If the content of the question is not linked to the answer, respond with 'ノー'.
+    4.The answer to the question should be provided in Japanese.
+    5. For questions unrelated to the problem, display 'どちらでもない'.
+    6. Format for responses in the case of 'Neither' (Example): 質問: (Content of the entered question is written here) 回答: どちらでもない
+    ";
+
+    
+    // ユーザーからの質問を含めます
+    $content = "#User Question: {$chatQuestionContent}
+                #Puzzle: {$question->question_content}
+                #Answer: {$question->answer_content}";
+
+    // GuzzleHTTPクライアントのインスタンスを作成
+    $client = new Client();
+
+    // API連携して回答を生成
+    $response = $client->post($endpoint, [
+        'headers' => [
+            'Authorization' => 'Bearer ' . env('OPENAI_API_KEY'),
+            'Content-Type' => 'application/json'
+        ],
+        
+        'json' => [
+            'model' => "gpt-3.5-turbo-0613",
+            "messages" => [
+                [
+                    "role" => "system",
+                    "content" => $prompt
+                ],
+                [
+                    "role" => "user",
+                    "content" => $content
+                ]
+            ]
+        ]
+    ]);
+    
+    // JSONレスポンスをデコードして回答を抽出
+    $data = json_decode($response->getBody(), true);
+    $generated_answer = $data['choices'][0]['message']['content'] ?? 'Failed to generate answer';
+    
+    // JSONとして回答を返す
+    return response()->json(['answer' => $generated_answer]);
+}
+    // ーーーーーーーーーーー質問関連はここまでーーーーーーーーーーー
 }    

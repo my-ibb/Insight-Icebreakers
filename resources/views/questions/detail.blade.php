@@ -26,18 +26,31 @@
             </div>
         </div>
     </div>
-</div>    
-<!-- 質問、ヒントをもらうボタン -->
-<a href="{{ route('questions.question_form', ['id' => $question['id']]) }}" class="btn btn-secondary">質問をする</a>
+</div>
+
+<!-- 質問関連はここから -->
+<!-- GPTへの共有＞＞ここの部分をテキストフォームで質問を入力し、送信できるように変えたい！！送信した後は画面遷移せず、JavaScriptで画面上で表示を変えていきたい〜〜〜！！！ -->
+<!-- テキストエリアと送信ボタン -->
+<div id="chatContainer">
+    <textarea id="userQuestion" rows="4" cols="50"></textarea>
+    <button onclick="sendQuestion()">質問をする</button>
+    <div id="chatResponse"></div> <!-- ここに回答を表示 -->
+</div>
+<!-- 質問関連はここまで -->
+
+
+<!-- ヒント関連はここから -->
 <a href="javascript:void(0);" onclick="showHint()" class="btn btn-info">ヒントをもらう</a>
 <div id="hint" style="display: none;"></div>
 <div id="hintContainer"></div>
 
-<!-- このエレメントはhintCountの値を表示するためのものです -->
+<!-- hintCountの値（回数）を表示する -->
 <div id="hintCountContainer">ヒント使用回数： 未使用</div>
 
+<!-- ヒント関連はここまで -->
 
-<!-- この部分がHTMLの最後に読み込まれます -->
+
+<!-- ここからJavaScript -->
 <!-- ボタンをクリックしたときに答えを表示するスクリプト -->
 <script>
     function showAnswer(id) {
@@ -90,5 +103,31 @@
         const hintCountContainer = document.getElementById("hintCountContainer");
         hintCountContainer.textContent = "ヒント使用回数： " + hintCount + "回目";
     }
+
+    async function sendQuestion() {
+        // ユーザーが入力した質問を取得
+        const userQuestion = document.getElementById("userQuestion").value;
+        const questionId = {{ $question->id }};  // Bladeテンプレートから問題IDを取得
+
+        // APIに送信
+        const response = await fetch('/generate-chat-response', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRF-TOKEN': '{{ csrf_token() }}',  // Laravel CSRFトークン
+            },
+            body: JSON.stringify({
+                chatQuestionContent: userQuestion,
+                questionId: questionId // もし必要なら問題IDも送信
+            })
+        });
+
+        const data = await response.json();
+
+        // 取得した回答を表示エリアにセット
+        const chatResponse = document.getElementById("chatResponse");
+        chatResponse.innerHTML = data.answer;
+    }
+
 </script>
 @endsection

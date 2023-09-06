@@ -44,15 +44,11 @@ Route::post('/save-question', [QuestionController::class, 'saveQuestion'])->name
 Route::get('/questions/generated',  [QuestionController::class, 'showGenerated'])->name('questions.generated');
 
 //質問のチャット、ヒントのページ
-Route::get('/chat-page', [QuestionController::class, 'chatPage'])->name('chat-page');
 Route::post('/generate-hint', [QuestionController::class, 'generateHint'])->name('generate-hint');
 Route::post('/generate-chat-response', [QuestionController::class, 'generateChatResponse'])->name('generate-chat-response');
-Route::get('/questions/chat', [QuestionController::class, 'generateChatResponse'])->name('questions.chat');
-
 
 //新しくつくった正解確認画面
 Route::get('/check/{id}', 'QuestionController@checkAnswer')->name('check-answer');
-
 
 Route::get('/questions/{id}/check', [QuestionController::class, 'checkAnswer'])->name('questions.check');//問題一覧の問題のこたえのやつ？？
 
