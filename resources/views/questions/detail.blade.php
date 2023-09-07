@@ -34,6 +34,10 @@
 <div id="chatContainer">
     <textarea id="userQuestion" rows="4" cols="50"></textarea>
     <button onclick="sendQuestion()">質問をする</button>
+    
+    <!-- 質問回数と過去の質問を表示するエリア -->
+<div id="questionCountContainer">質問回数：未使用</div>
+<div id="previousQuestionsContainer"></div>
     <div id="chatResponse"></div> <!-- ここに回答を表示 -->
 </div>
 <!-- 質問関連はここまで -->
@@ -102,44 +106,83 @@
         // hintCountの値をHTMLに表示
         const hintCountContainer = document.getElementById("hintCountContainer");
         hintCountContainer.textContent = "ヒント使用回数： " + hintCount + "回目";
-    }
+    };
 
-    let questionCount = 0;  // 質問の回数をカウントする変数
-    let previousQuestions = [];  // これまでの質問を保存する配列
+    // スクリプトの最上位で変数を定義
+    let questionCount = 0;
+    let previousQuestions = [];
+
+    // ページロード時の処理
+    document.addEventListener('DOMContentLoaded', (event) => {
+        // この部分でletを使って変数を宣言することで、sendQuestion関数でもその変数が使えるようになります。
+        const questionId = {{ $question->id }}; // Bladeテンプレートから問題IDを取得
+        // 質問回数をローカルストレージから取得
+        let storedQuestionCount = localStorage.getItem(`questionCount_${questionId}`);
+        if (storedQuestionCount) {
+            questionCount = parseInt(storedQuestionCount);
+            document.getElementById('questionCountContainer').textContent = "質問回数： " + questionCount + "回目";
+        }    
+            // 過去の質問をローカルストレージから取得
+        let storedPreviousQuestions = localStorage.getItem(`previousQuestions_${questionId}`);
+        if (storedPreviousQuestions) {
+            previousQuestions = JSON.parse(storedPreviousQuestions);
+            const previousQuestionsContainer = document.getElementById('previousQuestionsContainer');
+            previousQuestions.forEach((question, index) => {
+                const newQuestionElement = document.createElement("div");
+                newQuestionElement.textContent = `質問${index + 1}: ${question}`;
+                previousQuestionsContainer.appendChild(newQuestionElement);
+            });
+        }
+    });
 
     async function sendQuestion() {
         // ユーザーが入力した質問を取得
         const userQuestion = document.getElementById("userQuestion").value;
         const questionId = {{ $question->id }};  // Bladeテンプレートから問題IDを取得
-        // 質問の回数を増やす
-        questionCount++;
-
-        // この回の質問を保存する
-        previousQuestions.push(userQuestion);
-
-        // 質問回数と過去の質問をローカルストレージに保存
-        localStorage.setItem('questionCount', questionCount);
-        localStorage.setItem('previousQuestions', JSON.stringify(previousQuestions));
-
+        
         // APIに送信
-        const response = await fetch('/generate-chat-response', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-                'X-CSRF-TOKEN': '{{ csrf_token() }}',  // Laravel CSRFトークン
-            },
-            body: JSON.stringify({
-                chatQuestionContent: userQuestion,
-                questionId: questionId // もし必要なら問題IDも送信
-            })
-        });
+        try {
+            const response = await fetch('/generate-chat-response', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRF-TOKEN': '{{ csrf_token() }}',  // Laravel CSRFトークン
+                },
+                body: JSON.stringify({
+                    chatQuestionContent: userQuestion,
+                    questionId: questionId // もし必要なら問題IDも送信
+                })
+            });
 
-        const data = await response.json();
+            // レスポンスが正常であるかチェック
+            if (response.ok) {
+                    const data = await response.json();
+                    const chatResponse = document.getElementById("chatResponse");
+                    const newAnswerElement = document.createElement("div");
+                    newAnswerElement.textContent = `質問${questionCount}: ${userQuestion} / 回答: ${data.answer}`; //これきく
+                    chatResponse.appendChild(newAnswerElement);
 
-        // 取得した回答を表示エリアにセット
-        const chatResponse = document.getElementById("chatResponse");
-        chatResponse.innerHTML = data.answer;
+                    // この回の質問を保存する
+                    previousQuestions.push(userQuestion);
+
+                    // 質問回数を更新
+                    questionCount++;
+
+                    document.getElementById('questionCountContainer').textContent = "質問回数： " + questionCount + "回目";
+
+                    // 質問回数と過去の質問をローカルストレージに保存
+                    localStorage.setItem(`questionCount_${questionId}`, questionCount);
+                    localStorage.setItem(`previousQuestions_${questionId}`, JSON.stringify(previousQuestions));
+
+                    // 過去の質問を更新
+                    const previousQuestionsContainer = document.getElementById('previousQuestionsContainer');
+                    const newQuestionElement = document.createElement("div");
+                    newQuestionElement.textContent = `質問${questionCount}: ${userQuestion} / 回答: ${data.answer}`; //これきく
+                    previousQuestionsContainer.appendChild(newQuestionElement);
+                }
+        } catch (error) {
+            console.error("エラーが発生しました:", error);
+        }
     }
-
 </script>
 @endsection
