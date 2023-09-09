@@ -7,7 +7,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use GuzzleHttp\Client;
 use App\Models\SoupGameQuestion;
-
+use Illuminate\Support\Facades\Log;
 // QuestionController クラスの定義。Controller クラスを継承。
 class QuestionController extends Controller
 {
@@ -387,6 +387,7 @@ class QuestionController extends Controller
 public function generateChatResponse(Request $request)
 {
     $chatQuestionContent = $request->input('chatQuestionContent');
+    Log::info("Received chatQuestionContent: " . $chatQuestionContent); 
     $questionId = $request->input('questionId');  // 質問IDも取得
     // 質問回数をセッションから取得、もしくは初期化
     $questionCount = $request->session()->get('question_count', 0);
@@ -394,6 +395,11 @@ public function generateChatResponse(Request $request)
 
     // 問題の取得
     $question = SoupGameQuestion::find($questionId);
+
+    // デバッグ：受け取った質問やセッションデータを出力
+    error_log("Received chatQuestionContent: " . $chatQuestionContent);
+    error_log("Session question_count: " . $questionCount);
+        
     if (!$question) {
         return response()->json(['error' => 'Question not found'], 404);
     }
@@ -402,9 +408,9 @@ public function generateChatResponse(Request $request)
     
     // プロンプト
     // 1回目の質問、2回目の質問、3回目の質問...と追加情報をプロンプトに含める
-    $prompt = "1st Question: {$request->session()->get('1st_question', 'N/A')}
-            2nd Question: {$request->session()->get('2nd_question', 'N/A')}
-            ...";
+    // $prompt = "1st Question: {$request->session()->get('1st_question', 'N/A')}
+    //         2nd Question: {$request->session()->get('2nd_question', 'N/A')}
+    //         ...";
 
     $prompt =
     "1.The answer to the question should be 'イエス', 'ノー', or 'どちらでもない'.
@@ -412,14 +418,14 @@ public function generateChatResponse(Request $request)
     3.If the content of the question is not linked to the answer, respond with 'ノー'.
     4.The answer to the question should be provided in Japanese.
     5. For questions unrelated to the problem, display 'どちらでもない'.
-    6. Format for responses in the case of 'Neither' (Example): 質問: (Content of the entered question is written here) 回答: どちらでもない
+    6. Format for responses Example >>  質問: (Content of the entered question is written here) 回答: どちらでもない
     ";
 
     
     // ユーザーからの質問を含めます
-    $content = "#User Question: {$chatQuestionContent}
-                #Puzzle: {$question->question_content}
-                #Answer: {$question->answer_content}";
+    $content = "#Puzzle: {$question->question_content}
+                #Answer: {$question->answer_content}
+                #User Question: {$chatQuestionContent}";
 
     // GuzzleHTTPクライアントのインスタンスを作成
     $client = new Client();
@@ -449,6 +455,10 @@ public function generateChatResponse(Request $request)
     // JSONレスポンスをデコードして回答を抽出
     $data = json_decode($response->getBody(), true);
     $generated_answer = $data['choices'][0]['message']['content'] ?? 'Failed to generate answer';
+
+    // デバッグ：APIからのレスポンスを出力
+    error_log("API Response: " . json_encode($data));
+
     // 最新の質問をセッションに保存
     $request->session()->put("{$questionCount}th_question", $chatQuestionContent);
 
@@ -461,5 +471,21 @@ public function generateChatResponse(Request $request)
     // JSONとして回答を返す
     return response()->json(['answer' => $generated_answer]);
 }
+
+public function getAnswer(Request $request)
+{
+    // ユーザーからの質問を取得
+    $userQuestion = $request->input('question');
+
+    // GPT-3へのプロンプトを形成
+    $prompt = "Q: {$userQuestion}\nA:";
+
+    // GPT-3 APIへのリクエスト（以下は仮のコード、実際のAPIリクエストに置き換えてください）
+    $apiResponse = 'ここにAPIからの回答';
+
+    // APIからの回答をレスポンスとして返す
+    return response()->json(['answer' => $apiResponse]);
+}
+
     // ーーーーーーーーーーー質問関連はここまでーーーーーーーーーーー
 }    
