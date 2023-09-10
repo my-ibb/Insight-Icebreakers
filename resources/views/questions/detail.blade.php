@@ -87,10 +87,14 @@
         }
     });
 
+
     async function sendQuestion() {
+        const sendButton = document.querySelector('button[onclick="sendQuestion()"]'); // 質問を送信するボタンを特定
+        sendButton.disabled = true;  // ボタンを無効化
+
         const userQuestion = document.getElementById("userQuestion").value;
         const questionId = {{ $question->id }};
-
+    
         try {
             const response = await fetch('/generate-chat-response', {
                     method: 'POST',
@@ -102,9 +106,9 @@
                         questionId: questionId,
                         chatQuestionContent: userQuestion
                     })
-
             });
 
+        // 以降の処理（応答が正常である場合のロジックなど）
             if (response.ok) {
                 const data = await response.json();
                 console.log("Received data:", data);
@@ -124,10 +128,14 @@
                 const chatResponse = document.getElementById("chatResponse");
                 chatResponse.innerHTML = "";
 
+                // 以前の質問と回答をクリア
+                previousQuestionsContainer.innerHTML = "";
+                chatResponse.innerHTML = "";
+
                 previousQuestions.forEach((entry, index) => {
-                    const newQuestionElement = document.createElement("div");
-                    newQuestionElement.textContent = `質問${index + 1}: ${entry.question}`;
-                    previousQuestionsContainer.appendChild(newQuestionElement);
+                    //const newQuestionElement = document.createElement("div");
+                    //newQuestionElement.textContent = `質問${index + 1}: ${entry.question}`;
+                    //previousQuestionsContainer.appendChild(newQuestionElement);
 
                     const newAnswerElement = document.createElement("div");
                     newAnswerElement.textContent = `回答${index + 1}: ${entry.answer}`;
@@ -138,7 +146,9 @@
             }
         } catch (error) {
             console.error("There was an error sending the question", error);
-        }
+        } finally {
+        sendButton.disabled = false;  // ボタンを再び有効化
     }
+}
 </script>
 @endsection
