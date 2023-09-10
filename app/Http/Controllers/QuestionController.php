@@ -299,6 +299,7 @@ class QuestionController extends Controller
     
         // 既存のコード：問題の取得など
         $question = SoupGameQuestion::find($questionId);
+
         if (!$question) {
             return response()->json(['error' => 'Question not found'], 404);
         }
@@ -387,7 +388,7 @@ class QuestionController extends Controller
 public function generateChatResponse(Request $request)
 {
     $chatQuestionContent = $request->input('chatQuestionContent');
-    Log::info("Received chatQuestionContent: " . $chatQuestionContent); 
+    
     $questionId = $request->input('questionId');  // 質問IDも取得
     // 質問回数をセッションから取得、もしくは初期化
     $questionCount = $request->session()->get('question_count', 0);
@@ -395,6 +396,16 @@ public function generateChatResponse(Request $request)
 
     // 問題の取得
     $question = SoupGameQuestion::find($questionId);
+
+    if (!$question) {
+        Log::error("Question not found for ID: " . $questionId);
+        return response()->json(['error' => 'Question not found'], 404);
+    }
+    Log::info("Received chatQuestionContent: " . $chatQuestionContent); 
+    Log::info("Question Content: " . $question->question_content);
+    Log::info("Answer Content: " . $question->answer_content);
+    Log::info("Chat Question Content: " . $chatQuestionContent);
+    Log::info("Answer Content: " . $question->answer_content);
 
     // デバッグ：受け取った質問やセッションデータを出力
     error_log("Received chatQuestionContent: " . $chatQuestionContent);
