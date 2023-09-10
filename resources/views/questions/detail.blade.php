@@ -138,7 +138,7 @@
                     //previousQuestionsContainer.appendChild(newQuestionElement);
 
                     const newAnswerElement = document.createElement("div");
-                    newAnswerElement.textContent = `回答${index + 1}: ${entry.answer}`;
+                    newAnswerElement.textContent = `質問${index + 1}: ${entry.answer}`;
                     chatResponse.appendChild(newAnswerElement);
                 });
             } else {
