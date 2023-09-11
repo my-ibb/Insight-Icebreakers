@@ -85,24 +85,30 @@
     let previousQuestions = [];
 
     document.addEventListener('DOMContentLoaded', (event) => {
-        const questionId = {{ $question->id }};
-        let storedQuestionCount = localStorage.getItem(`questionCount_${questionId}`);
-        if (storedQuestionCount) {
-            questionCount = parseInt(storedQuestionCount);
-            document.getElementById('questionCountContainer').textContent = "質問回数： " + questionCount + "回目";
-        }    
-        let storedPreviousQuestions = localStorage.getItem(`previousQuestions_${questionId}`);
-        if (storedPreviousQuestions) {
-            previousQuestions = JSON.parse(storedPreviousQuestions);
-            const previousQuestionsContainer = document.getElementById('previousQuestionsContainer');
-            previousQuestions.forEach((question, index) => {
-            const newQuestionElement = document.createElement("div");
-            newQuestionElement.textContent = `質問${index + 1}: ${question}`;
-            previousQuestionsContainer.appendChild(newQuestionElement);
-            });
-        }
-    });
+    const form = document.querySelector('#answerFormArea form');
+    form.addEventListener('submit', async function(e) {
+        e.preventDefault();
 
+        const userAnswer = document.getElementById('user_answer').value;
+
+        // サーバーに回答を送信
+        const response = await fetch(form.action, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRF-TOKEN': document.querySelector('input[name="_token"]').value,
+            },
+            body: JSON.stringify({ userAnswer }),
+        });
+
+        const result = await response.json();
+
+        // フィードバック表示
+        let feedbackMessage = document.createElement('div');
+        feedbackMessage.innerText = result.isCorrect ? '正解です！' : '不正解です';
+        document.getElementById('answerFormArea').appendChild(feedbackMessage);
+    });
+});
 
     async function sendQuestion() {
         const sendButton = document.querySelector('button[onclick="sendQuestion()"]'); // 質問を送信するボタンを特定

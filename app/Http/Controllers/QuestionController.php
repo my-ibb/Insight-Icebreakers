@@ -31,13 +31,17 @@ class QuestionController extends Controller
     }
 
     // 特定のIDの問題の答えをチェック
-    public function checkAnswer($id)
-    {
+    public function checkAnswer(Request $request, $id) {
+        $userAnswer = $request->input('userAnswer');
+    
         $question = SoupGameQuestion::find($id);
-        $answer = $question->answer;
-        return view('questions.check', ['answer' => $answer]);
-    }
+        $correctAnswer = $question->answer_content;
+    
+        // 意味的な比較ロジックをここに（今は省略）
+        $isCorrect = ($userAnswer === $correctAnswer); // 単純な文字列比較
 
+        return response()->json(['isCorrect' => $isCorrect]);
+    }
     // 問題フォームを表示（使わないかも）
     public function showQuestionForm()
     {
