@@ -36,13 +36,17 @@ class QuestionController extends Controller
         $userAnswer = $request->input('userAnswer');
         $question = SoupGameQuestion::find($id);
         $correctAnswer = $question->answer_content;
+        $contextInformation = $request->input('contextInformation');
+
     
         $endpoint = "https://api.openai.com/v1/chat/completions";
     
         $prompt = "Instructions: You are asked to evaluate the similarity between the provided answer and the correct answer.
-                    How similar are these two answers in terms of meaning?
-                    Correct answer: $correctAnswer
-                    User's answer: $userAnswer";
+            Consider factors like meaning, relevance, and context in your evaluation.
+            Provide a numerical score between 0 and 1 for the similarity.
+            Correct answer: $correctAnswer
+            User's answer: $userAnswer
+            Context: $contextInformation";
 
         //$prompt = "指示：提供された回答と正解との類似性を評価するように求められています。
                     //これら二つの回答は、意味的にどれくらい類似していますか？
@@ -68,10 +72,16 @@ class QuestionController extends Controller
         ]);
     
         $data = json_decode($response->getBody(), true);
+        Log::info("API Response: " . json_encode($data));
+
         $similarity_score = $data['choices'][0]['message']['content'] ?? 'Failed to generate similarity score';
+        Log::info("Setting similarity score: " . json_encode($similarity_score));
+
     
         // 類似度がある程度以上であれば正解とする（この値は調整が必要）
-        $isCorrect = ($similarity_score >= 0.8);
+        Log::info("Similarity Score: " . $similarity_score);
+        $isCorrect = ($similarity_score >= 1.5);    
+        Log::info("Setting similarity score: " . json_encode($similarity_score));
 
         return response()->json(['isCorrect' => $isCorrect]);
     }
@@ -93,6 +103,8 @@ class QuestionController extends Controller
         // ゲストユーザーはログインページにリダイレクト
         if (Auth::guest()) 
         {
+            // 未ログインの場合、選んだ問題のIDをセッションに保存
+            session(['selected_question_id' => $id]);
             return redirect()->route('login');
         }
     // SoupGameQuestion モデルを使用して、指定されたIDに対応する問題を取得
@@ -266,7 +278,9 @@ class QuestionController extends Controller
         
         // JSONレスポンスをデコードして問題文を抽出
         $data = json_decode($response->getBody(), true);
+        Log::info('Decoded JSON data:', ['data' => $data]);
         $questionContent = $data['choices'][0]['message']['content'] ?? 'Failed to generate question';
+        Log::info('Question Content:', ['questionContent' => $questionContent]);
 
         // ここで正規表現を使って $question_content と $answer_content を抜き出す
         if (preg_match('/\[Question\]:(.*?)\[Answer\]:/su', $questionContent, $matches)) {
@@ -530,7 +544,7 @@ public function getAnswer(Request $request)
 
     // GPT-3 APIへのリクエスト（以下は仮のコード、実際のAPIリクエストに置き換えてください）
     $apiResponse = 'ここにAPIからの回答';
-
+    Log::info("API Response: ", $apiResponse);
     // APIからの回答をレスポンスとして返す
     return response()->json(['answer' => $apiResponse]);
 }
@@ -543,7 +557,7 @@ public function checkAnswerWithGPT (Request $request, $id)
     $question = SoupGameQuestion::find($id);
     $correctAnswer = $question->answer_content;
     $userAnswer = $request->input('user_answer');
-    
+    Log::info("User Input: " . $userAnswer);
      // GPTで意味的な比較を行う
     $gptResult = $this->compareAnswersWithGPT($userAnswer, $correctAnswer);
     

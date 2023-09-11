@@ -24,7 +24,18 @@ class LoginController extends Controller
     
         // 認証試行
         if (Auth::attempt($credentials)) {
-            // 認証成功：質問作成ページへリダイレクト
+            // セッションから選んだ問題のIDを取得
+            $selectedQuestionId = session('selected_question_id', null);
+
+            // もしセッションに問題IDが保存されていれば、その問題の詳細ページにリダイレクト
+            if ($selectedQuestionId !== null) {
+                // セッションから選んだ問題のIDを削除
+                $request->session()->forget('selected_question_id');
+                // 該当の問題の詳細ページにリダイレクト
+                return redirect()->route('questions.detail', ['id' => $selectedQuestionId]);
+            }
+
+            // 通常は質問作成ページへリダイレクト
             return redirect()->to('/questions/create');
         }
     
