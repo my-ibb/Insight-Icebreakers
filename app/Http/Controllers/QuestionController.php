@@ -499,4 +499,26 @@ public function getAnswer(Request $request)
 }
 
     // ーーーーーーーーーーー質問関連はここまでーーーーーーーーーーー
+
+    //ーーーーーーーーーーー回答フォームここからーーーーーーーーーーー
+public function checkAnswerWithGPT (Request $request, $id)
+    {
+    $question = SoupGameQuestion::find($id);
+    $correctAnswer = $question->answer_content;
+    $userAnswer = $request->input('user_answer');
+    
+     // GPTで意味的な比較を行う
+    $gptResult = $this->compareAnswersWithGPT($userAnswer, $correctAnswer);
+    
+    if ($gptResult) {
+        // 回答が正しいと判定された場合の処理
+        $message = "正解です！";
+    } else {
+        // 回答が正しくないと判定された場合の処理
+        $message = "残念、不正解です。";
+    }
+    
+        return view('check', ['result' => $gptResult, 'message' => $message]);
+    }
+    
 }    

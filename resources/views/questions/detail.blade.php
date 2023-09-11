@@ -28,10 +28,26 @@
     <div id="chatResponse"></div>
 </div>
 
+<!-- フィードバック表示エリア -->
+<div id="feedbackMessage"></div>
+
 <a href="javascript:void(0);" onclick="showHint()" class="btn btn-info">ヒントをもらう</a>
 <div id="hint" style="display: none;"></div>
 <div id="hintContainer"></div>
 <div id="hintCountContainer">ヒント使用回数： 未使用</div>
+
+<!-- 回答フォームエリア -->
+<div id="answerFormArea">
+    <form action="{{ route('checkAnswer', ['id' => $question->id]) }}" method="POST">
+        @csrf
+        <div class="form-group">
+            <label for="user_answer">あなたの回答：</label>
+            <input type="text" class="form-control" id="user_answer" name="user_answer" required>
+        </div>
+        <button type="submit" class="btn btn-primary">回答を送信</button>
+    </form>
+</div>
+
 
 <script>
     function showAnswer(id) {
@@ -149,6 +165,12 @@
         } finally {
         sendButton.disabled = false;  // ボタンを再び有効化
     }
+
+    function setFeedbackMessage(message) {
+    const feedbackDiv = document.getElementById("feedbackMessage");
+    feedbackDiv.innerHTML = `<h2>${message}</h2>`;
+}
+    
 }
 </script>
 @endsection
