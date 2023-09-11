@@ -35,7 +35,7 @@ class QuestionController extends Controller
     {
         $question = SoupGameQuestion::find($id);
         $answer = $question->answer;
-        return view('check', ['answer' => $answer]);
+        return view('questions.check', ['answer' => $answer]);
     }
 
     // 問題フォームを表示（使わないかも）
