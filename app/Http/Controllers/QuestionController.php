@@ -70,12 +70,9 @@ class QuestionController extends Controller
         $data = json_decode($response->getBody(), true);
         $similarity_score = $data['choices'][0]['message']['content'] ?? 'Failed to generate similarity score';
     
-        $isCorrect = false;  // Default to false
-    
-        if ($similarity_score === "high" || $similarity_score === "very high") {  // Adjust these conditions based on your needs
-            $isCorrect = true;
-        }
-    
+        // 類似度がある程度以上であれば正解とする（この値は調整が必要）
+        $isCorrect = ($similarity_score >= 0.8);
+
         return response()->json(['isCorrect' => $isCorrect]);
     }
             // 問題フォームを表示（使わないかも）
