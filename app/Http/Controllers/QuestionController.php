@@ -31,18 +31,54 @@ class QuestionController extends Controller
     }
 
     // 特定のIDの問題の答えをチェック
-    public function checkAnswer(Request $request, $id) {
+    public function checkAnswer(Request $request, $id)
+    {
         $userAnswer = $request->input('userAnswer');
-    
         $question = SoupGameQuestion::find($id);
         $correctAnswer = $question->answer_content;
     
-        // 意味的な比較ロジックをここに（今は省略）
-        $isCorrect = ($userAnswer === $correctAnswer); // 単純な文字列比較
+        $endpoint = "https://api.openai.com/v1/chat/completions";
+    
+        $prompt = "Instructions: You are asked to evaluate the similarity between the provided answer and the correct answer.
+                    How similar are these two answers in terms of meaning?
+                    Correct answer: $correctAnswer
+                    User's answer: $userAnswer";
 
+        //$prompt = "指示：提供された回答と正解との類似性を評価するように求められています。
+                    //これら二つの回答は、意味的にどれくらい類似していますか？
+                    //正解：$correctAnswer
+                    //ユーザーの回答：$userAnswer";
+
+        $client = new Client();
+    
+        $response = $client->post($endpoint, [
+            'headers' => [
+                'Authorization' => 'Bearer ' . env('OPENAI_API_KEY'),
+                'Content-Type' => 'application/json'
+            ],
+            'json' => [
+                'model' => "gpt-3.5-turbo-0613",
+                "messages" => [
+                    [
+                        "role" => "system",
+                        "content" => $prompt
+                    ]
+                ]
+            ]
+        ]);
+    
+        $data = json_decode($response->getBody(), true);
+        $similarity_score = $data['choices'][0]['message']['content'] ?? 'Failed to generate similarity score';
+    
+        $isCorrect = false;  // Default to false
+    
+        if ($similarity_score === "high" || $similarity_score === "very high") {  // Adjust these conditions based on your needs
+            $isCorrect = true;
+        }
+    
         return response()->json(['isCorrect' => $isCorrect]);
     }
-    // 問題フォームを表示（使わないかも）
+            // 問題フォームを表示（使わないかも）
     public function showQuestionForm()
     {
         return view('questions.question_form');
