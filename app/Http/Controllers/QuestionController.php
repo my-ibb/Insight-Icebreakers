@@ -33,25 +33,27 @@ class QuestionController extends Controller
     // 特定のIDの問題の答えをチェック
     public function checkAnswer(Request $request, $id)
     {
-        $userAnswer = $request->input('userAnswer');
+        $userAnswer = $request->input('user_answer');
+
         $question = SoupGameQuestion::find($id);
         $correctAnswer = $question->answer_content;
-        $contextInformation = $request->input('contextInformation');
+        $questionContent = $question->question_content;
 
-    
         $endpoint = "https://api.openai.com/v1/chat/completions";
-    
-        $prompt = "Instructions: You are asked to evaluate the similarity between the provided answer and the correct answer.
-            Consider factors like meaning, relevance, and context in your evaluation.
-            Provide a numerical score between 0 and 1 for the similarity.
-            Correct answer: $correctAnswer
-            User's answer: $userAnswer
-            Context: $contextInformation";
 
-        //$prompt = "指示：提供された回答と正解との類似性を評価するように求められています。
-                    //これら二つの回答は、意味的にどれくらい類似していますか？
-                    //正解：$correctAnswer
-                    //ユーザーの回答：$userAnswer";
+        $prompt = "
+        Instructions: You are asked to evaluate the similarity between the provided answer and the correct answer.
+        Consider factors like meaning, relevance, and context in your evaluation. Refer also to the question content.
+        Output strictly a numerical score between 0 and 1 for the similarity. Do not include any additional text or explanation.";
+
+        // 指示：ユーザーから提供された回答（User's answer）と模範回答（Correct answer）との類似性を評価してください。
+        // 評価には、意味、関連性、文脈などの要素を考慮してください。問題文（Question content）も参考にしてください。
+        // 類似性に対する数値スコアを0から1の範囲で提供してください。
+        // 出力形式：Integer型で0 ~ 1までの数字に限る。文字列は認めない。
+
+        $content = "Provided answer: $userAnswer
+                    Correct answer: $correctAnswer
+                    Question content: $questionContent";
 
         $client = new Client();
     
@@ -66,22 +68,28 @@ class QuestionController extends Controller
                     [
                         "role" => "system",
                         "content" => $prompt
+                    ],
+                    [
+                        "role" => "user",
+                        "content" => $content
                     ]
+
                 ]
             ]
         ]);
-    
+
         $data = json_decode($response->getBody(), true);
-        Log::info("API Response: " . json_encode($data));
+        // Log::info("API Response: " . json_encode($data));
 
         $similarity_score = $data['choices'][0]['message']['content'] ?? 'Failed to generate similarity score';
-        Log::info("Setting similarity score: " . json_encode($similarity_score));
+        // Log::info("Setting similarity score: " . json_encode($similarity_score));
 
-    
         // 類似度がある程度以上であれば正解とする（この値は調整が必要）
         Log::info("Similarity Score: " . $similarity_score);
-        $isCorrect = ($similarity_score >= 1.5);    
-        Log::info("Setting similarity score: " . json_encode($similarity_score));
+        $isCorrect = boolval($similarity_score >= 0.8);
+        // Log::info("Setting similarity score: " . json_encode($similarity_score));
+
+        Log::info("isCorrect: " . $isCorrect);
 
         return response()->json(['isCorrect' => $isCorrect]);
     }
@@ -560,7 +568,7 @@ public function checkAnswerWithGPT (Request $request, $id)
     Log::info("User Input: " . $userAnswer);
      // GPTで意味的な比較を行う
     $gptResult = $this->compareAnswersWithGPT($userAnswer, $correctAnswer);
-    
+    Log::info("Correct Answer: " . $correctAnswer);
     if ($gptResult) {
         // 回答が正しいと判定された場合の処理
         $message = "正解です！";

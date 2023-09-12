@@ -85,30 +85,30 @@
     let previousQuestions = [];
 
     document.addEventListener('DOMContentLoaded', (event) => {
-    const form = document.querySelector('#answerFormArea form');
-    form.addEventListener('submit', async function(e) {
-        e.preventDefault();
+        const form = document.querySelector('#answerFormArea form');
+        form.addEventListener('submit', async function(e) {
+            e.preventDefault();
 
-        const userAnswer = document.getElementById('user_answer').value;
+            const userAnswer = document.getElementById('user_answer').value;
 
-        // サーバーに回答を送信
-        const response = await fetch(form.action, {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-                'X-CSRF-TOKEN': document.querySelector('input[name="_token"]').value,
-            },
-            body: JSON.stringify({ userAnswer }),
+            // サーバーに回答を送信
+            const response = await fetch(form.action, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRF-TOKEN': document.querySelector('input[name="_token"]').value,
+                },
+                body: JSON.stringify({ userAnswer }),
+            });
+
+            const result = await response.json();
+
+            // フィードバック表示
+            let feedbackMessage = document.createElement('div');
+            feedbackMessage.innerText = result.isCorrect ? '正解です！' : '不正解です';
+            document.getElementById('answerFormArea').appendChild(feedbackMessage);
         });
-
-        const result = await response.json();
-
-        // フィードバック表示
-        let feedbackMessage = document.createElement('div');
-        feedbackMessage.innerText = result.isCorrect ? '正解です！' : '不正解です';
-        document.getElementById('answerFormArea').appendChild(feedbackMessage);
     });
-});
 
     async function sendQuestion() {
         const sendButton = document.querySelector('button[onclick="sendQuestion()"]'); // 質問を送信するボタンを特定
