@@ -436,6 +436,9 @@ class QuestionController extends Controller
     
         // JSONとしてヒントを返す（フロントエンドのJavaScriptで受け取る）
         return response()->json(['hint' => $generated_hint]);
+        // スコアの更新
+    $rankingController = new RankingController();
+    $rankingController->viewHint($user_id);  // ここでuserIdは適切な値に置き換えてください。
     }
     // ーーーーーーーーーーーヒント関連はここまでーーーーーーーーーーー
 
@@ -539,6 +542,9 @@ public function generateChatResponse(Request $request)
 
     // JSONとして回答を返す
     return response()->json(['answer' => $generated_answer]);
+    // スコアの更新
+    $rankingController = new RankingController();
+    $rankingController->askQuestion($userId);  // ここでuserIdは適切な値に置き換えてください。
 }
 
 public function getAnswer(Request $request)
