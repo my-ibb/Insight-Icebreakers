@@ -90,7 +90,6 @@ class QuestionController extends Controller
         // Log::info("Setting similarity score: " . json_encode($similarity_score));
 
         Log::info("isCorrect: " . $isCorrect);
-
         return response()->json(['isCorrect' => $isCorrect]);
     }
             // 問題フォームを表示（使わないかも）
