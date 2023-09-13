@@ -40,9 +40,9 @@
 <div id="answerFormArea">
     <form action="{{ route('checkAnswer', ['id' => $question->id]) }}" method="POST">
         @csrf
-        <div class="form-group">
+        <div class="form-group col-md-6">
             <label for="user_answer">あなたの回答：</label>
-            <input type="text" class="form-control" id="user_answer" name="user_answer" required>
+            <input type="text" class="form-control" id="user_answer" name="user_answer" style="height: 70px;" required>
         </div>
         <button type="submit" class="btn btn-primary">回答を送信</button>
     </form>
