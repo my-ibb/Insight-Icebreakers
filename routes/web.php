@@ -8,6 +8,7 @@ use App\Http\Controllers\RankingController;
 use App\Http\Controllers\Auth\LoginController; 
 use App\Http\Controllers\Auth\RegisterController;
 use Illuminate\Support\Facades\Auth;
+use App\Http\Controllers\Auth\SelfIntroductionLieGameController;
 
 /*
 |--------------------------------------------------------------------------
@@ -91,7 +92,12 @@ Route::post('/logout', function () {
     return redirect('/login');
 })->name('logout');
 
-// ホームページから自己紹介嘘当てゲーム
-Route::get('self-introduction-lie-game', 'SelfIntroductionLieGameController@index')->name('selfIntroductionLieGame.index');
+// ホームページから自己紹介嘘当てゲームへ
+Route::get('self-introduction-lie-game', [SelfIntroductionLieGameController::class, 'index'])->name('selfIntroductionLieGame.index');
 
+// ホーム画面からプレイヤー設定画面へ
+Route::get('self-introduction-lie-game/setup', [SelfIntroductionLieGameController::class, 'setup'])->name('selfIntroductionLieGame.setup');
+Route::get('/some-route', [SelfIntroductionLieGameController::class, 'someMethod']);
 
+// routes/web.php または routes/api.php
+Route::post('some/path', 'SelfIntroductionLieGameController@start')->name('selfIntroductionLieGame.start');
