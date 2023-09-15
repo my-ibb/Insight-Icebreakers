@@ -602,5 +602,4 @@ public function checkAnswerWithGPT (Request $request, $id)
     
         return view('check', ['result' => $gptResult, 'message' => $message]);
     }
-    
 }    

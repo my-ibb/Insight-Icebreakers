@@ -46,7 +46,7 @@
         </div>
         <button type="submit" class="btn btn-primary">回答を送信</button>
     </form>
-    <a href="{{ route('rankings.index') }}" class="btn btn-secondary">ランキングを確認する</a>
+    <a href="{{ url('questions/' . $question->id . '/ranking') }}">ランキングを確認する</a>
 </div>
 
 

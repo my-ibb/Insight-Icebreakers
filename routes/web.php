@@ -73,9 +73,8 @@ Route::get('/questions/{id}/input', [QuestionController::class, 'inputQuestion']
 
 Route::post('/questions/{id}/storeQuestion', [QuestionController::class, 'storeQuestion'])->name('questions.storeQuestion');
 
-//　ランキング関連
-Route::get('/rankings', [RankingController::class, 'index'])->name('rankings.index'); // ここでRankingControllerを使用
-
+//　ランキング関連　//RankingControllerのshowメソッドにルーティング
+Route::get('questions/{questionId}/ranking', [RankingController::class, 'show']);
 //　ユーザー関連
 Route::get('/mypage', [UserController::class, 'index'])->name('mypage');
 //　新規登録
