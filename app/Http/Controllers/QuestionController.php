@@ -42,14 +42,32 @@ class QuestionController extends Controller
         $endpoint = "https://api.openai.com/v1/chat/completions";
 
         $prompt = "
-        Instructions: You are asked to evaluate the similarity between the provided answer and the correct answer.
-        Consider factors like meaning, relevance, and context in your evaluation. Refer also to the question content.
-        Output strictly a numerical score between 0 and 1 for the similarity. Do not include any additional text or explanation.";
+        Let's play the Lateral Thinking Quiz.
+        In the Lateral Thinking game, participants pose questions that can only be answered with 'Yes', 'No', or 'Irrelevant' to solve the mystery set by the Quizmaster. You are a professional at creating questions for the Lateral Thinking game, and your task is to optimize the questions according to the specified genre and difficulty level.
+        You are also expected to judge whether the answers are correct.
 
+        Instructions: You are asked to evaluate the similarity between the provided answer and the correct answer.
+        Consider factors like meaning, relevance, and context in your evaluation. Refer also to the question content.        
+        Grammar and Spelling: The accuracy of grammar and spelling is not important in the evaluation of similarity. As long as the keywords match or have similar expressions, the answer will be considered similar.
+        Example: 
+        If the correct answer is 'photosynthesis', similar terms like plant 'food-making process' could be considered a match.
+        If the correct answer is 'gravity', then 'force that attracts objects toward each other' could also be considered similar.
+        Output strictly a numerical score between 0 and 1 for the similarity. Do not include any additional text or explanation.";
+    
+        // 水平思考クイズを遊びましょう。
+        // 水平思考ゲームでは、参加者は「はい」「いいえ」「関係ない」のいずれかだけで答えられる質問を出して、クイズマスターが出す謎を解明します。あなたは水平思考ゲームの問題作成のプロであり、指定されたジャンルと難易度に合わせて、問題文を最適化してください。
+        //　あなたは正解の判定をしていただきたいです。
+        
         // 指示：ユーザーから提供された回答（User's answer）と模範回答（Correct answer）との類似性を評価してください。
         // 評価には、意味、関連性、文脈などの要素を考慮してください。問題文（Question content）も参考にしてください。
         // 類似性に対する数値スコアを0から1の範囲で提供してください。
+        // 文法と綴り：類似性の評価において、文法や綴りの正確性は全く重要ではありません。キーワードが一致しているか、類似の表現があれば、回答は類似していると考えられます。
+        // 具体例：
+        //もし正解が「光合成」であれば、それに類似した用語である「植物の食物作成過程」といった回答も一致と考えられます。
+        //もし正解が「重力」であれば、「物体をお互いに引き付ける力」といった回答も類似と考えられます。
         // 出力形式：Integer型で0 ~ 1までの数字に限る。文字列は認めない。
+
+
 
         $content = "Provided answer: $userAnswer
                     Correct answer: $correctAnswer
