@@ -45,11 +45,12 @@
                         </a>
         </div>
         <div class="col-md-4">
-            <!-- 自己紹介嘘当てゲーム（近日公開） -->
-            <a href="#" class="btn deep-cyan-btn custom-btn">                <!-- 自己紹介嘘当てゲームのイラスト追加 -->
-                <img src="{{ asset('images/24220784.jpg') }}" alt="自己紹介嘘当てゲーム" class="img-fluid">
-                <span class="adjust-text">自己紹介嘘当てゲーム (Coming Soon)</span>
-            </a>
+            <!-- 自己紹介嘘当てゲーム -->
+    <a href="{{ route('selfIntroductionLieGame.index') }}" class="btn deep-cyan-btn custom-btn">
+        <!-- 自己紹介嘘当てゲームのイラスト追加 -->
+        <img src="{{ asset('images/24220784.jpg') }}" alt="自己紹介嘘当てゲーム" class="img-fluid">
+        <span class="adjust-text">自己紹介嘘当てゲーム</span>
+    </a>
         </div>
     </div>
     <!-- ログアウトボタン（ログインしている場合のみ表示） -->

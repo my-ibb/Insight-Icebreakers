@@ -91,5 +91,7 @@ Route::post('/logout', function () {
     return redirect('/login');
 })->name('logout');
 
+// ホームページから自己紹介嘘当てゲーム
+Route::get('self-introduction-lie-game', 'SelfIntroductionLieGameController@index')->name('selfIntroductionLieGame.index');
 
 
