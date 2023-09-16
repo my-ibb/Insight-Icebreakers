@@ -4,8 +4,8 @@
 <div class="container">
     <h1 class="text-center">プレイヤー設定画面</h1>
 
-    <form action="{{ route('selfIntroductionLieGame.start') }}" method="post" class="mt-5">
-        @csrf
+    <form method="POST" action="{{ route('selfIntroductionLieGame.start') }}">
+    @csrf
 
         <!-- プレイヤー名入力 -->
         <div class="form-group">

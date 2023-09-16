@@ -1,27 +1,28 @@
 @extends('layouts.app')
 
 @section('content')
-  <h1>ランキング</h1>
-  <table class="table">
-    <thead>
-      <tr>
-        <th scope="col">順位</th>
-        <th scope="col">ユーザーID</th>
-        <th scope="col">総得点</th>
-        <th scope="col">質問回数</th>
-        <th scope="col">ヒント回数</th>
-      </tr>
-    </thead>
-    <tbody>
-      @foreach ($rankings as $index => $ranking)
-        <tr>
-          <th scope="row">{{ $index + 1 }}</th>
-          <td>{{ $ranking->user_id }}</td>
-          <td>{{ $ranking->total_score }}</td>
-          <td>{{ $ranking->total_questions }}</td>
-          <td>{{ $ranking->total_hints }}</td>
-        </tr>
-      @endforeach
-    </tbody>
-  </table>
+    <h1>ランキング</h1>
+    
+    <h2>{{ $question->title ?? '指定の問題' }}</h2>
+    
+    <table>
+        <thead>
+            <tr>
+                <th>ユーザー名</th>
+                <th>スコア</th>
+                <th>ヒント使用回数</th>
+                <th>質問回数</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach($scores as $score)
+            <tr>
+                <td>{{ $score->user->name }}</td>
+                <td>{{ $score->score }}</td>
+                <td>{{ $score->hint_count }}</td>
+                <td>{{ $score->question_count }}</td>
+            </tr>
+            @endforeach
+        </tbody>
+    </table>
 @endsection

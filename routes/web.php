@@ -75,6 +75,8 @@ Route::post('/questions/{id}/storeQuestion', [QuestionController::class, 'storeQ
 
 //　ランキング関連　//RankingControllerのshowメソッドにルーティング
 Route::get('questions/{questionId}/ranking', [RankingController::class, 'show']);
+Route::post('questions/{questionId}/store-score', [ScoreController::class, 'store'])->name('storeScore');
+
 //　ユーザー関連
 Route::get('/mypage', [UserController::class, 'index'])->name('mypage');
 //　新規登録
@@ -99,4 +101,6 @@ Route::get('self-introduction-lie-game/setup', [SelfIntroductionLieGameControlle
 Route::get('/some-route', [SelfIntroductionLieGameController::class, 'someMethod']);
 
 // routes/web.php または routes/api.php
-Route::post('some/path', 'SelfIntroductionLieGameController@start')->name('selfIntroductionLieGame.start');
+Route::post('some/path', [SelfIntroductionLieGameController::class, 'start'])->name('selfIntroductionLieGame.start');
+
+Route::get('/setup', 'SelfIntroductionLieGameController@setup')->name('selfIntroductionLieGame.setup');

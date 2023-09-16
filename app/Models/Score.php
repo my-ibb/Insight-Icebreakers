@@ -1,13 +1,17 @@
 <?php
-
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Factories\HasFactory;
+use App\Models\User;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Facades\Http;
 
 class Score extends Model
 {
-    use HasFactory;
+    protected $table = 'scores';
+    protected $fillable = ['user_id', 'question_id', 'score', 'hint_count', 'question_count'];
 
-    // ここに関連する処理を書く
+    public function user()
+    {
+        return $this->belongsTo(User::class);
+    }
 }

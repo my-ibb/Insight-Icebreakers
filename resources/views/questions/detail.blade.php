@@ -106,31 +106,34 @@
 
             // フィードバック表示
             let feedbackMessage = document.createElement('div');
-            feedbackMessage.innerText = result.isCorrect ? '正解です！' : '不正解です';
-            document.getElementById('answerFormArea').appendChild(feedbackMessage);
-        });
+        feedbackMessage.innerText = result.isCorrect ? '正解です！' : '不正解です';
+        
+        if (result.isCorrect) {
+            saveScore(); // 正解だった場合にスコアを保存
+        }
+        
+        document.getElementById('answerFormArea').appendChild(feedbackMessage);
     });
+});
 
-    async function sendQuestion() {
-        const sendButton = document.querySelector('button[onclick="sendQuestion()"]'); // 質問を送信するボタンを特定
-        sendButton.disabled = true;  // ボタンを無効化
+async function sendQuestion() {
+    const sendButton = document.querySelector('button[onclick="sendQuestion()"]'); // 質問を送信するボタンを特定
+    sendButton.disabled = true;  // ボタンを無効化
+    const userQuestion = document.getElementById("userQuestion").value;
+    const questionId = {{ $question->id }};
 
-        const userQuestion = document.getElementById("userQuestion").value;
-        const questionId = {{ $question->id }};
-    
-        try {
-            const response = await fetch('/generate-chat-response', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'X-CSRF-TOKEN': '{{ csrf_token() }}',
-                    },
-                    body: JSON.stringify({
-                        questionId: questionId,
-                        chatQuestionContent: userQuestion
-                    })
-            });
-
+    try {
+        const response = await fetch('/generate-chat-response', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRF-TOKEN': '{{ csrf_token() }}',
+                },
+                body: JSON.stringify({
+                    questionId: questionId,
+                    chatQuestionContent: userQuestion
+                })
+        });
         // 以降の処理（応答が正常である場合のロジックなど）
             if (response.ok) {
                 const data = await response.json();
@@ -172,12 +175,39 @@
         } finally {
         sendButton.disabled = false;  // ボタンを再び有効化
     }
+} 
 
-    function setFeedbackMessage(message) {
-    const feedbackDiv = document.getElementById("feedbackMessage");
-    feedbackDiv.innerHTML = `<h2>${message}</h2>`;
+async function saveScore() {
+    const questionId = {{ $question->id }};
+    const questionCount = localStorage.getItem(`questionCount_${questionId}`);
+    const hintCount = localStorage.getItem(`hintCount_${questionId}`);
+
+    // スコアの計算
+    const score = questionCount * 1 + hintCount * 0.5;
+
+    try {
+        const response = await fetch(`/questions/${questionId}/store-score`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRF-TOKEN': '{{ csrf_token() }}',
+            },
+            body: JSON.stringify({
+                score: score,
+                questionCount: questionCount,
+                hintCount: hintCount,
+            }),
+        });
+
+        if (response.ok) {
+            console.log("Score saved successfully");
+        } else {
+            console.log("Failed to save score");
+        }
+    } catch (error) {
+        console.error("There was an error saving the score", error);
+    }
 }
-    
-}
+
 </script>
 @endsection
