@@ -68,6 +68,9 @@
         const questionId = {{ $question->id }};
         const previousHintsString = previousHints.join(',');
 
+         // localStorage に hintCount を保存
+        localStorage.setItem(`hintCount_${questionId}`, hintCount);
+
         const response = await fetch(`/getHint/${questionId}?previousHints=${previousHintsString}&hintCount=${hintCount}`);
         const data = await response.json();
 
@@ -179,8 +182,8 @@ async function sendQuestion() {
 
 async function saveScore() {
     const questionId = {{ $question->id }};
-    const questionCount = localStorage.getItem(`questionCount_${questionId}`);
-    const hintCount = localStorage.getItem(`hintCount_${questionId}`);
+    const questionCount = localStorage.getItem(`questionCount_${questionId}`) || 0;
+    const hintCount = localStorage.getItem(`hintCount_${questionId}`) || 0;
 
     // スコアの計算
     const score = questionCount * 1 + hintCount * 0.5;

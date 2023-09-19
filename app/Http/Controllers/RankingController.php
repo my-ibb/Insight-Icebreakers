@@ -3,14 +3,14 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Models\Score; // Score モデルを使用する
-use App\Models\Question; // Question モデルを使用する
+use App\Models\SoupGameQuestion; // Question モデルを使用する
 
 class RankingController extends Controller
 {
     public function show($questionId)
     {
         // 該当の問題の詳細を取得（オプション）
-        $question = Question::find($questionId);
+        $question = SoupGameQuestion::find($questionId);
 
         // データベースから該当の問題IDに関連するスコアデータを取得
         $scores = Score::where('question_id', $questionId)
