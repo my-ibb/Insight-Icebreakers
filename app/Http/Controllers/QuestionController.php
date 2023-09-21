@@ -41,37 +41,47 @@ class QuestionController extends Controller
 
         $endpoint = "https://api.openai.com/v1/chat/completions";
 
-        $prompt = "
-        Let's play the Lateral Thinking Quiz.
-        In the Lateral Thinking game, participants pose questions that can only be answered with 'Yes', 'No', or 'Irrelevant' to solve the mystery set by the Quizmaster. You are a professional at creating questions for the Lateral Thinking game, and your task is to optimize the questions according to the specified genre and difficulty level.
-        You are also expected to judge whether the answers are correct.
+        $prompt = "Let's play lateral thinking quizzes.
+        In lateral thinking games, participants pose questions that can only be answered with 'Yes', 'No', or 'Irrelevant', to unravel the mystery presented by the quiz master.
+        You are the one to determine whether the answers in the lateral thinking game are correct or incorrect.
 
         [Instructions]
-        You are asked to evaluate the similarity between the provided answer and the correct answer.
+        You are asked to evaluate the similarity between the provided by participant answer and the correct answer.
         Consider factors like meaning, relevance, and context in your evaluation. Refer also to the question content.
         Grammar and Spelling: The accuracy of grammar and spelling is not important in the evaluation of similarity. As long as the keywords match or have similar expressions, the answer will be considered similar.
         Example, If the correct answer is 'photosynthesis', similar terms like plant 'food-making process' could be considered a match.
         If the correct answer is 'gravity', then 'force that attracts objects toward each other' could also be considered similar.
 
         [OutputStyle]
-        Strictly a numerical score between 0 and 1 for the similarity. Do not include any additional text or explanation.";    
+        Strictly a numerical score between 0 and 1 for the similarity. Do not include any additional text or explanation. 
         
+        [Incorrect Output Examples]
+        Similarity score: 0.5
+        Similarity score is 1 
+
+
+        [Expected Output Examples]
+        1
+        0.5";
+
+
         // 水平思考クイズを遊びましょう。
-        // 水平思考ゲームでは、参加者は「はい」「いいえ」「関係ない」のいずれかだけで答えられる質問を出して、クイズマスターが出す謎を解明します。あなたは水平思考ゲームの問題作成のプロであり、指定されたジャンルと難易度に合わせて、問題文を最適化してください。
-        //　あなたは正解の判定をしていただきたいです。
-        
+        // 水平思考ゲームでは、参加者は「はい」「いいえ」「関係ない」のいずれかだけで答えられる質問を出して、クイズマスターが出す謎を解明します。
+        // あなたは水平思考ゲームの正解、不正解を判定をする者です。
+
         // 指示：ユーザーから提供された回答（User's answer）と模範回答（Correct answer）との類似性を評価してください。
         // 評価には、意味、関連性、文脈などの要素を考慮してください。問題文（Question content）も参考にしてください。
         // 類似性に対する数値スコアを0から1の範囲で提供してください。
         // 文法と綴り：類似性の評価において、文法や綴りの正確性は全く重要ではありません。キーワードが一致しているか、類似の表現があれば、回答は類似していると考えられます。
+
         // 具体例：
         //もし正解が「光合成」であれば、それに類似した用語である「植物の食物作成過程」といった回答も一致と考えられます。
         //もし正解が「重力」であれば、「物体をお互いに引き付ける力」といった回答も類似と考えられます。
         // 出力形式：Integer型で0 ~ 1までの数字に限る。文字列は認めない。
 
+        // 出力例　
 
-
-        $content = "Provided answer: $userAnswer
+        $content = "Provided by participant answer: $userAnswer
                     Correct answer: $correctAnswer
                     Question content: $questionContent";
 
@@ -105,7 +115,7 @@ class QuestionController extends Controller
         // Log::info("Setting similarity score: " . json_encode($similarity_score));
 
         // 類似度がある程度以上であれば正解とする（この値は調整が必要）
-        Log::info("Similarity Score: " . $similarity_score);
+        Log::info($similarity_score);
         $isCorrect = boolval($similarity_score >= 0.5);
         // Log::info("Setting similarity score: " . json_encode($similarity_score));
 
@@ -456,10 +466,7 @@ class QuestionController extends Controller
     
         // JSONとしてヒントを返す（フロントエンドのJavaScriptで受け取る）
         return response()->json(['hint' => $generated_hint]);
-        // スコアの更新
-    $rankingController = new RankingController();
-    $rankingController->viewHint($user_id);  // ここでuserIdは適切な値に置き換えてください。
-    }
+        }
     // ーーーーーーーーーーーヒント関連はここまでーーーーーーーーーーー
 
 
@@ -562,9 +569,6 @@ public function generateChatResponse(Request $request)
 
     // JSONとして回答を返す
     return response()->json(['answer' => $generated_answer]);
-    // スコアの更新
-    $rankingController = new RankingController();
-    $rankingController->askQuestion($userId);  // ここでuserIdは適切な値に置き換えてください。
 }
 
 public function getAnswer(Request $request)
@@ -583,25 +587,4 @@ public function getAnswer(Request $request)
 }
 
     // ーーーーーーーーーーー質問関連はここまでーーーーーーーーーーー
-
-    //ーーーーーーーーーーー回答フォームここからーーーーーーーーーーー
-public function checkAnswerWithGPT (Request $request, $id)
-    {
-    $question = SoupGameQuestion::find($id);
-    $correctAnswer = $question->answer_content;
-    $userAnswer = $request->input('user_answer');
-    Log::info("User Input: " . $userAnswer);
-     // GPTで意味的な比較を行う
-    $gptResult = $this->compareAnswersWithGPT($userAnswer, $correctAnswer);
-    Log::info("Correct Answer: " . $correctAnswer);
-    if ($gptResult) {
-        // 回答が正しいと判定された場合の処理
-        $message = "正解です！";
-    } else {
-        // 回答が正しくないと判定された場合の処理
-        $message = "残念、不正解です。";
-    }
-    
-        return view('check', ['result' => $gptResult, 'message' => $message]);
-    }
 }    
