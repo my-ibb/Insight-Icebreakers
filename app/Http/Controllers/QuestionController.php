@@ -46,14 +46,16 @@ class QuestionController extends Controller
         In the Lateral Thinking game, participants pose questions that can only be answered with 'Yes', 'No', or 'Irrelevant' to solve the mystery set by the Quizmaster. You are a professional at creating questions for the Lateral Thinking game, and your task is to optimize the questions according to the specified genre and difficulty level.
         You are also expected to judge whether the answers are correct.
 
-        Instructions: You are asked to evaluate the similarity between the provided answer and the correct answer.
-        Consider factors like meaning, relevance, and context in your evaluation. Refer also to the question content.        
+        [Instructions]
+        You are asked to evaluate the similarity between the provided answer and the correct answer.
+        Consider factors like meaning, relevance, and context in your evaluation. Refer also to the question content.
         Grammar and Spelling: The accuracy of grammar and spelling is not important in the evaluation of similarity. As long as the keywords match or have similar expressions, the answer will be considered similar.
-        Example: 
-        If the correct answer is 'photosynthesis', similar terms like plant 'food-making process' could be considered a match.
+        Example, If the correct answer is 'photosynthesis', similar terms like plant 'food-making process' could be considered a match.
         If the correct answer is 'gravity', then 'force that attracts objects toward each other' could also be considered similar.
-        Output strictly a numerical score between 0 and 1 for the similarity. Do not include any additional text or explanation.";
-    
+
+        [OutputStyle]
+        Strictly a numerical score between 0 and 1 for the similarity. Do not include any additional text or explanation.";    
+        
         // 水平思考クイズを遊びましょう。
         // 水平思考ゲームでは、参加者は「はい」「いいえ」「関係ない」のいずれかだけで答えられる質問を出して、クイズマスターが出す謎を解明します。あなたは水平思考ゲームの問題作成のプロであり、指定されたジャンルと難易度に合わせて、問題文を最適化してください。
         //　あなたは正解の判定をしていただきたいです。
@@ -104,7 +106,7 @@ class QuestionController extends Controller
 
         // 類似度がある程度以上であれば正解とする（この値は調整が必要）
         Log::info("Similarity Score: " . $similarity_score);
-        $isCorrect = boolval($similarity_score >= 0.8);
+        $isCorrect = boolval($similarity_score >= 0.5);
         // Log::info("Setting similarity score: " . json_encode($similarity_score));
 
         Log::info("isCorrect: " . $isCorrect);
