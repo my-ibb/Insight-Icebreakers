@@ -30,39 +30,136 @@ class QuestionController extends Controller
         return view('questions.create');
     }
 
-    // 特定のIDの問題の答えをチェック
+    // 正解判定のための処理はここ！！！
     public function checkAnswer(Request $request, $id)
     {
-        $userAnswer = $request->input('user_answer');
-
         $question = SoupGameQuestion::find($id);
         $correctAnswer = $question->answer_content;
         $questionContent = $question->question_content;
 
         $endpoint = "https://api.openai.com/v1/chat/completions";
+        $client = new Client();
 
-        $prompt = "Let's play lateral thinking quizzes.
+        // ---- ここから要約のためのAPI通信の一連の処理 -------
+        // 1. 元の正解文を要約するためのプロンプトを定義
+        $summaryPrompt = "
+        # Background
+        We are developing a web service for solving lateral thinking puzzles using the ChatGPT API. 
+        With the help of AI (ChatGPT), we have implemented a process that spans from automatic question creation to answering.
+        The question creation part has already been implemented using a separate prompt, and the created questions are stored in a database.
+        Users solve these puzzles and submit their answers to the service.
+        This prompt is used to determine the correctness of the answers submitted by the users.
+        Due to the nature of lateral thinking puzzles, the determination of the answer is based on the match in meaning or nuance, rather than an exact match in the text.
+
+        # Instructions
+        Given the 'Question content' and the 'Correct answer', your task is to create a concise summary that captures the main information and nuance of the correct answer. This summary will be used as a standard for determining the similarity of user-submitted answers in terms of meaning.
+
+        Please ensure that the summary is:
+        - Concise: It should be a shortened version of the correct answer, focusing on the main points.
+        - Informative: It should capture the main information and nuance of the correct answer.
+        - Neutral: Avoid adding any personal opinions or interpretations.
+
+        #Constraints
+        - Output in Japanese
+
+        ## Example
+        **Question content**: Why was Morita-san looking out of the window during his overtime?
+        **Correct answer**: Morita-san, during his overtime, was curious about the scream he heard from outside. When he looked out of the building's window, he saw a dead body lying in the alley and a man nearby. Morita-san realized he had witnessed the man committing murder. The man noticed Morita-san, who might have seen the murder, and started counting the floors of the building by pointing and saying, '1st floor, 2nd floor, 3rd floor...' to identify which floor Morita-san was on, intending to silence him.
+
+        **Expected Summary**: Morita-san witnessed a man committing murder in the alley from his building during his overtime. The man tried to identify Morita-san's floor by counting the floors.
+        ";
+
+        $summaryContent = "#Question content
+                            ```
+                            {$questionContent}
+                            ```
+                            #Correct answer
+                            ```
+                            {$correctAnswer}
+                            ```";
+
+        // 2. そのプロンプトを使用して、正解文を要約するためのAPI通信を行う
+        $summaryResponse = $client->post($endpoint, [
+            'headers' => [
+                'Authorization' => 'Bearer ' . env('OPENAI_API_KEY'),
+                'Content-Type' => 'application/json'
+            ],
+            'json' => [
+                'model' => "gpt-3.5-turbo-0613",
+                "messages" => [
+                    [
+                        "role" => "system",
+                        "content" => $summaryPrompt
+                    ],
+                    [
+                        "role" => "user",
+                        "content" => $summaryContent
+                    ]
+
+                ]
+            ]
+        ]);
+
+        // 3. APIからのレスポンスを受け取り、要約されたテキストを取得
+        $summaryData = json_decode($summaryResponse->getBody(), true);
+        $summarizedAnswer = $summaryData['choices'][0]['message']['content'] ?? 'Failed to generate summary';
+
+        // （あとで消す） ログを出力
+        Log::info($summarizedAnswer);
+        
+        // ---- 要約のためのAPI通信の一連の処理はここまで -------
+
+        $checkAnswerPrompt = "
+        # Background
+        We are developing a web service for solving lateral thinking puzzles using the ChatGPT API. 
+        With the help of AI (ChatGPT), we have implemented a process that spans from automatic question creation to answering.
+        The question creation part has already been implemented using a separate prompt, and the created questions are stored in a database.
+        Users solve these puzzles and submit their answers to the service.
+        This prompt is used to determine the correctness of the answers submitted by the users.
+        Due to the nature of lateral thinking puzzles, the determination of the answer is based on the match in meaning or nuance, rather than an exact match in the text.
+
+        # Instructions
+        Let's play lateral thinking quizzes.
         In lateral thinking games, participants pose questions that can only be answered with 'Yes', 'No', or 'Irrelevant', to unravel the mystery presented by the quiz master.
         You are the one to determine whether the answers in the lateral thinking game are correct or incorrect.
 
-        [Instructions]
         You are asked to evaluate the similarity between the provided by participant answer and the correct answer.
         Consider factors like meaning, relevance, and context in your evaluation. Refer also to the question content.
         Grammar and Spelling: The accuracy of grammar and spelling is not important in the evaluation of similarity. As long as the keywords match or have similar expressions, the answer will be considered similar.
-        Example, If the correct answer is 'photosynthesis', similar terms like plant 'food-making process' could be considered a match.
-        If the correct answer is 'gravity', then 'force that attracts objects toward each other' could also be considered similar.
 
-        [OutputStyle]
-        Strictly a numerical score between 0 and 1 for the similarity. Do not include any additional text or explanation. 
+        In the example below, the truth of the story is correct, therefore the output score should be 0.5 or higher.
         
-        [Incorrect Output Examples]
+        ## Answer and Output Example ①
+        Correct Answer Example: This school was hosting a special event, and that day was 'Thanksgiving Day.' This student, being deaf from birth, could hear the birds singing and his friends' voices for the first time. His emotion was conveyed to the other students around him, and they also cried and laughed with deep emotion.
+        User Answer Example: The student, being deaf from birth, could hear the birds singing and his friends' voices for the first time.
+
+        ## Answer and Output Example ②
+        Correct Answer Example: The woman happened to see the man on the train. She fell in love at first sight with his kind smile and attractive aura and made him the protagonist of her novel. She believed that he was her ideal partner, but she had never had any real contact with him. However, she believed that she could get closer to him through this novel and chose him as the protagonist. She was trying to build a bridge to him by writing while imagining his figure.
+        User Answer Example: The woman happened to see the man on the train. She fell in love at first sight with his kind smile and attractive aura and made him the protagonist of her novel.
+        
+        ## Answer and Output Example ③
+        Correct Answer Example: The student was living a wheelchair life. The seat he sat in was a special barrier-free desk and chair, and the way to the classroom exit was difficult for him. While the other students could naturally leave the classroom when the bell rang, he continued to sit, not understanding the situation. When the teacher noticed and went to help him, the teacher carried him and followed the other students, carrying his wheelchair to the exit. He was happy to help the other students move around without trouble.
+        User Answer Example: The student was living a wheelchair life. The seat he sat in was a special barrier-free desk and chair, and the way to the classroom exit was difficult for him.
+
+
+        # Output Format
+        Strictly a numerical score between 0 and 1 for the similarity. You should never include any additional text or explanation. 
+
+        ## Incorrect Output Format
+        ```
         Similarity score: 0.5
-        Similarity score is 1 
+        Explanation: The provided answer is unrelated and does not provide any information or explanation for why the students reacted the way they did.
+        ```
 
+        ## Expected Output Examples
+        ```
+        Similarity score: 0.5
+        ```
 
-        [Expected Output Examples]
-        1
-        0.5";
+        ```
+        Similarity score: 1
+        ```
+        ";
 
 
         // 水平思考クイズを遊びましょう。
@@ -74,19 +171,55 @@ class QuestionController extends Controller
         // 類似性に対する数値スコアを0から1の範囲で提供してください。
         // 文法と綴り：類似性の評価において、文法や綴りの正確性は全く重要ではありません。キーワードが一致しているか、類似の表現があれば、回答は類似していると考えられます。
 
+        //下記の例の場合、そのストーリーの真相は合っているため、出力されるスコアは0.5以上で出力する。
+        // 回答と出力例①
+        // 答え：この学校はある特別なイベントが開催されており、その日は「感謝の日」でした。その生徒は、生まれつき聴覚が遮断されていたため、初めて鳥の鳴き声や友人の声を聞くことができました。彼の感動が周りの生徒たちにも伝わり、彼らも感極まって泣き笑いしたのです。
+        // ユーザー回答例：その生徒は、生まれつき聴覚が遮断されていたため、初めて鳥の鳴き声や友人の声を聞くことができました。
+
+        // 回答と出力例②
+        // 答え：その女性は、電車の中でたまたまその男性を見かけました。彼の優しそうな笑顔と魅力的な雰囲気に一目惚れし、小説の主人公にしたのです。彼女はその男性が自分の理想のパートナーだと思い込んでいましたが、現実の彼とは一度も接点がありませんでした。しかし、この小説を通じて彼に近づけると信じて、彼を主人公に選んだのです。彼女は彼の姿を想像しながら執筆することで、彼との架け橋を築こうとしていたのです。
+        // ユーザー回答例:その女性は、電車の中でたまたまその男性を見かけました。彼の優しそうな笑顔と魅力的な雰囲気に一目惚れし、小説の主人公にしたのです。
+
+        // 回答と出力例③
+        // 答え：その生徒は車椅子生活を送っていました。彼の座った席はバリアフリーの特別な机と椅子であり、教室の出口までの道のりは彼にとっては困難でした。他の生徒たちはベルが鳴ったことで自然と教室を出て行けましたが、彼はその状況を理解できずに座り続けたのです。教師が彼を気づかって助けに行くと、教師は彼を抱えて他の生徒たちの後を追い、彼の車椅子を出口まで運びました。彼は周りの生徒たちが無理なく移動できるように手助けをすることを嬉しく思っていました。
+        // ユーザー回答例:その生徒は車椅子生活を送っていました。彼の座った席はバリアフリーの特別な机と椅子であり、教室の出口までの道のりは彼にとっては困難でした。
+
+
         // 具体例：
         //もし正解が「光合成」であれば、それに類似した用語である「植物の食物作成過程」といった回答も一致と考えられます。
         //もし正解が「重力」であれば、「物体をお互いに引き付ける力」といった回答も類似と考えられます。
         // 出力形式：Integer型で0 ~ 1までの数字に限る。文字列は認めない。
 
-        // 出力例　
+        // 出力スタイル
+        // 類似性については0から1の間の厳密に数値のスコアのみ。追加のテキストや説明を含めてはなりません。
+        // 不正確な出力例
+        // 類似スコア: 0.5
+        // 説明: 提供された答えは関連性がなく、学生たちがそのように反応した理由についての情報や説明が提供されていません。
 
-        $content = "Provided by participant answer: $userAnswer
-                    Correct answer: $correctAnswer
-                    Question content: $questionContent";
+        // 期待される出力例
+        // 類似スコア: 0.5
+        // 類似スコア: 1
 
-        $client = new Client();
+        $userAnswer = $request->input('userAnswer');
+
+        $answerCheckContent = "
+                    # Question content
+                    ```
+                    {$questionContent}
+                    ```
+                    # Correct answer
+                    ```
+                    {$summarizedAnswer}
+                    ```
+                    # Provided by participant answer
+                    ```
+                    {$userAnswer}
+                    ```
+                    ";
+        
+        Log::info($answerCheckContent);
     
+        // $responseには、 ChatGPTにAPI通信をした結果(レスポンス)が入ってくる
         $response = $client->post($endpoint, [
             'headers' => [
                 'Authorization' => 'Bearer ' . env('OPENAI_API_KEY'),
@@ -97,22 +230,30 @@ class QuestionController extends Controller
                 "messages" => [
                     [
                         "role" => "system",
-                        "content" => $prompt
+                        "content" => $checkAnswerPrompt
                     ],
                     [
                         "role" => "user",
-                        "content" => $content
+                        "content" => $answerCheckContent
                     ]
 
                 ]
             ]
         ]);
 
+        // $dataには $response をjson_decode(形式を整えるような処理)をした結果が入っている
         $data = json_decode($response->getBody(), true);
-        // Log::info("API Response: " . json_encode($data));
 
-        $similarity_score = $data['choices'][0]['message']['content'] ?? 'Failed to generate similarity score';
-        // Log::info("Setting similarity score: " . json_encode($similarity_score));
+        // $similarity_scoreには $dataの中から必要な部分のみを抜き出した文字列("Similarity score: 0.0"などの実際の正答結果)が入ってくる
+        // ※ $dataはそのままの状態だとChatGPTのAPIから返ってきた色々な情報が詰め込まれている（例えば処理日時など・・・）ので、そこから必要な部分のみを抽出する必要がある
+        $str = $data['choices'][0]['message']['content'] ?? 'Failed to generate similarity score';
+
+        if (preg_match('/\d+(\.\d+)?/', $str, $matches)) {  //正規表現、検索対象、検索結果
+            $similarity_score = (float)$matches[0];
+        } else {
+            // 数値が見つからない場合の処理。適切なデフォルト値を設定したり、エラーログを出力したりする。
+            $similarity_score = 0.0; // 例として、0.0をデフォルト値とします。
+        }
 
         // 類似度がある程度以上であれば正解とする（この値は調整が必要）
         Log::info($similarity_score);
@@ -122,7 +263,8 @@ class QuestionController extends Controller
         Log::info("isCorrect: " . $isCorrect);
         return response()->json(['isCorrect' => $isCorrect]);
     }
-            // 問題フォームを表示（使わないかも）
+
+    // 問題フォームを表示（使わないかも）
     public function showQuestionForm()
     {
         return view('questions.question_form');
@@ -138,8 +280,7 @@ class QuestionController extends Controller
     public function detail($id)
     {
         // ゲストユーザーはログインページにリダイレクト
-        if (Auth::guest()) 
-        {
+        if (Auth::guest()) {
             // 未ログインの場合、選んだ問題のIDをセッションに保存
             session(['selected_question_id' => $id]);
             return redirect()->route('login');
@@ -147,10 +288,10 @@ class QuestionController extends Controller
     // SoupGameQuestion モデルを使用して、指定されたIDに対応する問題を取得
         $question = SoupGameQuestion::find($id);
     // もし問題が存在しなければ、404エラーを返す
-        if (!$question) 
-        {
+        if (!$question) {
             abort(404, 'The specified question does not exist.');
         }
+
         return view('questions.detail', compact('question'));
     }
 
@@ -240,49 +381,49 @@ class QuestionController extends Controller
         [Answer]:
         {Display the answer}";
 
-    // $prompt = "#指示
-    // 水平思考クイズを遊びましょう。
-
-    // 水平思考ゲームでは、参加者は「はい」「いいえ」「関係ない」のいずれかだけで答えられる質問を出して、クイズマスターが出す謎を解明します。あなたは水平思考ゲームの問題作成のプロであり、指定されたジャンルと難易度に合わせて、問題文を最適化してください。
-
-    // --------------
-    // 以下は一例です。参考にしてください。
-
-    // #例1
-    // ある男が海の近くのレストランで亀のスープを頼みました。一口飲んでからシェフに「これは本当に亀のスープですか？」と尋ねました。シェフは「はい、あなたが食べているのは間違いなく亀のスープです」と答えました。その男は料金を支払い、帰宅して自らの命を絶った。なぜそんな極端な行動をとったのでしょうか？
-
-    // #例1の答え
-    // このクイズの答えは、その男が以前、何人かの仲間と海で遭難していたということです。食べ物がなく、死んだ者の肉を食べ始めましたが、その男は頑としてそれを食べないでいました。仲間の一人が「これは亀のスープだ」と嘘をついて、彼が生き延びることができました。レストランで「本物の」亀のスープを味わったとき、彼は真実を悟り、絶望から自らの命を絶ったのです。
-
-    // #例2
-    // (以下、他の例も続く)
-    // --------------
-    // #ゲームの楽しみ方
-    // 亀のスープについての例の質問のように、一連の質問と回答を通じて真実を解き明かす楽しみがあります。したがって、答えは現実離れしているわけでも、あまりにも直訳ではなく、ゲームの楽しさを保つべきです。
-
-    // #手順
-    // 1. #制約 と #禁止事項 に従い、#表示形式に従って質問と対応する答えを作成してください。
-
-    // #制約
-    // * [質問] は70文字から250文字の間でなければならない
-    // * [答え] は論理的な流れに従ったストーリーでなければならない
-    // * 例の質問を参考にしてください
-    // * 登場人物や場面が生き生きとしていること
-    // * [質問] は一見すると逆説的に見えるべき
-    // * [答え] は一般的な道徳観や倫理観に合致するものでなければならない
-    // * 出力は日本語で
-    // * [質問] は疑問形で終わる（なぜそうしたのか？など）
-
-    // #禁止事項
-    // * [答え] の結末で「それは夢だった」としないこと
-    // * [答え] で現実離れした設定を使わないこと
-
-    // #表示形式
-    // [質問]:
-    // {質問を表示}
-
-    // [答え]:
-    // {答えを表示}";
+        // $prompt = "#指示
+        // 水平思考クイズを遊びましょう。
+        
+        // 水平思考ゲームでは、参加者は「はい」「いいえ」「関係ない」のいずれかだけで答えられる質問を出して、クイズマスターが出す謎を解明します。あなたは水平思考ゲームの問題作成のプロであり、指定されたジャンルと難易度に合わせて、問題文を最適化してください。
+        
+        // --------------
+        // 以下は一例です。参考にしてください。
+        
+        // #例1
+        // ある男が海の近くのレストランで亀のスープを頼みました。一口飲んでからシェフに「これは本当に亀のスープですか？」と尋ねました。シェフは「はい、あなたが食べているのは間違いなく亀のスープです」と答えました。その男は料金を支払い、帰宅して自らの命を絶った。なぜそんな極端な行動をとったのでしょうか？
+        
+        // #例1の答え
+        // このクイズの答えは、その男が以前、何人かの仲間と海で遭難していたということです。食べ物がなく、死んだ者の肉を食べ始めましたが、その男は頑としてそれを食べないでいました。仲間の一人が「これは亀のスープだ」と嘘をついて、彼が生き延びることができました。レストランで「本物の」亀のスープを味わったとき、彼は真実を悟り、絶望から自らの命を絶ったのです。
+        
+        // #例2
+        // (以下、他の例も続く)
+        // --------------
+        // #ゲームの楽しみ方
+        // 亀のスープについての例の質問のように、一連の質問と回答を通じて真実を解き明かす楽しみがあります。したがって、答えは現実離れしているわけでも、あまりにも直訳ではなく、ゲームの楽しさを保つべきです。
+        
+        // #手順
+        // 1. #制約 と #禁止事項 に従い、#表示形式に従って質問と対応する答えを作成してください。
+        
+        // #制約
+        // * [質問] は70文字から250文字の間でなければならない
+        // * [答え] は論理的な流れに従ったストーリーでなければならない
+        // * 例の質問を参考にしてください
+        // * 登場人物や場面が生き生きとしていること
+        // * [質問] は一見すると逆説的に見えるべき
+        // * [答え] は一般的な道徳観や倫理観に合致するものでなければならない
+        // * 出力は日本語で
+        // * [質問] は疑問形で終わる（なぜそうしたのか？など）
+        
+        // #禁止事項
+        // * [答え] の結末で「それは夢だった」としないこと
+        // * [答え] で現実離れした設定を使わないこと
+        
+        // #表示形式
+        // [質問]:
+        // {質問を表示}
+        
+        // [答え]:
+        // {答えを表示}";
 
         // フォームからジャンルと難易度を取得
         $genre = $request->input('genre');
@@ -321,11 +462,11 @@ class QuestionController extends Controller
 
         // ここで正規表現を使って $question_content と $answer_content を抜き出す
         if (preg_match('/\[Question\]:(.*?)\[Answer\]:/su', $questionContent, $matches)) {
-        $question_content = trim($matches[1]);
+            $question_content = trim($matches[1]);
         }
 
         if (preg_match('/\[Answer\]:(.*)$/su', $questionContent, $matches)) {
-        $answer_content = trim($matches[1]);
+            $answer_content = trim($matches[1]);
         }
 
         // 生成された問題を次のページで表示するためにリダイレクト
@@ -336,13 +477,15 @@ class QuestionController extends Controller
             ->with('genre', $genre)
             ->with('difficulty', $difficulty);
     }
-        // 生成された問題を表示するメソッド
+
+    // 生成された問題を表示するメソッド
     public function showGenerated()
     {
         // セッションから問題を取得してビューに渡す
         $question = session('question', 'No question generated');
         return view('questions.generated', compact('question'));
     }
+
     // 新規の問題をデータベースに保存するメソッド
     public function store(Request $request)
     {
@@ -358,7 +501,8 @@ class QuestionController extends Controller
         return redirect()->route('questions.create');
     }
 
-    public function saveQuestion(Request $request) {
+    public function saveQuestion(Request $request) 
+    {
         $data = [
             'generated_question' => $request->input('question_content'),
             'generated_answer' => $request->input('answer_content'),
@@ -409,27 +553,25 @@ class QuestionController extends Controller
         
         #Please provide a hint";
 
-    // #指示
-    // あなたは水平思考パズルに対するヒントを提供する訓練を受けたAIです。プレイヤーは行き詰っていて、前に進むための微妙なヒントが必要です。
+        // #指示
+        // あなたは水平思考パズルに対するヒントを提供する訓練を受けたAIです。プレイヤーは行き詰っていて、前に進むための微妙なヒントが必要です。
+        // #手順
+        // 1. 答えを明かさないように、プレイヤーを正しい方向に微妙に導くヒントを提供してください。
+        // 2. ヒントは簡潔で、一つまたは二つの文でなければなりません。
+        // 3. ヒントはパズルに関連していなければなりません。
+        // 4. 出力は日本語で行ってください。
+        // #禁止事項
+        // 答えの内容と全く同じ文章を入れない
 
-    // #手順
-    // 1. 答えを明かさないように、プレイヤーを正しい方向に微妙に導くヒントを提供してください。
-    // 2. ヒントは簡潔で、一つまたは二つの文でなければなりません。
-    // 3. ヒントはパズルに関連していなければなりません。
-    // 4. 出力は日本語で行ってください。
-
-    // #禁止事項
-    // 答えの内容と全く同じ文章を入れない
-
-    // #ヒントを提供してください
+        // #ヒントを提供してください
 
         $content = "#Puzzle: {$question->question_content}
                     #Answer: {$question->answer_content}"; 
 
          // hintCountが1より大きい場合、前回のヒントをcontentに追加
         if ($hintCount > 1) {
-        $content .= "\n#Previous Hints: {$previousHints}";
-    }
+            $content .= "\n#Previous Hints: {$previousHints}";
+        }
 
         // GuzzleHTTPクライアントのインスタンスを作成           
         $client = new Client();
@@ -466,125 +608,122 @@ class QuestionController extends Controller
     
         // JSONとしてヒントを返す（フロントエンドのJavaScriptで受け取る）
         return response()->json(['hint' => $generated_hint]);
-        }
+    }
     // ーーーーーーーーーーーヒント関連はここまでーーーーーーーーーーー
-
 
     // ーーーーーーーーーーー質問関連はここからーーーーーーーーーーー
     // OpenAI APIを使って問題に対する回答を生成するメソッド
-// OpenAI APIを使って問題に対する回答を生成するメソッド
-public function generateChatResponse(Request $request)
-{
-    $chatQuestionContent = $request->input('chatQuestionContent');
-    
-    $questionId = $request->input('questionId');  // 質問IDも取得
-    // 質問回数をセッションから取得、もしくは初期化
-    $questionCount = $request->session()->get('question_count', 0);
-    $questionCount++;
-
-    // 問題の取得
-    $question = SoupGameQuestion::find($questionId);
-
-    if (!$question) {
-        Log::error("Question not found for ID: " . $questionId);
-        return response()->json(['error' => 'Question not found'], 404);
-    }
-    Log::info("Received chatQuestionContent: " . $chatQuestionContent); 
-    Log::info("Question Content: " . $question->question_content);
-    Log::info("Answer Content: " . $question->answer_content);
-    Log::info("Chat Question Content: " . $chatQuestionContent);
-    Log::info("Answer Content: " . $question->answer_content);
-
-    // デバッグ：受け取った質問やセッションデータを出力
-    error_log("Received chatQuestionContent: " . $chatQuestionContent);
-    error_log("Session question_count: " . $questionCount);
+    public function generateChatResponse(Request $request)
+    {
+        $chatQuestionContent = $request->input('chatQuestionContent');
         
-    if (!$question) {
-        return response()->json(['error' => 'Question not found'], 404);
-    }
+        $questionId = $request->input('questionId');  // 質問IDも取得
+        // 質問回数をセッションから取得、もしくは初期化
+        $questionCount = $request->session()->get('question_count', 0);
+        $questionCount++;
 
-    $endpoint = "https://api.openai.com/v1/chat/completions";
-    
-    // プロンプト
-    // 1回目の質問、2回目の質問、3回目の質問...と追加情報をプロンプトに含める
-    // $prompt = "1st Question: {$request->session()->get('1st_question', 'N/A')}
-    //         2nd Question: {$request->session()->get('2nd_question', 'N/A')}
-    //         ...";
+        // 問題の取得
+        $question = SoupGameQuestion::find($questionId);
 
-    $prompt =
-    "1.The answer to the question should be 'イエス', 'ノー', or 'どちらでもない'.
-    2.If the content of the question is linked to the answer, respond with 'イエス'. 
-    3.If the content of the question is not linked to the answer, respond with 'ノー'.
-    4.The answer to the question should be provided in Japanese.
-    5. For questions unrelated to the problem, display 'どちらでもない'.
-    6. Format for responses Example >>  質問: (Content of the entered question is written here) 回答: どちらでもない
-    ";
+        if (!$question) {
+            Log::error("Question not found for ID: " . $questionId);
+            return response()->json(['error' => 'Question not found'], 404);
+        }
+        Log::info("Received chatQuestionContent: " . $chatQuestionContent); 
+        Log::info("Question Content: " . $question->question_content);
+        Log::info("Answer Content: " . $question->answer_content);
+        Log::info("Chat Question Content: " . $chatQuestionContent);
+        Log::info("Answer Content: " . $question->answer_content);
 
-    
-    // ユーザーからの質問を含めます
-    $content = "#Puzzle: {$question->question_content}
-                #Answer: {$question->answer_content}
-                #User Question: {$chatQuestionContent}";
+        // デバッグ：受け取った質問やセッションデータを出力
+        error_log("Received chatQuestionContent: " . $chatQuestionContent);
+        error_log("Session question_count: " . $questionCount);
+            
+        if (!$question) {
+            return response()->json(['error' => 'Question not found'], 404);
+        }
 
-    // GuzzleHTTPクライアントのインスタンスを作成
-    $client = new Client();
-
-    // API連携して回答を生成
-    $response = $client->post($endpoint, [
-        'headers' => [
-            'Authorization' => 'Bearer ' . env('OPENAI_API_KEY'),
-            'Content-Type' => 'application/json'
-        ],
+        $endpoint = "https://api.openai.com/v1/chat/completions";
         
-        'json' => [
-            'model' => "gpt-3.5-turbo-0613",
-            "messages" => [
-                [
-                    "role" => "system",
-                    "content" => $prompt
-                ],
-                [
-                    "role" => "user",
-                    "content" => $content
+        // プロンプト
+        // 1回目の質問、2回目の質問、3回目の質問...と追加情報をプロンプトに含める
+        // $prompt = "1st Question: {$request->session()->get('1st_question', 'N/A')}
+        //         2nd Question: {$request->session()->get('2nd_question', 'N/A')}
+        //         ...";
+
+        $prompt =
+        "1.The answer to the question should be 'イエス', 'ノー', or 'どちらでもない'.
+        2.If the content of the question is linked to the answer, respond with 'イエス'. 
+        3.If the content of the question is not linked to the answer, respond with 'ノー'.
+        4.The answer to the question should be provided in Japanese.
+        5. For questions unrelated to the problem, display 'どちらでもない'.
+        6. Format for responses Example >>  質問: (Content of the entered question is written here) 回答: どちらでもない
+        ";
+
+        
+        // ユーザーからの質問を含めます
+        $content = "#Puzzle: {$question->question_content}
+                    #Answer: {$question->answer_content}
+                    #User Question: {$chatQuestionContent}";
+
+        // GuzzleHTTPクライアントのインスタンスを作成
+        $client = new Client();
+
+        // API連携して回答を生成
+        $response = $client->post($endpoint, [
+            'headers' => [
+                'Authorization' => 'Bearer ' . env('OPENAI_API_KEY'),
+                'Content-Type' => 'application/json'
+            ],
+            
+            'json' => [
+                'model' => "gpt-3.5-turbo-0613",
+                "messages" => [
+                    [
+                        "role" => "system",
+                        "content" => $prompt
+                    ],
+                    [
+                        "role" => "user",
+                        "content" => $content
+                    ]
                 ]
             ]
-        ]
-    ]);
-    
-    // JSONレスポンスをデコードして回答を抽出
-    $data = json_decode($response->getBody(), true);
-    $generated_answer = $data['choices'][0]['message']['content'] ?? 'Failed to generate answer';
+        ]);
+        
+        // JSONレスポンスをデコードして回答を抽出
+        $data = json_decode($response->getBody(), true);
+        $generated_answer = $data['choices'][0]['message']['content'] ?? 'Failed to generate answer';
 
-    // デバッグ：APIからのレスポンスを出力
-    error_log("API Response: " . json_encode($data));
+        // デバッグ：APIからのレスポンスを出力
+        error_log("API Response: " . json_encode($data));
 
-    // 最新の質問をセッションに保存
-    $request->session()->put("{$questionCount}th_question", $chatQuestionContent);
+        // 最新の質問をセッションに保存
+        $request->session()->put("{$questionCount}th_question", $chatQuestionContent);
 
-    // 過去の質問をセッションに保存（配列として）
-    $previousQuestions = $request->session()->get('previous_questions', []);
-    $previousQuestions[] = $chatQuestionContent;
-    $request->session()->put('previous_questions', $previousQuestions);
+        // 過去の質問をセッションに保存（配列として）
+        $previousQuestions = $request->session()->get('previous_questions', []);
+        $previousQuestions[] = $chatQuestionContent;
+        $request->session()->put('previous_questions', $previousQuestions);
 
 
-    // JSONとして回答を返す
-    return response()->json(['answer' => $generated_answer]);
-}
+        // JSONとして回答を返す
+        return response()->json(['answer' => $generated_answer]);
+    }
 
-public function getAnswer(Request $request)
-{
-    // ユーザーからの質問を取得
-    $userQuestion = $request->input('question');
+    public function getAnswer(Request $request)
+    {
+        // ユーザーからの質問を取得
+        $userQuestion = $request->input('question');
 
-    // GPT-3へのプロンプトを形成
-    $prompt = "Q: {$userQuestion}\nA:";
+        // GPT-3へのプロンプトを形成
+        $prompt = "Q: {$userQuestion}\nA:";
 
-    // GPT-3 APIへのリクエスト（以下は仮のコード、実際のAPIリクエストに置き換えてください）
-    $apiResponse = 'ここにAPIからの回答';
-    Log::info("API Response: ", $apiResponse);
-    // APIからの回答をレスポンスとして返す
-    return response()->json(['answer' => $apiResponse]);
-}
-
+        // GPT-3 APIへのリクエスト（以下は仮のコード、実際のAPIリクエストに置き換えてください）
+        $apiResponse = 'ここにAPIからの回答';
+        Log::info("API Response: ", $apiResponse);
+        // APIからの回答をレスポンスとして返す
+        return response()->json(['answer' => $apiResponse]);
+    }
     // ーーーーーーーーーーー質問関連はここまでーーーーーーーーーーー
 }    
