@@ -9,8 +9,7 @@ use App\Http\Controllers\ScoreController;
 use App\Http\Controllers\Auth\LoginController; 
 use App\Http\Controllers\Auth\RegisterController;
 use Illuminate\Support\Facades\Auth;
-use App\Http\Controllers\Auth\SelfIntroductionLieGameController;
-
+use App\Http\Controllers\SelfIntroductionLieGameController;
 /*
 |--------------------------------------------------------------------------
 | Web Routes
@@ -97,11 +96,9 @@ Route::post('/logout', function () {
 // ホームページから自己紹介嘘当てゲームへ
 Route::get('self-introduction-lie-game', [SelfIntroductionLieGameController::class, 'index'])->name('selfIntroductionLieGame.index');
 
-// ホーム画面からプレイヤー設定画面へ
-Route::get('self-introduction-lie-game/setup', [SelfIntroductionLieGameController::class, 'setup'])->name('selfIntroductionLieGame.setup');
-Route::get('/some-route', [SelfIntroductionLieGameController::class, 'someMethod']);
-
 // routes/web.php または routes/api.php
-Route::post('some/path', [SelfIntroductionLieGameController::class, 'start'])->name('selfIntroductionLieGame.start');
+Route::post('/start', [SelfIntroductionLieGameController::class, 'start'])->name('selfIntroductionLieGame.start');
 
-Route::get('/setup', 'SelfIntroductionLieGameController@setup')->name('selfIntroductionLieGame.setup');
+Route::get('/setup', [SelfIntroductionLieGameController::class, 'setup'])->name('selfIntroductionLieGame.setup');
+
+Route::post('/completeQuestion', [SelfIntroductionLieGameController::class, 'completeQuestion'])->name('selfIntroductionLieGame.completeQuestion');
