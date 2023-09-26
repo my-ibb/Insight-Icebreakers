@@ -77,6 +77,20 @@ class SelfIntroductionLieGameController extends Controller
         // ...
     
         // 設問入力画面にリダイレクト（次のプレイヤーのターン）
-        return redirect()->route('selfIntroductionLieGame.setup');
+        // 設問入力画面にリダイレクト（次のプレイヤーのターン）
+    return redirect()->route('selfIntroductionLieGame.display');
+
     }
+    //  自己紹介表示画面
+    public function display() 
+{
+    $player_names = session('player_names', []); // セッションからプレイヤー名を取得。
+    
+    // 自己紹介表示ページにリダイレクト
+    return view('self_introduction_lie_game_display', [
+        'player_names' => $player_names // プレイヤー名をビューに渡す
+    ]);
+    return view('self_introduction_display'); // 自己紹介表示ページのビューファイル名に変更してください。
 }
+}
+
