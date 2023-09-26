@@ -15,10 +15,13 @@ class SelfIntroductionLieGameController extends Controller
         // 設問個数のオプション（例: 1から5個）
         $numberOfQuestionsOptions = range(1, 5);
 
+        $player_names = session('player_names', []); // セッションからプレイヤー名を取得
+
         // オプションをビューに渡す
         return view('self_introduction_lie_game', [
             'numberOfPlayersOptions' => $numberOfPlayersOptions,
-            'numberOfQuestionsOptions' => $numberOfQuestionsOptions
+            'numberOfQuestionsOptions' => $numberOfQuestionsOptions,
+            'player_names' => $player_names // プレイヤー名をビューに渡す
         ]);
     }
 
@@ -27,22 +30,21 @@ class SelfIntroductionLieGameController extends Controller
     {
         $numberOfPlayersOptions = range(2, 10);
         $numberOfQuestionsOptions = range(1, 5);
+        $player_names = session('player_names', []); // セッションからプレイヤー名を取得。デフォルトは空の配列。
 
         return view('self_introduction_lie_game_setup', [
             'numberOfPlayersOptions' => $numberOfPlayersOptions,
-            'numberOfQuestionsOptions' => $numberOfQuestionsOptions
+            'numberOfQuestionsOptions' => $numberOfQuestionsOptions,
+            'player_names' => $player_names // プレイヤー名をビューに渡す
         ]);
     }
 
     // 現在のプレイヤー名をビューに渡す
     public function start(Request $request) 
     {
-        $player_name = $request->input('player_name');
+        $player_names = $request->input('player_names');
         $number_of_players = $request->input('number_of_players');
         $number_of_questions = $request->input('number_of_questions');
-        
-         // 仮に、$player_namesを作成する（この部分はどうやってプレイヤー名を集めるかに依存）
-        $player_names = [$player_name];  // ここで$player_namesを定義
         
         // これらの情報をセッションに保存（他の保存方法もあり）
         session([
@@ -51,6 +53,8 @@ class SelfIntroductionLieGameController extends Controller
             'number_of_questions' => $number_of_questions
         ]);
     
+        //dd(session('player_names'));
+
         // 設問入力画面にリダイレクト
         return redirect()->route('selfIntroductionLieGame.setup');
     }

@@ -30,7 +30,7 @@
 
             // label要素を作成し、for属性とテキストコンテンツを設定します。
             const label = document.createElement('label');
-            label.for = `content${i}`;
+            label.htmlFor = `content${i}`;
             label.textContent = `設問${i + 1}の内容`;
 
             const input = document.createElement('input');
