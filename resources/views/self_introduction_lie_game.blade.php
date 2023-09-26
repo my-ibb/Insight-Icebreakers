@@ -13,6 +13,7 @@
         <div class="form-group">
             <label for="number_of_players">参加人数</label>
             <select class="form-control" id="number_of_players" name="number_of_players">
+                <option value="" selected disabled>選択してください</option>
                 @foreach ($numberOfPlayersOptions as $option)
                     <option value="{{ $option }}">{{ $option }}人</option>
                 @endforeach
