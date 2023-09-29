@@ -103,7 +103,5 @@ class SelfIntroductionLieGameController extends Controller
     return view('self_introduction_lie_game_display', [
         'player_names' => $player_names // プレイヤー名をビューに渡す
     ]);
-    return view('self_introduction_display'); // 自己紹介表示ページのビューファイル名に変更してください。
 }
-}
-
+    }

@@ -34,11 +34,6 @@
             const div = document.createElement('div');
             div.className = 'form-group';// Bootstrapのクラス名
 
-            // label要素を作成し、for属性とテキストコンテンツを設定します。
-            const label = document.createElement('label');
-            label.htmlFor = `content${i}`;
-            label.textContent = `設問${i + 1}の内容`;
-
             const input = document.createElement('input');
             input.type = 'text';
             input.className = 'form-control';// Bootstrapのクラス名
