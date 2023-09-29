@@ -31,14 +31,19 @@ class SelfIntroductionLieGameController extends Controller
         $numberOfPlayersOptions = range(2, 10);
         $numberOfQuestionsOptions = range(1, 5);
         $player_names = session('player_names', []); // セッションからプレイヤー名を取得。デフォルトは空の配列。
-
+    
+        $number_of_questions = session('number_of_questions', 1); // セッションから設問数を取得。デフォルトは1。
+    
+        $questions = IntroGameQuestion::inRandomOrder()->limit($number_of_questions)->get(); // ランダムな質問を取得
+    
         return view('self_introduction_lie_game_setup', [
             'numberOfPlayersOptions' => $numberOfPlayersOptions,
             'numberOfQuestionsOptions' => $numberOfQuestionsOptions,
-            'player_names' => $player_names // プレイヤー名をビューに渡す
+            'player_names' => $player_names, // プレイヤー名をビューに渡す
+            'questions' => $questions // ランダムに取得した質問をビューに渡す
         ]);
     }
-
+    
     // 現在のプレイヤー名をビューに渡す
     public function start(Request $request) 
     {
@@ -61,22 +66,30 @@ class SelfIntroductionLieGameController extends Controller
 
     // 設問が完了したら呼び出されるメソッド
     public function completeQuestion(Request $request) {
+        \DB::enableQueryLog();// クエリログを有効化
         // 現在のプレイヤー名をセッションから取得する（仮の例）
         $current_player_name = session('current_player_name', 'Default Name');
     
         // 設問内容をリクエストから取得
         $content = $request->input('content');
-    
+        \Log::info('Content:', ['content' => $content]);
+        \Log::info('Before Create Method');
         // 設問内容をデータベースに保存
+        \Log::info('Create Method Parameters:', ['parameters' => $parameters]);
+    IntroGameQuestion::create($parameters);
+
         IntroGameQuestion::create([
             'content' => $content
             // 必要に応じて他のフィールドも追加
         ]);
-    
+
+        \Log::info('After Create Method');
+        $log = \DB::getQueryLog();
+        \Log::info($log); // クエリログを出力
+
         // 次のプレイヤーに移るロジック（セッションの更新、など）
         // ...
     
-        // 設問入力画面にリダイレクト（次のプレイヤーのターン）
         // 設問入力画面にリダイレクト（次のプレイヤーのターン）
     return redirect()->route('selfIntroductionLieGame.display');
 

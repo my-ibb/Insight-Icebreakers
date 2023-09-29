@@ -7,13 +7,19 @@
 
     <form method="POST" action="{{ route('selfIntroductionLieGame.completeQuestion') }}">
     @csrf
-        <div id="questionsContainer"></div>
+        <div id="questionsContainer">
+            @foreach($questions as $index => $question)
+                <div class="form-group">
+                    <label for="content{{ $index }}">設問{{ $index + 1 }}: {{ $question->content }}</label>
+                    <input type="text" class="form-control" id="content{{ $index }}" name="content[]">
+                </div>
+            @endforeach
+        </div>
 
         <!-- 送信ボタン -->
         <button type="submit" class="btn btn-primary">次へ</button>
     </form>
 </div>
-
 <script>
     // ドキュメントが完全に読み込まれたら、このコードブロックが実行されます
     document.addEventListener('DOMContentLoaded', function () {
