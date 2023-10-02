@@ -21,32 +21,31 @@
     </form>
 </div>
 <script>
-    // ドキュメントが完全に読み込まれたら、このコードブロックが実行されます
     document.addEventListener('DOMContentLoaded', function () {
-        // セッションから設問数を取得し、JavaScript変数に代入します。
-        // セッションに設問数がない場合、1が代入されます。
+        const questions = @json($questions); // サーバーから取得した設問を格納
         const numberOfQuestions = {{ session('number_of_questions', 1) }};
-        // 設問の入力フィールドを格納するコンテナを取得します。
         const container = document.getElementById('questionsContainer');
-        // 設問数分の入力フィールドを生成します。
+        container.innerHTML = ''; // containerの中身を空にする
+    
         for (let i = 0; i < numberOfQuestions; i++) {
-            // 新しいdiv要素（入力フィールドのコンテナ）を作成します。
             const div = document.createElement('div');
-            div.className = 'form-group';// Bootstrapのクラス名
-
+            div.className = 'form-group';
+    
             const input = document.createElement('input');
             input.type = 'text';
-            input.className = 'form-control';// Bootstrapのクラス名
+            input.className = 'form-control';
             input.id = `content${i}`;
-            input.name = 'content[]'; // PHP側で配列として受け取るための記述
-
-            // 作成したlabelとinputをdivに追加します。
+            input.name = 'content[]';
+    
+            const label = document.createElement('label');
+            label.htmlFor = `content${i}`;
+            label.textContent = `設問${i + 1}: ${questions[i].content}`; // 設問の内容を含むlabelを生成
+    
             div.appendChild(label);
             div.appendChild(input);
-            // 作成したdivをコンテナに追加します。
             container.appendChild(div);
         }
     });
-</script>
-
+    </script>
+    
 @endsection

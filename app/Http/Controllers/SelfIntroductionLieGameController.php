@@ -92,19 +92,33 @@ class SelfIntroductionLieGameController extends Controller
     // 設問入力画面にリダイレクトするメソッド
     // 次のプレイヤーの設問入力画面にリダイレクト
     private function redirectToSetup() 
-    {
-        $player_index = session('current_player_index', 0);
-        $player_names = session('player_names', []);
+{
+    $player_index = session('current_player_index', 0);
+    $question_index = session('current_question_index', 0);
+    $player_names = session('player_names', []);
+    $total_questions = session('number_of_questions', 0); // セッションから設問数を取得
 
-        // 現在のプレイヤー名をセッションに保存
-        session(['current_player_name' => $player_names[$player_index] ?? 'デフォルト名']);
-
-        // 次のプレイヤーに移る準備
-        session(['current_player_index' => $player_index + 1]);
-
-        return redirect()->route('selfIntroductionLieGame.setup');
+    // すべてのプレイヤーが全ての設問に答えたかチェック
+    if ($player_index >= count($player_names) && $question_index >= $total_questions) {
+        // すべてのプレイヤーが設問に答えたら要約画面にリダイレクト
+        return redirect()->route('selfIntroductionLieGame.display');
     }
 
+    // 現在のプレイヤー名をセッションに保存
+    session(['current_player_name' => $player_names[$player_index] ?? 'デフォルト名']);
+
+    // 次の設問に進むか、次のプレイヤーに移るかを判断
+    if ($question_index >= $total_questions) {
+        // 次のプレイヤーに移り、設問インデックスをリセット
+        session(['current_player_index' => $player_index + 1]);
+        session(['current_question_index' => 0]);
+    } else {
+        // 次の設問に進む
+        session(['current_question_index' => $question_index + 1]);
+    }
+
+    return redirect()->route('selfIntroductionLieGame.setup');
+}
 
 // コンテンツをAPIに送信し、結果を返す
 private function callGPTAPI($content)
