@@ -5,7 +5,7 @@
 <div class="container">
     <h1 class="text-center">自己紹介設定画面</h1>
 
-    <form method="POST" action="{{ route('selfIntroductionLieGame.completeQuestion') }}">
+    <form method="POST" action="{{ route('selfIntroductionLieGame.storeTruthAndLie') }}">
     @csrf
         <div id="questionsContainer">
             @foreach($questions as $index => $question)

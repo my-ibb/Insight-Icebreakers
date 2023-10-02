@@ -8,6 +8,7 @@ use GuzzleHttp\Client;
 class SelfIntroductionLieGameController extends Controller
 {
     // 初期設定画面を表示
+    //オプションとセッションからのプレイヤー名をビューに渡す
     public function index()
     {
         // 参加人数のオプション（例: 2人から10人）
@@ -26,26 +27,9 @@ class SelfIntroductionLieGameController extends Controller
         ]);
     }
 
-    // 設問入力画面を表示
-    public function setup()
-    {
-        $numberOfPlayersOptions = range(2, 10);
-        $numberOfQuestionsOptions = range(1, 5);
-        $player_names = session('player_names', []); // セッションからプレイヤー名を取得。デフォルトは空の配列。
-    
-        $number_of_questions = session('number_of_questions', 1); // セッションから設問数を取得。デフォルトは1。
-    
-        $questions = IntroGameQuestion::inRandomOrder()->limit($number_of_questions)->get(); // ランダムな質問を取得
-    
-        return view('self_introduction_lie_game_setup', [
-            'numberOfPlayersOptions' => $numberOfPlayersOptions,
-            'numberOfQuestionsOptions' => $numberOfQuestionsOptions,
-            'player_names' => $player_names, // プレイヤー名をビューに渡す
-            'questions' => $questions // ランダムに取得した質問をビューに渡す
-        ]);
-    }
     
     // 現在のプレイヤー名をビューに渡す
+    //ゲーム開始処理
     public function start(Request $request) 
     {
         $player_names = $request->input('player_names');
@@ -64,10 +48,49 @@ class SelfIntroductionLieGameController extends Controller
         ]);
     
         // 設問入力画面にリダイレクト
+        //入力データをセッションに保存し、設問入力画面にリダイレクト
         return redirect()->route('selfIntroductionLieGame.setup');
     }
 
+    // 設問入力画面を表示
+    //ランダムな質問とプレイヤー名をビューに渡す
+    public function setup()
+    {
+        $numberOfPlayersOptions = range(2, 10);
+        $numberOfQuestionsOptions = range(1, 5);
+        $player_names = session('player_names', []); // セッションからプレイヤー名を取得。デフォルトは空の配列。
+    
+        $number_of_questions = session('number_of_questions', 1); // セッションから設問数を取得。デフォルトは1。
+    
+        $questions = IntroGameQuestion::inRandomOrder()->limit($number_of_questions)->get(); // ランダムな質問を取得
+    
+        return view('self_introduction_lie_game_setup', [
+            'numberOfPlayersOptions' => $numberOfPlayersOptions,
+            'numberOfQuestionsOptions' => $numberOfQuestionsOptions,
+            'player_names' => $player_names, // プレイヤー名をビューに渡す
+            'questions' => $questions // ランダムに取得した質問をビューに渡す
+        ]);
+    }
+
+    public function storeTruthAndLie(Request $request) 
+    {
+        // 真実と嘘の情報を処理・保存(自己紹介文要約）)
+        
+        // GPT APIを呼び出し要約を生成
+        $response = $this->callGPTAPI($request->input('content'));
+        
+        // 要約結果のハンドリングと保存
+        if($response['success']){
+            session(['summary' => $response['data']]);
+        }else{
+            return redirect()->back()->withErrors(['api_error' => '要約の生成に失敗しました。']);
+        }
+        // 次のプレイヤーにリダイレクト
+        return $this->redirectToSetup();
+    }
+    
     // 設問入力画面にリダイレクトするメソッド
+    // 次のプレイヤーの設問入力画面にリダイレクト
     private function redirectToSetup() 
     {
         $player_index = session('current_player_index', 0);
@@ -82,27 +105,33 @@ class SelfIntroductionLieGameController extends Controller
         return redirect()->route('selfIntroductionLieGame.setup');
     }
 
-    public function storeTruthAndLie(Request $request) 
-{
-    // 真実と嘘の情報を処理・保存
-    
-    // GPT APIを呼び出し要約を生成
-    $response = $this->callGPTAPI($request->input('content'));
-    
-    // 要約結果のハンドリングと保存
-    if($response['success']){
-        session(['summary' => $response['data']]);
-    }else{
-        return redirect()->back()->withErrors(['api_error' => '要約の生成に失敗しました。']);
-    }
-    // 次のプレイヤーにリダイレクト
-    return $this->redirectToSetup();
-}
 
+// コンテンツをAPIに送信し、結果を返す
 private function callGPTAPI($content)
 {
     $client = new Client();
     $endpoint = "https://api.openai.com/v1/chat/completions"; 
+    $prompt =
+    "#Instruction
+    I leave the self-introduction to you.
+    
+    #Procedure
+    
+    Prepare some questions in advance and have them entered by one player at a time.
+    Finally, each player will introduce themselves using the introduction sentences created by GPT.
+    #Example
+    For instance, the first one could be about their favorite character in Conan, the second one about their favorite food, the third one about what they would bring to a deserted island, etc.… GPT will compile these into nice self-introduction sentences and, on top of that, please include one piece of information that wasn’t asked in the questions (in other words, a false piece of information).
+    
+    #Prohibitions
+    
+    Do not disclose which information is false.
+    Do not exaggerate stories from the content answered in the questions.
+    (Example:
+    Question 2: What was your major in your student days?
+    Answer 2: English.
+    Even if the answer to the question, 'What was your major in your student days?' is 'English', it does not necessarily mean they are working in a job related to English, so do not exaggerate the story.
+    The false information can be something other than experience.";
+
     
     try {
         // API呼び出し
@@ -126,25 +155,33 @@ private function callGPTAPI($content)
                 ]
             ]
         ]);
+        $statusCode = $response->getStatusCode();
+        $body = (string) $response->getBody();
         
-        if($response->successful()){
+        if($statusCode == 200){
             return [
                 'success' => true,
-                'data' => $response->body() // 必要に応じて変更してください
+                'data' => json_decode($body, true) // 必要に応じて変更してください
             ];
         }else{
             return [
                 'success' => false,
-                'error' => $response->body() // 必要に応じて変更してください
+                'error' => $body // 必要に応じて変更してください
             ];
         }
-    } catch (\Exception $e) {
+    } catch (\GuzzleHttp\Exception\RequestException $e) { // Guzzle 特有の例外をキャッチ
+        $errorMessage = $e->hasResponse() ? (string) $e->getResponse()->getBody() : $e->getMessage();
+        return [
+            'success' => false,
+            'error' => $errorMessage
+        ];
+    } catch (\Exception $e) { // その他の例外をキャッチ
         return [
             'success' => false,
             'error' => $e->getMessage()
         ];
     }
-}   
+}        
     //  自己紹介表示画面
     public function display() 
 {
