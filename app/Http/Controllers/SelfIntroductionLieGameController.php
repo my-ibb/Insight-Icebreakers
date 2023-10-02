@@ -3,6 +3,7 @@ namespace App\Http\Controllers;
 use App\Http\Controllers\Controller; 
 use Illuminate\Http\Request;
 use App\Models\IntroGameQuestion; // IntroGameQuestionモデルをインポート
+use GuzzleHttp\Client;
 
 class SelfIntroductionLieGameController extends Controller
 {
@@ -51,49 +52,99 @@ class SelfIntroductionLieGameController extends Controller
         $number_of_players = $request->input('number_of_players');
         $number_of_questions = $request->input('number_of_questions');
         
-        // これらの情報をセッションに保存（他の保存方法もあり）
+        // 例えば、IntroGameQuestionモデルから設問をランダムに取得
+        $questions = IntroGameQuestion::inRandomOrder()->take($number_of_questions)->pluck('id')->toArray();
+    
+        // これらの情報をセッションに保存
         session([
-            'player_names' => $player_names,// 単一のプレイヤー名を取得
+            'player_names' => $player_names,
             'number_of_players' => $number_of_players,
-            'number_of_questions' => $number_of_questions
+            'number_of_questions' => $number_of_questions,
+            'questions' => $questions, // 同じ設問をセッションに保存
         ]);
     
-        //dd(session('player_names'));
-
         // 設問入力画面にリダイレクト
         return redirect()->route('selfIntroductionLieGame.setup');
     }
 
-    // 設問が完了したら呼び出されるメソッド
-    public function completeQuestion(Request $request) {
-        \DB::enableQueryLog();// クエリログを有効化
-        // 現在のプレイヤー名をセッションから取得する（仮の例）
-        $current_player_name = session('current_player_name', 'Default Name');
-    
-        // 設問内容をリクエストから取得
-        $content = $request->input('content');
-        \Log::info('Content:', ['content' => $content]);
-        \Log::info('Before Create Method');
-        // 設問内容をデータベースに保存
-        \Log::info('Create Method Parameters:', ['parameters' => $parameters]);
-    IntroGameQuestion::create($parameters);
+    // 設問入力画面にリダイレクトするメソッド
+    private function redirectToSetup() 
+    {
+        $player_index = session('current_player_index', 0);
+        $player_names = session('player_names', []);
 
-        IntroGameQuestion::create([
-            'content' => $content
-            // 必要に応じて他のフィールドも追加
-        ]);
+        // 現在のプレイヤー名をセッションに保存
+        session(['current_player_name' => $player_names[$player_index] ?? 'デフォルト名']);
 
-        \Log::info('After Create Method');
-        $log = \DB::getQueryLog();
-        \Log::info($log); // クエリログを出力
+        // 次のプレイヤーに移る準備
+        session(['current_player_index' => $player_index + 1]);
 
-        // 次のプレイヤーに移るロジック（セッションの更新、など）
-        // ...
-    
-        // 設問入力画面にリダイレクト（次のプレイヤーのターン）
-    return redirect()->route('selfIntroductionLieGame.display');
-
+        return redirect()->route('selfIntroductionLieGame.setup');
     }
+
+    public function storeTruthAndLie(Request $request) 
+{
+    // 真実と嘘の情報を処理・保存
+    
+    // GPT APIを呼び出し要約を生成
+    $response = $this->callGPTAPI($request->input('content'));
+    
+    // 要約結果のハンドリングと保存
+    if($response['success']){
+        session(['summary' => $response['data']]);
+    }else{
+        return redirect()->back()->withErrors(['api_error' => '要約の生成に失敗しました。']);
+    }
+    // 次のプレイヤーにリダイレクト
+    return $this->redirectToSetup();
+}
+
+private function callGPTAPI($content)
+{
+    $client = new Client();
+    $endpoint = "https://api.openai.com/v1/chat/completions"; 
+    
+    try {
+        // API呼び出し
+        $response = $client->post($endpoint, [
+            'headers' => [
+                'Authorization' => 'Bearer ' . env('OPENAI_API_KEY'),
+                'Content-Type' => 'application/json'
+            ],
+            
+            'json' => [
+                'model' => "gpt-3.5-turbo-0613",
+                "messages" => [
+                    [
+                        "role" => "system",
+                        "content" => $prompt
+                    ],
+                    [
+                        "role" => "user",
+                        "content" => $content
+                    ]
+                ]
+            ]
+        ]);
+        
+        if($response->successful()){
+            return [
+                'success' => true,
+                'data' => $response->body() // 必要に応じて変更してください
+            ];
+        }else{
+            return [
+                'success' => false,
+                'error' => $response->body() // 必要に応じて変更してください
+            ];
+        }
+    } catch (\Exception $e) {
+        return [
+            'success' => false,
+            'error' => $e->getMessage()
+        ];
+    }
+}   
     //  自己紹介表示画面
     public function display() 
 {

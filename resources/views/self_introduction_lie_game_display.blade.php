@@ -3,7 +3,8 @@
 
 @section('content')
 <div class="container">
-    <h1>自己紹介表示ページ</h1>
-    <!-- ここに自己紹介内容を表示... -->
+    <h1 class="text-center">自己紹介設定画面</h1>
+
+    <h2 class="text-center">ユーザー名: {{ session('current_player_name', 'デフォルト名') }}</h2>
 </div>
 @endsection
