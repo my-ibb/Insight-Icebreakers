@@ -37,18 +37,24 @@ class SelfIntroductionLieGameController extends Controller
         $number_of_players = $request->input('number_of_players');
         // 設問数をフォームの入力内容から取得
         $number_of_questions = $request->input('number_of_questions');
-
+    
         // ランダムな質問を取得
         $questions = IntroGameQuestion::inRandomOrder()->limit($number_of_questions)->get(); 
-
+    
+        // 最初のプレイヤーをセッションに保存
+        // $player_namesが空でないことをチェックしてから
+        $current_player_name = $player_names[0] ?? null;
+    
         // これらの情報をセッションに保存
         session([
             'player_names' => $player_names,
             'number_of_players' => $number_of_players,
             'number_of_questions' => $number_of_questions,
-            'questions' => $questions
+            'questions' => $questions,
+            'current_player_name' => $current_player_name,
+            'current_player_index' => 0,  // 最初のプレイヤーのインデックスも保存
         ]);
-
+    
         // 入力データをセッションに保存し、設問入力画面にリダイレクト
         return redirect()->route('selfIntroductionLieGame.setup');
     }
