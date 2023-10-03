@@ -97,9 +97,12 @@ Route::post('/logout', function () {
 Route::get('self-introduction-lie-game', [SelfIntroductionLieGameController::class, 'index'])->name('selfIntroductionLieGame.index');
 
 // routes/web.php または routes/api.php
+Route::group(['middleware' => ['web']], function () {
+
 Route::post('/start', [SelfIntroductionLieGameController::class, 'start'])->name('selfIntroductionLieGame.start');
 
 Route::get('/setup', [SelfIntroductionLieGameController::class, 'setup'])->name('selfIntroductionLieGame.setup');
+});
 
 //自己紹介設問画面から自己紹介表示画面へ
 Route::get('/self-introduction-display', [SelfIntroductionLieGameController::class, 'display'])->name('selfIntroductionLieGame.display');
