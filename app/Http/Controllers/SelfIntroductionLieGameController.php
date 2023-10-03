@@ -63,11 +63,11 @@ class SelfIntroductionLieGameController extends Controller
     //ランダムな質問とプレイヤー名をビューに渡す
     public function setup()
     {
-        $player_names = session('player_names', []); // セッションからプレイヤー名を取得。デフォルトは空の配列。
+        $current_player_name = session('current_player_name', []); // セッションからプレイヤー名を取得。デフォルトは空の配列。
         $questions = session('questions');
     
         return view('self_introduction_lie_game_setup', [
-            'player_names' => $player_names, // プレイヤー名をビューに渡す
+            'current_player_name' => $current_player_name, // プレイヤー名をビューに渡す
             'questions' => $questions // ランダムに取得した質問をビューに渡す
         ]);
     }
@@ -75,16 +75,17 @@ class SelfIntroductionLieGameController extends Controller
     public function storeTruthAndLie(Request $request) 
     {
         // 真実と嘘の情報を処理・保存(自己紹介文要約）)
+
+        // // GPT APIを呼び出し要約を生成
+        // $response = $this->callGPTAPI($request->input('content'));
         
-        // GPT APIを呼び出し要約を生成
-        $response = $this->callGPTAPI($request->input('content'));
-        
-        // 要約結果のハンドリングと保存
-        if($response['success']){
-            session(['summary' => $response['data']]);
-        }else{
-            return redirect()->back()->withErrors(['api_error' => '要約の生成に失敗しました。']);
-        }
+        // // 要約結果のハンドリングと保存
+        // if($response['success']){
+        //     session(['summary' => $response['data']]);
+        // }else{
+        //     return redirect()->back()->withErrors(['api_error' => '要約の生成に失敗しました。']);
+        // }
+
         // 次のプレイヤーにリダイレクト
         return $this->redirectToSetup();
     }
@@ -93,30 +94,24 @@ class SelfIntroductionLieGameController extends Controller
     // 次のプレイヤーの設問入力画面にリダイレクト
     private function redirectToSetup() 
     {
-        $player_index = session('current_player_index', 0);
-        $question_index = session('current_question_index', 0);
+        $player_index = session('current_player_index');
         $player_names = session('player_names', []);
-        $total_questions = session('number_of_questions', 0); // セッションから設問数を取得
+        $tmp_number_of_players = session('number_of_players');
+        $number_of_players = $tmp_number_of_players - 1;
 
-        // すべてのプレイヤーが全ての設問に答えたかチェック
-        if ($player_index >= count($player_names) && $question_index >= $total_questions) {
+        // すべてのプレイヤーが設問に答えたかチェック
+        if ($player_index == $number_of_players) {
             // すべてのプレイヤーが設問に答えたら要約画面にリダイレクト
             return redirect()->route('selfIntroductionLieGame.display');
         }
 
+        // 次のプレイヤーに移り
+        session(['current_player_index' => $player_index + 1]);
+
         // 現在のプレイヤー名をセッションに保存
-        session(['current_player_name' => $player_names[$player_index] ?? 'デフォルト名']);
+        session(['current_player_name' => $player_names[$player_index + 1] ?? 'デフォルト名']);
 
-        // 次の設問に進むか、次のプレイヤーに移るかを判断
-        if ($question_index >= $total_questions) {
-            // 次のプレイヤーに移り、設問インデックスをリセット
-            session(['current_player_index' => $player_index + 1]);
-            session(['current_question_index' => 0]);
-        } else {
-            // 次の設問に進む
-            session(['current_question_index' => $question_index + 1]);
-        }
-
+        
         return redirect()->route('selfIntroductionLieGame.setup');
     }
 

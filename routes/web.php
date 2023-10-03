@@ -107,4 +107,4 @@ Route::get('/setup', [SelfIntroductionLieGameController::class, 'setup'])->name(
 //自己紹介設問画面から自己紹介表示画面へ
 Route::get('/self-introduction-display', [SelfIntroductionLieGameController::class, 'display'])->name('selfIntroductionLieGame.display');
 // 自己紹介要約する
-Route::post('/storeTruthAndLie', [SelfIntroductionLieGameController::class, 'setup'])->name('selfIntroductionLieGame.storeTruthAndLie');
+Route::post('/storeTruthAndLie', [SelfIntroductionLieGameController::class, 'storeTruthAndLie'])->name('selfIntroductionLieGame.storeTruthAndLie');
