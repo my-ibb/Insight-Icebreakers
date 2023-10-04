@@ -82,17 +82,7 @@ class SelfIntroductionLieGameController extends Controller
         // ChatGPT APIを呼び出し要約を生成
         // 下にあるcallGPTAPIを呼び出してる
         $response = $this->callGPTAPI($formattedContent);
-        
-        // 要約結果のハンドリングと保存
-        if($response['success']){
-            session(['summary' => $response['data']]);
-        }else{
-            // ログにエラー詳細を出力
-            Log::error('要約の生成に失敗しました。', [
-                'error' => $response['error']
-            ]);
-            return redirect()->back()->withErrors(['api_error' => '要約の生成に失敗しました。']);
-        }
+        dd($response);
 
         // 次のプレイヤーにリダイレクト
         return $this->redirectToSetup();
@@ -101,11 +91,22 @@ class SelfIntroductionLieGameController extends Controller
     private function formatContent(array $contents): string
     {
         $formattedContent = '';
-    
+        // 現在のプレイヤー名をセッションから取得
+        $playerName = session('current_player_name', '');
+
+        // プレイヤー名を含める
+        $formattedContent .= 'プレイヤー名： ' . $playerName . "\n\n";
+
+        // 保存してある質問（問題文）をセッションから取得
+        $questions = session('questions', []);
+
         foreach($contents as $index => $content) {
-            $formattedContent .= '設問' . ($index + 1) . '： ' . $content . "\n";
+            // 各設問に関して、セッションから取得した質問とユーザーの回答を組み合わせる
+            $formattedContent .= '設問' . ($index + 1) . '： ' . ($questions[$index]->content ?? '未定義の設問') . "\n";
+            $formattedContent .= '回答' . ($index + 1) . '： ' . $content . "\n";
         }
-    
+        dd($formattedContent);
+
         return $formattedContent;
     }
 
@@ -187,7 +188,7 @@ class SelfIntroductionLieGameController extends Controller
         Log::info('Decoded JSON data:', ['data' => $data]);
 
         $summaryContent = $data['choices'][0]['message']['content'] ?? 'Failed to generate question';
-        Log::info('Summary Content:', ['questionContent' => $summaryContent]);
+        return $summaryContent;
     }
 
     //  自己紹介表示画面
