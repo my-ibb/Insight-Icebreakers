@@ -4,6 +4,7 @@ use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Models\IntroGameQuestion; // IntroGameQuestionモデルをインポート
 use GuzzleHttp\Client;
+use Illuminate\Support\Facades\Log;
 
 class SelfIntroductionLieGameController extends Controller
 {
@@ -72,24 +73,42 @@ class SelfIntroductionLieGameController extends Controller
         ]);
     }
 
-    public function storeTruthAndLie(Request $request) 
+    public function storeTruthAndLie(Request $request) // 自己紹介設定画面で設問回答したら動く部分
     {
         // 真実と嘘の情報を処理・保存(自己紹介文要約）)
-
-        // // GPT APIを呼び出し要約を生成
-        // $response = $this->callGPTAPI($request->input('content'));
+        $contents = $request->input('content');
+        // 配列の要素を指定のフォーマットの文字列に変換
+        $formattedContent = $this->formatContent($contents);
+        // ChatGPT APIを呼び出し要約を生成
+        // 下にあるcallGPTAPIを呼び出してる
+        $response = $this->callGPTAPI($formattedContent);
         
-        // // 要約結果のハンドリングと保存
-        // if($response['success']){
-        //     session(['summary' => $response['data']]);
-        // }else{
-        //     return redirect()->back()->withErrors(['api_error' => '要約の生成に失敗しました。']);
-        // }
+        // 要約結果のハンドリングと保存
+        if($response['success']){
+            session(['summary' => $response['data']]);
+        }else{
+            // ログにエラー詳細を出力
+            Log::error('要約の生成に失敗しました。', [
+                'error' => $response['error']
+            ]);
+            return redirect()->back()->withErrors(['api_error' => '要約の生成に失敗しました。']);
+        }
 
         // 次のプレイヤーにリダイレクト
         return $this->redirectToSetup();
     }
     
+    private function formatContent(array $contents): string
+    {
+        $formattedContent = '';
+    
+        foreach($contents as $index => $content) {
+            $formattedContent .= '設問' . ($index + 1) . '： ' . $content . "\n";
+        }
+    
+        return $formattedContent;
+    }
+
     // 設問入力画面にリダイレクトするメソッド
     // 次のプレイヤーの設問入力画面にリダイレクト
     private function redirectToSetup() 
@@ -120,6 +139,7 @@ class SelfIntroductionLieGameController extends Controller
     {
         $client = new Client();
         $endpoint = "https://api.openai.com/v1/chat/completions"; 
+
         $prompt =
         "#Instruction
         I leave the self-introduction to you.
@@ -141,55 +161,33 @@ class SelfIntroductionLieGameController extends Controller
         Even if the answer to the question, 'What was your major in your student days?' is 'English', it does not necessarily mean they are working in a job related to English, so do not exaggerate the story.
         The false information can be something other than experience.";
 
-    
-        try {
-            // API呼び出し
-            $response = $client->post($endpoint, [
-                'headers' => [
-                    'Authorization' => 'Bearer ' . env('OPENAI_API_KEY'),
-                    'Content-Type' => 'application/json'
-                ],
-
-                'json' => [
-                    'model' => "gpt-3.5-turbo-0613",
-                    "messages" => [
-                        [
-                            "role" => "system",
-                            "content" => $prompt
-                        ],
-                        [
-                            "role" => "user",
-                            "content" => $content
-                        ]
+        // GPTにAPI連携して問題文を生成したものを$responseとして受け取っている
+        $response = $client->post($endpoint, [
+            'headers' => [
+                'Authorization' => 'Bearer ' . env('OPENAI_API_KEY'),
+                'Content-Type' => 'application/json'
+            ],
+            'json' => [
+                'model' => "gpt-3.5-turbo-0613",
+                "messages" => [
+                    [
+                        "role" => "system",
+                        "content" => $prompt
+                    ],
+                    [
+                        "role" => "user",
+                        "content" => $content
                     ]
                 ]
-            ]);
-            $statusCode = $response->getStatusCode();
-            $body = (string) $response->getBody();
+            ]
+        ]);
+            
+        // JSONレスポンスをデコードして問題文を抽出
+        $data = json_decode($response->getBody(), true);
+        Log::info('Decoded JSON data:', ['data' => $data]);
 
-            if($statusCode == 200){
-                return [
-                    'success' => true,
-                    'data' => json_decode($body, true) // 必要に応じて変更してください
-                ];
-            }else{
-                return [
-                    'success' => false,
-                    'error' => $body // 必要に応じて変更してください
-                ];
-            }
-        } catch (\GuzzleHttp\Exception\RequestException $e) { // Guzzle 特有の例外をキャッチ
-            $errorMessage = $e->hasResponse() ? (string) $e->getResponse()->getBody() : $e->getMessage();
-            return [
-                'success' => false,
-                'error' => $errorMessage
-            ];
-        } catch (\Exception $e) { // その他の例外をキャッチ
-            return [
-                'success' => false,
-                'error' => $e->getMessage()
-            ];
-        }
+        $summaryContent = $data['choices'][0]['message']['content'] ?? 'Failed to generate question';
+        Log::info('Summary Content:', ['questionContent' => $summaryContent]);
     }
 
     //  自己紹介表示画面
