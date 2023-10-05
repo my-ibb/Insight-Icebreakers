@@ -208,4 +208,11 @@ class SelfIntroductionLieGameController extends Controller
             'summaries' => $summaries // 要約をビューに渡す
         ]);
     }
+
+    // セッションをリセットしてトップページにリダイレクト
+    public function reset()
+    {
+         session()->flush();  // セッションをクリア
+         return redirect()->route('selfIntroductionLieGame.index');  // トップページへリダイレクト
+    }
 }

@@ -108,3 +108,7 @@ Route::get('/setup', [SelfIntroductionLieGameController::class, 'setup'])->name(
 Route::get('/self-introduction-display', [SelfIntroductionLieGameController::class, 'display'])->name('selfIntroductionLieGame.display');
 // 自己紹介要約する
 Route::post('/storeTruthAndLie', [SelfIntroductionLieGameController::class, 'storeTruthAndLie'])->name('selfIntroductionLieGame.storeTruthAndLie');
+
+// セッションをリセットする
+Route::post('/selfIntroductionLieGame/reset', [SelfIntroductionLieGameController::class, 'reset'])
+    ->name('selfIntroductionLieGame.reset');

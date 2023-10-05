@@ -8,5 +8,11 @@
         <h2>{{ $summary['player_name'] }}</h2>
         <p>{{ $summary['summary'] }}</p>
     @endforeach
+
+    {{-- トップページに戻るボタンを追加 --}}
+    <form action="{{ route('selfIntroductionLieGame.reset') }}" method="POST" class="mt-4">
+        @csrf
+        <button type="submit" class="btn btn-primary">トップページに戻る</button>
+    </form>
 </div>
 @endsection
