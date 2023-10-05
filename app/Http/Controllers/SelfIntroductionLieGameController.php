@@ -82,7 +82,15 @@ class SelfIntroductionLieGameController extends Controller
         // ChatGPT APIを呼び出し要約を生成
         // 下にあるcallGPTAPIを呼び出してる
         $response = $this->callGPTAPI($formattedContent);
-        dd($response);
+
+        // 現在のプレイヤー名と要約文をセッションに保存
+        $current_player_name = session('current_player_name', '');
+        $summaries = session('summaries', []); // 既に保存されている要約を取得
+        $summaries[] = [ // 新しい要約を追加
+            'player_name' => $current_player_name,
+            'summary' => $response,
+        ];
+        session(['summaries' => $summaries]); // 更新された要約をセッションに保存
 
         // 次のプレイヤーにリダイレクト
         return $this->redirectToSetup();
@@ -105,7 +113,6 @@ class SelfIntroductionLieGameController extends Controller
             $formattedContent .= '設問' . ($index + 1) . '： ' . ($questions[$index]->content ?? '未定義の設問') . "\n";
             $formattedContent .= '回答' . ($index + 1) . '： ' . $content . "\n";
         }
-        dd($formattedContent);
 
         return $formattedContent;
     }
@@ -194,11 +201,11 @@ class SelfIntroductionLieGameController extends Controller
     //  自己紹介表示画面
     public function display() 
     {
-        $player_names = session('player_names', []); // セッションからプレイヤー名を取得。
+        $summaries = session('summaries', []); // セッションから全プレイヤーの要約を取得。
 
         // 自己紹介表示ページにリダイレクト
         return view('self_introduction_lie_game_display', [
-            'player_names' => $player_names // プレイヤー名をビューに渡す
+            'summaries' => $summaries // 要約をビューに渡す
         ]);
     }
 }

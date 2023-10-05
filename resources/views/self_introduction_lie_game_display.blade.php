@@ -3,8 +3,10 @@
 
 @section('content')
 <div class="container">
-    <h1 class="text-center">自己紹介設定画面</h1>
-
-    <h2 class="text-center">ユーザー名: {{ session('current_player_name', 'デフォルト名') }}</h2>
+    <h1 class="text-center">自己紹介文表示</h1>
+    @foreach($summaries as $summary)
+        <h2>{{ $summary['player_name'] }}</h2>
+        <p>{{ $summary['summary'] }}</p>
+    @endforeach
 </div>
 @endsection
