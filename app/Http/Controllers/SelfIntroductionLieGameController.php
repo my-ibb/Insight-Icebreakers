@@ -161,7 +161,7 @@ class SelfIntroductionLieGameController extends Controller
         
         #Prohibitions
         
-        Do not disclose which information is false.
+        Do not declare that 'this information is false' regarding the false information.
         Do not exaggerate stories from the content answered in the questions.
         (Example:
         Question 2: What was your major in your student days?
