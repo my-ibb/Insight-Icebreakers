@@ -1,20 +1,42 @@
-@extends('layouts.admin') <!-- もし管理者用のレイアウトがある場合 -->
+@extends('layouts.admin')
 
 @section('content')
-    <h1>Admin Dashboard</h1>
+    <div class="container mt-4">
+        <h1 class="mb-4">Admin Dashboard</h1>
 
-    <section id="users">
-        <h2>Users</h2>
-        <!-- Users management content will go here -->
-    </section>
+        <div class="row">
+            <div class="col-md-4">
+                <section id="users" class="mb-4">
+                    <h2 class="h4 mb-3">Users</h2>
+                    <!-- Users management content will go here -->
+                    <!-- Example: If you have users to list -->
+                    <ul class="list-group">
+                        <!-- Loop through users -->
+                        @foreach(range(1,5) as $user)
+                            <li class="list-group-item d-flex justify-content-between align-items-center">
+                                User {{ $user }}
+                                <span class="badge bg-primary rounded-pill">Edit | Delete</span>
+                            </li>
+                        @endforeach
+                    </ul>
+                </section>
+            </div>
 
-    <section id="questions">
-        <h2>Questions</h2>
-        <!-- Questions management content will go here -->
-    </section>
+            <div class="col-md-4">
+                <section id="questions" class="mb-4">
+                    <h2 class="h4 mb-3">Questions</h2>
+                    <!-- Questions management content will go here -->
+                    <!-- Similar loop for questions like in users -->
+                </section>
+            </div>
 
-    <section id="self-introductions">
-        <h2>Self Introduction Questions</h2>
-        <!-- Self introduction questions management content will go here -->
-    </section>
+            <div class="col-md-4">
+                <section id="self-introductions" class="mb-4">
+                    <h2 class="h4 mb-3">Self Introduction Questions</h2>
+                    <!-- Self introduction questions management content will go here -->
+                    <!-- Similar loop for self introduction questions -->
+                </section>
+            </div>
+        </div>
+    </div>
 @endsection
