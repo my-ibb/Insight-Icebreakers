@@ -117,3 +117,10 @@ Route::post('/selfIntroductionLieGame/reset', [SelfIntroductionLieGameController
 
 // ホーム画面から管理者ログイン画面へ
 Route::get('/admin/login', [AdminController::class, 'login'])->name('admin.login');
+// ポストルートの追加
+Route::post('/admin/login', [AdminController::class, 'authenticate'])->name('admin.authenticate');
+// ダッシュボード
+Route::get('/admin/dashboard', [AdminController::class, 'dashboard'])->name('admin.dashboard');
+// Routes for user management
+Route::get('/admin/users/edit/{user}', [AdminController::class, 'editUser'])->name('admin.users.edit');
+Route::delete('/admin/users/{user}', [AdminController::class, 'deleteUser'])->name('admin.users.delete');

@@ -31,4 +31,9 @@ class AdminController extends Controller
             'email' => 'The provided credentials do not match our records.',
         ]);
     }
+    public function dashboard()
+{
+    // 管理者ダッシュボードのロジック
+    return view('auth.passwords.admin.dashboard');
+}
 }
