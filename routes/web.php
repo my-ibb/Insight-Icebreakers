@@ -10,6 +10,8 @@ use App\Http\Controllers\Auth\LoginController;
 use App\Http\Controllers\Auth\RegisterController;
 use Illuminate\Support\Facades\Auth;
 use App\Http\Controllers\SelfIntroductionLieGameController;
+use App\Http\Controllers\AdminController;
+
 /*
 |--------------------------------------------------------------------------
 | Web Routes
@@ -114,4 +116,4 @@ Route::post('/selfIntroductionLieGame/reset', [SelfIntroductionLieGameController
     ->name('selfIntroductionLieGame.reset');
 
 // ホーム画面から管理者ログイン画面へ
-Route::get('/admin/login', 'AdminController@login')->name('admin.login');
+Route::get('/admin/login', [AdminController::class, 'login'])->name('admin.login');

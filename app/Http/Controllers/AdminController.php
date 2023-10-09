@@ -9,9 +9,9 @@ class AdminController extends Controller
 {
     public function login()
     {
-        return view('admin.adminlogin');
+        return view('auth.passwords.admin.adminlogin');
     }
-
+    
     public function authenticate(Request $request)
     {
         // バリデーション
