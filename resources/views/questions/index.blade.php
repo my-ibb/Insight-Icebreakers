@@ -6,6 +6,20 @@
 
 <!-- メインコンテンツの開始 -->
 @section('content')
+
+<!-- ナビゲーションバー -->
+<nav class="navbar navbar-expand-lg navbar-light bg-light">
+    <div class="container-fluid">
+      <a class="navbar-brand" href="#">ウミガメのスープ</a>
+      <div class="collapse navbar-collapse" id="navbarNav">
+        <ul class="navbar-nav ml-auto">
+          <li class="nav-item">
+            <a class="nav-link" href="{{ route('admin.login') }}">管理者ログイン</a>
+          </li>
+        </ul>
+      </div>
+    </div>
+  </nav>
 <!-- ページのタイトル -->  
 <h1>問題一覧ページ</h1>  
 

@@ -112,3 +112,6 @@ Route::post('/storeTruthAndLie', [SelfIntroductionLieGameController::class, 'sto
 // セッションをリセットする
 Route::post('/selfIntroductionLieGame/reset', [SelfIntroductionLieGameController::class, 'reset'])
     ->name('selfIntroductionLieGame.reset');
+
+// ホーム画面から管理者ログイン画面へ
+Route::get('/admin/login', 'AdminController@login')->name('admin.login');
