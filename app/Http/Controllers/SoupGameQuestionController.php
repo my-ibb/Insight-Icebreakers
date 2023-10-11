@@ -12,6 +12,13 @@ class SoupGameQuestionController extends Controller
         $questions = SoupGameQuestion::all();
         return view('auth.passwords.admin.dashboard', ['questions' => $questions]);
     }    
+
+    public function showQuestions()
+    {
+        $questions = SoupGameQuestion::all();
+        return view('questions.index', ['questions' => $questions]);
+    }
+
     public function deleteQuestion($id)
 {
     $question = SoupGameQuestion::find($id);  // idで問題を取得

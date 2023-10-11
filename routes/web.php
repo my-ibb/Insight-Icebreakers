@@ -134,3 +134,4 @@ Route::patch('/questions/{id}', [App\Http\Controllers\SoupGameQuestionController
 Route::delete('/questions/{id}', [App\Http\Controllers\SoupGameQuestionController::class, 'deleteQuestion'])->name('questions.delete');
 // ダッシュボード
 Route::get('/admin/dashboard', [AdminController::class, 'dashboard'])->name('admin.dashboard');
+
