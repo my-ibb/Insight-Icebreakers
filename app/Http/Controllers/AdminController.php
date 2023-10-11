@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth; // Authファサードを使用
+use App\Models\SoupGameQuestion; 
 
 class AdminController extends Controller
 {
@@ -33,7 +34,10 @@ class AdminController extends Controller
     }
     public function dashboard()
 {
-    // 管理者ダッシュボードのロジック
-    return view('auth.passwords.admin.dashboard');
+  // すべての質問を取得
+    $questions = SoupGameQuestion::all();
+
+  // ビューに質問のデータを渡す
+    return view('auth.passwords.admin.dashboard', ['questions' => $questions]);
 }
 }

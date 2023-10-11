@@ -11,6 +11,7 @@ use App\Http\Controllers\Auth\RegisterController;
 use Illuminate\Support\Facades\Auth;
 use App\Http\Controllers\SelfIntroductionLieGameController;
 use App\Http\Controllers\AdminController;
+use App\Http\Controllers\SoupGameQuestionController;
 
 /*
 |--------------------------------------------------------------------------
@@ -124,3 +125,12 @@ Route::get('/admin/dashboard', [AdminController::class, 'dashboard'])->name('adm
 // Routes for user management
 Route::get('/admin/users/edit/{user}', [AdminController::class, 'editUser'])->name('admin.users.edit');
 Route::delete('/admin/users/{user}', [AdminController::class, 'deleteUser'])->name('admin.users.delete');
+
+// ダッシュボード Questionsの部分
+Route::get('/admin/dashboard', [App\Http\Controllers\AdminController::class, 'dashboard'])->name('admin.dashboard');
+Route::get('/questions', [App\Http\Controllers\SoupGameQuestionController::class, 'showQuestions'])->name('questions.index');
+Route::get('/questions/{id}/edit', [App\Http\Controllers\SoupGameQuestionController::class, 'editQuestion'])->name('questions.edit');
+Route::patch('/questions/{id}', [App\Http\Controllers\SoupGameQuestionController::class, 'updateQuestion'])->name('questions.update');
+Route::delete('/questions/{id}', [App\Http\Controllers\SoupGameQuestionController::class, 'deleteQuestion'])->name('questions.delete');
+// ダッシュボード
+Route::get('/admin/dashboard', [AdminController::class, 'dashboard'])->name('admin.dashboard');
