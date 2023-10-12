@@ -222,4 +222,11 @@ class SelfIntroductionLieGameController extends Controller
 
         return redirect()->route('admin.dashboard')->with('success', 'Self-introduction deleted successfully');
     }
+
+//-------------ダッシュボードはここから-------------------
+public function edit($id) //QuestionController.phpに移動する
+{
+    $introQuestions = IntroGameQuestion::find($id);  // idで問題を取得
+    return view('introduction_edit', ['introQuestions' => $introQuestions]);  // 編集ビューにデータを渡す
+}
 }

@@ -11,7 +11,7 @@ use App\Http\Controllers\Auth\RegisterController;
 use Illuminate\Support\Facades\Auth;
 use App\Http\Controllers\SelfIntroductionLieGameController;
 use App\Http\Controllers\AdminController;
-use App\Http\Controllers\SoupGameQuestionController;
+
 
 /*
 |--------------------------------------------------------------------------
@@ -67,7 +67,6 @@ Route::get('/questions/{id}/question', [QuestionController::class, 'showQuestion
 Route::get('/questions/{id}/hint', [QuestionController::class, 'showHintForm'])->name('questions.hint_form');
 Route::get('/getHint/{questionId}', [QuestionController::class, 'getHint'])->name('questions.hint');
 
-Route::get('/questions/{id}/edit', [QuestionController::class, 'edit'])->name('questions.edit');
 
 //
 Route::post('/questions/storeAnswer', [QuestionController::class, 'storeAnswer'])->name('questions.storeAnswer');
@@ -125,7 +124,6 @@ Route::delete('/admin/users/{user}', [AdminController::class, 'deleteUser'])->na
 
 // Questionsの部分
 Route::get('/questions', [QuestionController::class, 'index'])->name('questions.index');
-Route::get('/questions/{id}/edit', [QuestionController::class, 'edit'])->name('questions.edit');
 Route::patch('/questions/{id}', [QuestionController::class, 'updateQuestion'])->name('questions.update');
 Route::delete('/questions/{id}', [QuestionController::class, 'delete'])->name('questions.delete');
 
@@ -134,7 +132,12 @@ Route::get('/admin/dashboard', [AdminController::class, 'dashboard'])->name('adm
 
 Route::get('/admin/users/create', [UserController::class, 'create'])->name('users.create');
 
-Route::get('/self-introductions/create', [SelfIntroductionLieController::class, 'create'])->name('self-introductions.create');
+Route::get('/self-introductions/create', [SelfIntroductionLieGameController::class, 'create'])->name('self-introductions.create');
 
-Route::get('/self-introductions/{id}/edit', [SelfIntroductionLieController::class, 'edit'])->name('self-introductions.edit');
-Route::delete('/self-introductions/{id}', [SelfIntroductionLieController::class, 'destroy'])->name('self-introductions.delete');
+Route::get('/self-introductions/{id}/edit', [SelfIntroductionLieGameController::class, 'edit'])->name('self-introductions.edit');
+Route::delete('/self-introductions/{id}', [SelfIntroductionLieGameController::class, 'destroy'])->name('self-introductions.delete');
+
+Route::put('/questions/{id}', [QuestionController::class, 'update'])->name('questions.update');
+Route::put('/introductions/{id}', [SelfIntroductionLieGameController::class, 'updateIntroductionQuestion'])->name('introductions.update');
+Route::put('/introQuestions/{id}', [SelfIntroductionLieGameController::class, 'update'])->name('introQuestions.update');
+Route::get('/questions/{id}/edit', [QuestionController::class, 'edit'])->name('questions.edit');

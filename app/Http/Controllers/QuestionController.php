@@ -16,10 +16,10 @@ class QuestionController extends Controller
     {
         // SoupGameQuestion モデルを使用してデータベースから全ての問題を取得
         // データベースから新着順でデータを取得
-        $questions = SoupGameQuestion::orderBy('created_at', 'desc')->get();    
+        $questions = SoupGameQuestion::orderBy('created_at', 'desc')->get();
         return view('questions.index', compact('questions'));
     }
-    
+
     // 新しい問題を作成するフォームを表示
     public function create()
     {
@@ -106,7 +106,7 @@ class QuestionController extends Controller
 
         // （あとで消す） ログを出力
         Log::info($summarizedAnswer);
-        
+
         // ---- 要約のためのAPI通信の一連の処理はここまで -------
 
         $checkAnswerPrompt = "
@@ -216,9 +216,9 @@ class QuestionController extends Controller
                     {$userAnswer}
                     ```
                     ";
-        
+
         Log::info($answerCheckContent);
-    
+
         // $responseには、 ChatGPTにAPI通信をした結果(レスポンス)が入ってくる
         $response = $client->post($endpoint, [
             'headers' => [
@@ -269,13 +269,6 @@ class QuestionController extends Controller
     {
         return view('questions.question_form');
     }
-
-    // 問題を編集するためのフォームを表示
-    public function edit($id)
-    {
-        return view('questions.edit', compact('id'));
-    }
-
     // 問題の詳細ページを表示
     public function detail($id)
     {
@@ -285,9 +278,9 @@ class QuestionController extends Controller
             session(['selected_question_id' => $id]);
             return redirect()->route('login');
         }
-    // SoupGameQuestion モデルを使用して、指定されたIDに対応する問題を取得
+        // SoupGameQuestion モデルを使用して、指定されたIDに対応する問題を取得
         $question = SoupGameQuestion::find($id);
-    // もし問題が存在しなければ、404エラーを返す
+        // もし問題が存在しなければ、404エラーを返す
         if (!$question) {
             abort(404, 'The specified question does not exist.');
         }
@@ -383,27 +376,27 @@ class QuestionController extends Controller
 
         // $prompt = "#指示
         // 水平思考クイズを遊びましょう。
-        
+
         // 水平思考ゲームでは、参加者は「はい」「いいえ」「関係ない」のいずれかだけで答えられる質問を出して、クイズマスターが出す謎を解明します。あなたは水平思考ゲームの問題作成のプロであり、指定されたジャンルと難易度に合わせて、問題文を最適化してください。
-        
+
         // --------------
         // 以下は一例です。参考にしてください。
-        
+
         // #例1
         // ある男が海の近くのレストランで亀のスープを頼みました。一口飲んでからシェフに「これは本当に亀のスープですか？」と尋ねました。シェフは「はい、あなたが食べているのは間違いなく亀のスープです」と答えました。その男は料金を支払い、帰宅して自らの命を絶った。なぜそんな極端な行動をとったのでしょうか？
-        
+
         // #例1の答え
         // このクイズの答えは、その男が以前、何人かの仲間と海で遭難していたということです。食べ物がなく、死んだ者の肉を食べ始めましたが、その男は頑としてそれを食べないでいました。仲間の一人が「これは亀のスープだ」と嘘をついて、彼が生き延びることができました。レストランで「本物の」亀のスープを味わったとき、彼は真実を悟り、絶望から自らの命を絶ったのです。
-        
+
         // #例2
         // (以下、他の例も続く)
         // --------------
         // #ゲームの楽しみ方
         // 亀のスープについての例の質問のように、一連の質問と回答を通じて真実を解き明かす楽しみがあります。したがって、答えは現実離れしているわけでも、あまりにも直訳ではなく、ゲームの楽しさを保つべきです。
-        
+
         // #手順
         // 1. #制約 と #禁止事項 に従い、#表示形式に従って質問と対応する答えを作成してください。
-        
+
         // #制約
         // * [質問] は70文字から250文字の間でなければならない
         // * [答え] は論理的な流れに従ったストーリーでなければならない
@@ -413,32 +406,32 @@ class QuestionController extends Controller
         // * [答え] は一般的な道徳観や倫理観に合致するものでなければならない
         // * 出力は日本語で
         // * [質問] は疑問形で終わる（なぜそうしたのか？など）
-        
+
         // #禁止事項
         // * [答え] の結末で「それは夢だった」としないこと
         // * [答え] で現実離れした設定を使わないこと
-        
+
         // #表示形式
         // [質問]:
         // {質問を表示}
-        
+
         // [答え]:
         // {答えを表示}";
 
         // フォームからジャンルと難易度を取得
         $genre = $request->input('genre');
         $difficulty = $request->input('difficulty');
-        $content = "ジャンルとしては{$genre}系の問題で、難易度は「{$difficulty}」レベルとして作成してください。"; 
+        $content = "ジャンルとしては{$genre}系の問題で、難易度は「{$difficulty}」レベルとして作成してください。";
         // GuzzleHTTPクライアントのインスタンスを作成           
         $client = new Client();
-    
+
         // GPTにAPI連携して問題文を生成したものを$responseとして受け取っている
         $response = $client->post($endpoint, [
             'headers' => [
                 'Authorization' => 'Bearer ' . env('OPENAI_API_KEY'),
                 'Content-Type' => 'application/json'
             ],
-            
+
             'json' => [
                 'model' => "gpt-3.5-turbo-0613",
                 "messages" => [
@@ -453,7 +446,7 @@ class QuestionController extends Controller
                 ]
             ]
         ]);
-        
+
         // JSONレスポンスをデコードして問題文を抽出
         $data = json_decode($response->getBody(), true);
         Log::info('Decoded JSON data:', ['data' => $data]);
@@ -501,7 +494,7 @@ class QuestionController extends Controller
         return redirect()->route('questions.create');
     }
 
-    public function saveQuestion(Request $request) 
+    public function saveQuestion(Request $request)
     {
         $data = [
             'generated_question' => $request->input('question_content'),
@@ -509,37 +502,37 @@ class QuestionController extends Controller
             'genre' => $request->input('genre'),
             'difficulty' => $request->input('difficulty'),
         ];
-    
+
         // モデルを通してデータベースに保存
         $result = SoupGameQuestion::storeNewQuestion($data);
-    
+
         // 保存成功時の処理
-        if($result) {
+        if ($result) {
             return redirect()->route('questions.index')->with('success', 'Question saved successfully.');
         }
-    
+
         // 保存失敗時の処理
         return redirect()->route('questions.index')->with('error', 'Failed to save the question.');
     }
-    
+
     // ーーーーーーーーーーーヒント関連はここからーーーーーーーーーーー
     public function getHint(Request $request, $questionId)
     {
         // クエリパラメータからこれまでのヒントを取得
         $previousHints = $request->query('previousHints', '');
         $hintCount = $request->query('hintCount', 1);
-    
+
         // 既存のコード：問題の取得など
         $question = SoupGameQuestion::find($questionId);
 
         if (!$question) {
             return response()->json(['error' => 'Question not found'], 404);
         }
-    
+
         $endpoint = "https://api.openai.com/v1/chat/completions";
 
-        $prompt =         
-        "#Instructions
+        $prompt =
+            "#Instructions
         You are an AI trained to provide subtle hints for lateral thinking puzzles. The player is stuck and needs a hint to move forward.
         
         #Procedure
@@ -566,23 +559,23 @@ class QuestionController extends Controller
         // #ヒントを提供してください
 
         $content = "#Puzzle: {$question->question_content}
-                    #Answer: {$question->answer_content}"; 
+                    #Answer: {$question->answer_content}";
 
-         // hintCountが1より大きい場合、前回のヒントをcontentに追加
+        // hintCountが1より大きい場合、前回のヒントをcontentに追加
         if ($hintCount > 1) {
             $content .= "\n#Previous Hints: {$previousHints}";
         }
 
         // GuzzleHTTPクライアントのインスタンスを作成           
         $client = new Client();
-    
+
         // GPTにAPI連携して問題文を生成したものを$responseとして受け取っている
         $response = $client->post($endpoint, [
             'headers' => [
                 'Authorization' => 'Bearer ' . env('OPENAI_API_KEY'),
                 'Content-Type' => 'application/json'
             ],
-            
+
             'json' => [
                 'model' => "gpt-3.5-turbo-0613",
                 "messages" => [
@@ -597,15 +590,15 @@ class QuestionController extends Controller
                 ]
             ]
         ]);
-        
+
         // JSONレスポンスをデコードしてヒントを抽出
         $data = json_decode($response->getBody(), true);
         $generated_hint = $data['choices'][0]['message']['content'] ?? 'Failed to generate question';
 
-    
+
         // API呼び出しを行い、ヒントを生成（この部分はOpenAI APIと通信する実際のコードに置き換えてください）
         //$generated_hint = "これは生成されたヒントです";
-    
+
         // JSONとしてヒントを返す（フロントエンドのJavaScriptで受け取る）
         return response()->json(['hint' => $generated_hint]);
     }
@@ -616,7 +609,7 @@ class QuestionController extends Controller
     public function generateChatResponse(Request $request)
     {
         $chatQuestionContent = $request->input('chatQuestionContent');
-        
+
         $questionId = $request->input('questionId');  // 質問IDも取得
         // 質問回数をセッションから取得、もしくは初期化
         $questionCount = $request->session()->get('question_count', 0);
@@ -629,7 +622,7 @@ class QuestionController extends Controller
             Log::error("Question not found for ID: " . $questionId);
             return response()->json(['error' => 'Question not found'], 404);
         }
-        Log::info("Received chatQuestionContent: " . $chatQuestionContent); 
+        Log::info("Received chatQuestionContent: " . $chatQuestionContent);
         Log::info("Question Content: " . $question->question_content);
         Log::info("Answer Content: " . $question->answer_content);
         Log::info("Chat Question Content: " . $chatQuestionContent);
@@ -638,13 +631,13 @@ class QuestionController extends Controller
         // デバッグ：受け取った質問やセッションデータを出力
         error_log("Received chatQuestionContent: " . $chatQuestionContent);
         error_log("Session question_count: " . $questionCount);
-            
+
         if (!$question) {
             return response()->json(['error' => 'Question not found'], 404);
         }
 
         $endpoint = "https://api.openai.com/v1/chat/completions";
-        
+
         // プロンプト
         // 1回目の質問、2回目の質問、3回目の質問...と追加情報をプロンプトに含める
         // $prompt = "1st Question: {$request->session()->get('1st_question', 'N/A')}
@@ -652,7 +645,7 @@ class QuestionController extends Controller
         //         ...";
 
         $prompt =
-        "1.The answer to the question should be 'イエス', 'ノー', or 'どちらでもない'.
+            "1.The answer to the question should be 'イエス', 'ノー', or 'どちらでもない'.
         2.If the content of the question is linked to the answer, respond with 'イエス'. 
         3.If the content of the question is not linked to the answer, respond with 'ノー'.
         4.The answer to the question should be provided in Japanese.
@@ -660,7 +653,7 @@ class QuestionController extends Controller
         6. Format for responses Example >>  質問: (Content of the entered question is written here) 回答: どちらでもない
         ";
 
-        
+
         // ユーザーからの質問を含めます
         $content = "#Puzzle: {$question->question_content}
                     #Answer: {$question->answer_content}
@@ -675,7 +668,7 @@ class QuestionController extends Controller
                 'Authorization' => 'Bearer ' . env('OPENAI_API_KEY'),
                 'Content-Type' => 'application/json'
             ],
-            
+
             'json' => [
                 'model' => "gpt-3.5-turbo-0613",
                 "messages" => [
@@ -690,7 +683,7 @@ class QuestionController extends Controller
                 ]
             ]
         ]);
-        
+
         // JSONレスポンスをデコードして回答を抽出
         $data = json_decode($response->getBody(), true);
         $generated_answer = $data['choices'][0]['message']['content'] ?? 'Failed to generate answer';
@@ -735,11 +728,9 @@ class QuestionController extends Controller
         return redirect()->back()->with('success', 'Question deleted successfully.');  // 削除後のリダイレクト
     }
 
-    public function editQuestion($id) //QuestionController.phpに移動する
-{
-    $question = SoupGameQuestion::find($id);  // idで問題を取得
-    return view('your_edit_view', ['question' => $question]);  // 編集ビューにデータを渡す
+    public function edit($id) //QuestionController.phpに移動する
+    {
+        $question = SoupGameQuestion::find($id);  // idで問題を取得
+        return view('questions.question_edit', ['question' => $question]);  // 編集ビューにデータを渡す
+    }
 }
-
-    
-}    
