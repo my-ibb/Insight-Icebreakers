@@ -118,20 +118,23 @@ Route::post('/selfIntroductionLieGame/reset', [SelfIntroductionLieGameController
 
 // ホーム画面から管理者ログイン画面へ
 Route::get('/admin/login', [AdminController::class, 'login'])->name('admin.login');
-// ポストルートの追加
 Route::post('/admin/login', [AdminController::class, 'authenticate'])->name('admin.authenticate');
-// ダッシュボード
 Route::get('/admin/dashboard', [AdminController::class, 'dashboard'])->name('admin.dashboard');
-// Routes for user management
 Route::get('/admin/users/edit/{user}', [AdminController::class, 'editUser'])->name('admin.users.edit');
 Route::delete('/admin/users/{user}', [AdminController::class, 'deleteUser'])->name('admin.users.delete');
 
-// ダッシュボード Questionsの部分
-Route::get('/admin/dashboard', [App\Http\Controllers\AdminController::class, 'dashboard'])->name('admin.dashboard');
-Route::get('/questions', [App\Http\Controllers\SoupGameQuestionController::class, 'showQuestions'])->name('questions.index');
-Route::get('/questions/{id}/edit', [App\Http\Controllers\SoupGameQuestionController::class, 'editQuestion'])->name('questions.edit');
-Route::patch('/questions/{id}', [App\Http\Controllers\SoupGameQuestionController::class, 'updateQuestion'])->name('questions.update');
-Route::delete('/questions/{id}', [App\Http\Controllers\SoupGameQuestionController::class, 'deleteQuestion'])->name('questions.delete');
+// Questionsの部分
+Route::get('/questions', [QuestionController::class, 'index'])->name('questions.index');
+Route::get('/questions/{id}/edit', [QuestionController::class, 'edit'])->name('questions.edit');
+Route::patch('/questions/{id}', [QuestionController::class, 'updateQuestion'])->name('questions.update');
+Route::delete('/questions/{id}', [QuestionController::class, 'delete'])->name('questions.delete');
+
 // ダッシュボード
 Route::get('/admin/dashboard', [AdminController::class, 'dashboard'])->name('admin.dashboard');
 
+Route::get('/admin/users/create', [UserController::class, 'create'])->name('users.create');
+
+Route::get('/self-introductions/create', [SelfIntroductionLieController::class, 'create'])->name('self-introductions.create');
+
+Route::get('/self-introductions/{id}/edit', [SelfIntroductionLieController::class, 'edit'])->name('self-introductions.edit');
+Route::delete('/self-introductions/{id}', [SelfIntroductionLieController::class, 'destroy'])->name('self-introductions.delete');

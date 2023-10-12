@@ -8,10 +8,15 @@ use Illuminate\Http\Request;
 // UserControllerクラスの定義
 class UserController extends Controller
 {
-    // indexメソッド：ユーザーのマイページを表示
     public function index()
     {
-        // 'mypage'という名前のビューを返す
         return view('mypage');
+    }
+
+    // 新しいメソッドをここに追加
+    public function create()
+    {
+        // 'user_create'という名前のビューを返す
+        return view('user_create');
     }
 }

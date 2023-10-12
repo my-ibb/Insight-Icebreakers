@@ -215,4 +215,11 @@ class SelfIntroductionLieGameController extends Controller
          session()->flush();  // セッションをクリア
          return redirect()->route('selfIntroductionLieGame.index');  // トップページへリダイレクト
     }
+    public function destroy($id)
+    {
+        $selfIntroduction = SelfIntroduction::findOrFail($id);
+        $selfIntroduction->delete();
+
+        return redirect()->route('admin.dashboard')->with('success', 'Self-introduction deleted successfully');
+    }
 }

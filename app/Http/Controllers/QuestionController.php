@@ -726,4 +726,20 @@ class QuestionController extends Controller
         return response()->json(['answer' => $apiResponse]);
     }
     // ーーーーーーーーーーー質問関連はここまでーーーーーーーーーーー
+
+    //------------------ダッシュボード------------------------
+    public function deleteQuestion($id) //QuestionController.phpに移動する
+    {
+        $question = SoupGameQuestion::find($id);  // idで問題を取得
+        $question->delete();  // 問題を削除
+        return redirect()->back()->with('success', 'Question deleted successfully.');  // 削除後のリダイレクト
+    }
+
+    public function editQuestion($id) //QuestionController.phpに移動する
+{
+    $question = SoupGameQuestion::find($id);  // idで問題を取得
+    return view('your_edit_view', ['question' => $question]);  // 編集ビューにデータを渡す
+}
+
+    
 }    
