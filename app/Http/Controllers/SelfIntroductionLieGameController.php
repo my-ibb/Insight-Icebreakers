@@ -217,7 +217,7 @@ class SelfIntroductionLieGameController extends Controller
     }
     public function destroy($id)
     {
-        $selfIntroduction = SelfIntroduction::findOrFail($id);
+        $selfIntroduction = IntroGameQuestion::findOrFail($id);
         $selfIntroduction->delete();
 
         return redirect()->route('admin.dashboard')->with('success', 'Self-introduction deleted successfully');
