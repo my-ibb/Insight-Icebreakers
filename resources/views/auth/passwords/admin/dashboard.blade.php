@@ -13,9 +13,16 @@
             <ul class="list-group mb-5"> <!-- Added more bottom margin -->
                 @foreach($users as $user)
                     <li class="list-group-item d-flex justify-content-between align-items-center">
-                        User {{ $user }}
-                        <span class="badge bg-primary rounded-pill">Edit | Delete</span>
+                        User Name： {{ $user['username'] }}
                     </li>
+                    <li class="list-group-item d-flex justify-content-between align-items-center">
+                        User Email： {{ $user['email'] }}
+                    </li>
+                    <li class="list-group-item d-flex justify-content-between align-items-center">
+                        User Role： {{ $user['role'] }}
+                    </li>
+                    <!-- 以下のspanの部分は、後々ちゃんとボタンを押せるようにする必要がある！！！ -->
+                    <span class="badge bg-primary rounded-pill">Edit | Delete</span>
                 @endforeach
             </ul>
         </section>
