@@ -26,9 +26,13 @@
                 Questions
                 <a href="{{ route('questions.create') }}" class="btn btn-primary btn-sm">Create New</a>
             </h2>
+            
             @foreach($questions as $question)
-                <div class="mb-3">
-                    <p>{{ $question->title }}</p>
+                <div class="mb-4">
+                    <h5><strong>Question:</strong>{{ $question->question_content }}</h5>
+                    <p><strong>Answer:</strong> {{ $question->answer_content }}</p>
+                    <p><strong>Genre:</strong> {{ $question->genre }}</p>
+                    <p><strong>Difficulty:</strong> {{ $question->difficulty }}</p>
                     <a href="{{ route('questions.edit', ['id' => $question->id]) }}" class="btn btn-warning btn-sm">Edit</a>
                     <form method="POST" action="{{ route('questions.delete', ['id' => $question->id]) }}" style="display:inline;">
                         @csrf
@@ -40,3 +44,15 @@
         </section>
     </div>
 @endsection
+<script>
+    document.addEventListener('DOMContentLoaded', (event) => {
+        document.querySelectorAll('.btn-danger').forEach((button) => {
+            button.addEventListener('click', (event) => {
+                if (!confirm('本当にこの問題・解答を削除しますか？')) {
+                    event.preventDefault();
+                }
+            });
+        });
+    });
+</script>
+

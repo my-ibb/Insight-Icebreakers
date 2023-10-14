@@ -26,8 +26,8 @@
                 Users
                 <a href="{{ route('register') }}" class="btn btn-secondary ml-2">Create New User</a>
             </h2>
-            <ul class="list-group mb-5"> <!-- Added more bottom margin -->
-                @foreach($users as $user)
+            @foreach($users as $user)
+                <ul class="list-group mb-5"> <!-- Added more bottom margin -->
                     <li class="list-group-item d-flex justify-content-between align-items-center">
                         User Name： {{ $user['username'] }}
                     </li>
@@ -37,10 +37,31 @@
                     <li class="list-group-item d-flex justify-content-between align-items-center">
                         User Role： {{ $user['role'] }}
                     </li>
-                    <!-- 以下のspanの部分は、後々ちゃんとボタンを押せるようにする必要がある！！！ -->
-                    <span class="badge bg-primary rounded-pill">Edit | Delete</span>
-                @endforeach
-            </ul>
+                    <!-- 削除・編集ボタン -->
+                    <li class="list-group-item">
+                        <div class="badge pull-left">
+                            <a href="{{ route('self-introductions.edit', ['id' => $user->id]) }}" class="btn btn-warning btn-sm">Edit</a>
+                            <form method="POST" action="{{ route('self-introductions.delete', ['id' => $user->id]) }}" style="display:inline;">
+                                @csrf
+                                @method('DELETE')
+                                <input type="submit" value="Delete" class="btn btn-danger btn-sm">
+                            </form>
+                        </div>
+                    </li>
+                </ul>
+            @endforeach
         </section>
     </div>
 @endsection
+
+<script>
+document.addEventListener('DOMContentLoaded', (event) => {
+    document.querySelectorAll('.btn-danger').forEach((button) => {
+        button.addEventListener('click', (event) => {
+            if (!confirm('本当にこの問題・解答を削除しますか？')) {
+                event.preventDefault();
+            }
+        });
+    });
+});
+</script>

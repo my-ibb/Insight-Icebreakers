@@ -2,12 +2,11 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\IntroGameQuestion;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth; // Authファサードを使用
-use App\Models\SoupGameQuestion; 
 use App\Models\User;
-use App\Models\SelfIntroQuestion;
+use App\Models\SoupGameQuestion; 
+use App\Models\IntroGameQuestion;
 
 class AdminController extends Controller
 {
@@ -35,6 +34,7 @@ class AdminController extends Controller
             'email' => 'The provided credentials do not match our records.',
         ]);
     }
+
     public function dashboardUsers()
     {
         $users = User::all();  // 全てのユーザーを取得    
@@ -42,9 +42,10 @@ class AdminController extends Controller
             'users' => $users,
         ]);
     }
+    
     public function dashboardQuestions()
     {
-        $questions = SoupGameQuestion::all();    
+        $questions = SoupGameQuestion::all();
         return view('auth.passwords.admin.dashboard_questions', [
             'questions' => $questions,
         ]);
@@ -53,16 +54,8 @@ class AdminController extends Controller
     public function dashboardSelfIntroductionQuestions()
     {
         $introQuestions = IntroGameQuestion::all();  // 全ての自己紹介の質問を取得
-    
         return view('auth.passwords.admin.dashboard_self_introduction_questions', [
             'introQuestions' => $introQuestions
         ]);
     }
-
-    public function showDashboard() //AdminController.phpに移動
-    {
-        $questions = SoupGameQuestion::all();
-        return view('auth.passwords.admin.dashboard_users', ['questions' => $questions]);
-    }    
-
 }
