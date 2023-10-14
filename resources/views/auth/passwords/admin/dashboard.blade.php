@@ -8,7 +8,7 @@
         <section id="users" class="mb-4">
             <h2 class="h4 mb-3">
                 Users
-                <a href="{{ route('users.create') }}" class="btn btn-primary btn-sm">Create New</a>
+                <a href="{{ route('register') }}" class="btn btn-secondary ml-2">新規登録</a>
             </h2>
             <ul class="list-group mb-5"> <!-- Added more bottom margin -->
                 @foreach($users as $user)

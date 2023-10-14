@@ -141,3 +141,4 @@ Route::put('/questions/{id}', [QuestionController::class, 'update'])->name('ques
 Route::put('/introductions/{id}', [SelfIntroductionLieGameController::class, 'updateIntroductionQuestion'])->name('introductions.update');
 Route::put('/introQuestions/{id}', [SelfIntroductionLieGameController::class, 'update'])->name('introQuestions.update');
 Route::get('/questions/{id}/edit', [QuestionController::class, 'edit'])->name('questions.edit');
+
