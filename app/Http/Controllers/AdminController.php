@@ -27,7 +27,7 @@ class AdminController extends Controller
         // 認証チェック
         if (Auth::attempt(['email' => $request->email, 'password' => $request->password])) {
             // 認証に成功したらダッシュボードへリダイレクト
-            return redirect()->route('admin.dashboard');
+            return redirect()->route('admin.dashboard.users');
         }
 
         // 認証に失敗したら、ログインフォームに戻る
@@ -35,22 +35,34 @@ class AdminController extends Controller
             'email' => 'The provided credentials do not match our records.',
         ]);
     }
-    public function dashboard()
+    public function dashboardUsers()
     {
-        $questions = SoupGameQuestion::all();
-        $users = User::all();  // 全てのユーザーを取得
+        $users = User::all();  // 全てのユーザーを取得    
+        return view('auth.passwords.admin.dashboard_users', [
+            'users' => $users,
+        ]);
+    }
+    public function dashboardQuestions()
+    {
+        $questions = SoupGameQuestion::all();    
+        return view('auth.passwords.admin.dashboard_questions', [
+            'questions' => $questions,
+        ]);
+    }
+
+    public function dashboardSelfIntroductionQuestions()
+    {
         $introQuestions = IntroGameQuestion::all();  // 全ての自己紹介の質問を取得
     
-        return view('auth.passwords.admin.dashboard', [
-            'questions' => $questions,
-            'users' => $users,
+        return view('auth.passwords.admin.dashboard_self_introduction_questions', [
             'introQuestions' => $introQuestions
         ]);
     }
+
     public function showDashboard() //AdminController.phpに移動
     {
         $questions = SoupGameQuestion::all();
-        return view('auth.passwords.admin.dashboard', ['questions' => $questions]);
+        return view('auth.passwords.admin.dashboard_users', ['questions' => $questions]);
     }    
 
 }
