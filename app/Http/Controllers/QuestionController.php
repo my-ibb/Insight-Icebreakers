@@ -733,4 +733,16 @@ class QuestionController extends Controller
         $question = SoupGameQuestion::find($id);  // idで問題を取得
         return view('questions.question_edit', ['question' => $question]);  // 編集ビューにデータを渡す
     }
+
+    public function delete($id)
+    {
+        $question = SoupGameQuestion::find($id); // idで問題を取得
+        if ($question) { // 質問が存在するか確認
+            $question->delete(); // 問題を削除
+            return redirect()->back()->with('success', 'Question deleted successfully.'); // 削除後に前のページにリダイレクト
+        } else {
+            return redirect()->back()->with('error', 'Question not found.'); // 問題が存在しない場合、エラーメッセージと共にリダイレクト
+        }
+    }
+
 }

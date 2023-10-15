@@ -10,7 +10,7 @@
               <a class="nav-link active" aria-current="page" href="{{ route('admin.dashboard.users') }}">Users</a>
             </li>
             <li class="nav-item">
-              <a class="nav-link" href="{{ route('admin.dashboard.questions') }}">Question</a>
+              <a class="nav-link" href="{{ route('admin.dashboard.questions') }}">Questions</a>
             </li>
             <li class="nav-item">
               <a class="nav-link" href="{{ route('admin.dashboard.self_introduction_questions') }}">Self Introduction Questions</a>

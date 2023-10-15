@@ -142,6 +142,9 @@ Route::delete('/admin/users/{user}', [AdminController::class, 'deleteUser'])->na
 
 // 管理者 - Question関連
 Route::get('/admin/dashboard/questions', [AdminController::class, 'dashboardQuestions'])->name('admin.dashboard.questions');
+Route::delete('/question/{id}/delete', [QuestionController::class, 'delete'])->name('question.delete');
 
 // 管理者 - SelfIntroductionLieGame関連
 Route::get('/admin/dashboard/self-introduction-questions', [AdminController::class, 'dashboardSelfIntroductionQuestions'])->name('admin.dashboard.self_introduction_questions');
+
+

@@ -10,7 +10,7 @@
               <a class="nav-link" href="{{ route('admin.dashboard.users') }}">Users</a>
             </li>
             <li class="nav-item">
-              <a class="nav-link active" aria-current="page" href="{{ route('admin.dashboard.questions') }}">Question</a>
+              <a class="nav-link active" aria-current="page" href="{{ route('admin.dashboard.questions') }}">Questions</a>
             </li>
             <li class="nav-item">
               <a class="nav-link" href="{{ route('admin.dashboard.self_introduction_questions') }}">Self Introduction Questions</a>
@@ -34,7 +34,7 @@
                     <p><strong>Genre:</strong> {{ $question->genre }}</p>
                     <p><strong>Difficulty:</strong> {{ $question->difficulty }}</p>
                     <a href="{{ route('questions.edit', ['id' => $question->id]) }}" class="btn btn-warning btn-sm">Edit</a>
-                    <form method="POST" action="{{ route('questions.delete', ['id' => $question->id]) }}" style="display:inline;">
+                    <form method="POST" action="{{ route('question.delete', ['id' => $question->id]) }}" style="display:inline;">
                         @csrf
                         @method('DELETE')
                         <input type="submit" value="Delete" class="btn btn-danger btn-sm">
