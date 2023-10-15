@@ -10,14 +10,29 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Laravel\Sanctum\HasApiTokens;
+use Illuminate\Database\Eloquent\SoftDeletes;
 
 // Userクラスの定義。Authenticatableクラスを継承。
 class User extends Authenticatable
 {
-     // SoupGameQuestionへのリレーション
+    use SoftDeletes;
+
+    protected static function booted()
+    {
+        static::deleting(function ($user) {
+            $user->soupGameQuestions()->delete();
+            $user->scores()->delete();
+        });
+    }
+
     public function soupGameQuestions()
     {
         return $this->hasMany(SoupGameQuestion::class);
+    }
+
+    public function scores()
+    {
+        return $this->hasMany(Score::class);
     }
     // トレイトの使用
     use HasApiTokens, HasFactory, Notifiable;

@@ -5,9 +5,23 @@ namespace App\Models;
 use App\Models\User;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Http;
+use Illuminate\Database\Eloquent\SoftDeletes;
 
 class SoupGameQuestion extends Model
 {
+    use SoftDeletes;
+
+    protected static function booted()
+    {
+        static::deleting(function ($question) {
+            $question->scores()->delete();
+        });
+    }
+
+    public function scores()
+    {
+        return $this->hasMany(Score::class, 'question_id');
+    }
     // ユーザーへのリレーション
     public function user()
     {

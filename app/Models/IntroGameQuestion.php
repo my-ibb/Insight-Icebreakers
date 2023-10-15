@@ -3,9 +3,12 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\SoftDeletes;
+
 
 class IntroGameQuestion extends Model
 {
+    use SoftDeletes;
     use HasFactory;
 
     // モデルが使用するテーブル名を定義
