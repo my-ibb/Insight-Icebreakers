@@ -40,8 +40,8 @@
                     <!-- 削除・編集ボタン -->
                     <li class="list-group-item">
                         <div class="badge pull-left">
-                            <a href="{{ route('self-introductions.edit', ['id' => $user->id]) }}" class="btn btn-warning btn-sm">Edit</a>
-                            <form method="POST" action="{{ route('self-introductions.delete', ['id' => $user->id]) }}" style="display:inline;">
+                            <a href="{{ route('user.edit', ['id' => $user->id]) }}" class="btn btn-warning btn-sm">Edit</a>
+                            <form method="POST" action="{{ route('user.delete', ['id' => $user->id]) }}" style="display:inline;">
                                 @csrf
                                 @method('DELETE')
                                 <input type="submit" value="Delete" class="btn btn-danger btn-sm">

@@ -65,9 +65,6 @@ class SoupGameQuestion extends Model
         }
         $data = $response->json();
 
-        // $dataの中身をデバッグ（オプション）
-        //dd($data);
-
         // この$dataを用いて問題をデータベースに保存
         SoupGameQuestion::storeNewQuestion($data);
     }

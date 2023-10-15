@@ -11,7 +11,7 @@ use App\Http\Controllers\Auth\RegisterController;
 use Illuminate\Support\Facades\Auth;
 use App\Http\Controllers\SelfIntroductionLieGameController;
 use App\Http\Controllers\AdminController;
-
+use App\Models\User;
 
 /*
 |--------------------------------------------------------------------------
@@ -125,10 +125,6 @@ Route::get('/self-introductions/create', [SelfIntroductionLieGameController::cla
 Route::get('/self-introductions/{id}/edit', [SelfIntroductionLieGameController::class, 'edit'])->name('self-introductions.edit');
 Route::delete('/self-introductions/{id}', [SelfIntroductionLieGameController::class, 'destroy'])->name('self-introductions.delete');
 
-Route::put('/questions/{id}', [QuestionController::class, 'update'])->name('questions.update');
-Route::put('/introductions/{id}', [SelfIntroductionLieGameController::class, 'updateIntroductionQuestion'])->name('introductions.update');
-Route::put('/introQuestions/{id}', [SelfIntroductionLieGameController::class, 'update'])->name('introQuestions.update');
-Route::get('/questions/{id}/edit', [QuestionController::class, 'edit'])->name('questions.edit');
 
 // ーーー管理者関連はここからーーー
 // 管理者 - ログイン処理
@@ -137,14 +133,16 @@ Route::post('/admin/login', [AdminController::class, 'authenticate'])->name('adm
 
 // 管理者 - User関連
 Route::get('/admin/dashboard/users', [AdminController::class, 'dashboardUsers'])->name('admin.dashboard.users');
-Route::get('/admin/users/edit/{user}', [AdminController::class, 'editUser'])->name('admin.users.edit');
-Route::delete('/admin/users/{user}', [AdminController::class, 'deleteUser'])->name('admin.users.delete');
+Route::delete('/user/{id}/delete', [UserController::class, 'delete'])->name('user.delete');
+Route::get('/user/{id}/edit', [UserController::class, 'editUser'])->name('user.edit');
 
 // 管理者 - Question関連
 Route::get('/admin/dashboard/questions', [AdminController::class, 'dashboardQuestions'])->name('admin.dashboard.questions');
 Route::delete('/question/{id}/delete', [QuestionController::class, 'delete'])->name('question.delete');
+Route::get('/questions/{id}/edit', [QuestionController::class, 'edit'])->name('questions.edit');
+Route::put('/questions/{id}', [QuestionController::class, 'update'])->name('questions.update');
 
 // 管理者 - SelfIntroductionLieGame関連
 Route::get('/admin/dashboard/self-introduction-questions', [AdminController::class, 'dashboardSelfIntroductionQuestions'])->name('admin.dashboard.self_introduction_questions');
-
-
+Route::put('/introductions/{id}', [SelfIntroductionLieGameController::class, 'updateIntroductionQuestion'])->name('introductions.update');
+Route::put('/introQuestions/{id}', [SelfIntroductionLieGameController::class, 'update'])->name('introQuestions.update');
