@@ -34,8 +34,8 @@
 
                         <!-- 削除・編集ボタン -->
                         <div class="badge">
-                            <a href="{{ route('self-introductions.edit', ['id' => $question->id]) }}" class="btn btn-warning btn-sm">Edit</a>
-                            <form method="POST" action="{{ route('self-introductions.delete', ['id' => $question->id]) }}" style="display:inline;">
+                            <a href="{{ route('self-introduction.edit', ['id' => $question->id]) }}" class="btn btn-warning btn-sm">Edit</a>
+                            <form method="POST" action="{{ route('self-introduction.delete', ['id' => $question->id]) }}" style="display:inline;">
                                 @csrf
                                 @method('DELETE')
                                 <input type="submit" value="Delete" class="btn btn-danger btn-sm">

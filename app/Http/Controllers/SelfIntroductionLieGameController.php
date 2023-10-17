@@ -6,8 +6,21 @@ use App\Models\IntroGameQuestion; // IntroGameQuestionモデルをインポー�
 use GuzzleHttp\Client;
 use Illuminate\Support\Facades\Log;
 
+
 class SelfIntroductionLieGameController extends Controller
+
 {
+    public function delete($id) 
+    {
+        $question = IntroGameQuestion::findOrFail($id); // 指定された設問を取得
+
+        if ($question) { // 設問が存在するか確認
+            $question->delete(); // 設問を削除
+            return redirect()->back()->with('success', 'Question deleted successfully.'); // 削除後に前のページにリダイレクト
+        } else {
+            return redirect()->back()->with('error', 'Question not found.'); // 設問が存在しない場合、エラーメッセージと共にリダイレクト
+        }
+    }
     // 初期設定画面を表示
     //オプションとセッションからのプレイヤー名をビューに渡す
     public function index()

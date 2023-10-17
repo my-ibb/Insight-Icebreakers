@@ -11,7 +11,6 @@ use App\Http\Controllers\Auth\RegisterController;
 use Illuminate\Support\Facades\Auth;
 use App\Http\Controllers\SelfIntroductionLieGameController;
 use App\Http\Controllers\AdminController;
-use App\Models\User;
 
 /*
 |--------------------------------------------------------------------------
@@ -144,5 +143,5 @@ Route::put('/questions/{id}', [QuestionController::class, 'update'])->name('ques
 
 // 管理者 - SelfIntroductionLieGame関連
 Route::get('/admin/dashboard/self-introduction-questions', [AdminController::class, 'dashboardSelfIntroductionQuestions'])->name('admin.dashboard.self_introduction_questions');
-Route::put('/introductions/{id}', [SelfIntroductionLieGameController::class, 'updateIntroductionQuestion'])->name('introductions.update');
-Route::put('/introQuestions/{id}', [SelfIntroductionLieGameController::class, 'update'])->name('introQuestions.update');
+Route::delete('/self-introduction/{id}/delete', [SelfIntroductionLieGameController::class, 'delete'])->name('self-introduction.delete');
+Route::get('/self-introduction/{id}/edit', [SelfIntroductionController::class, 'edit'])->name('self-introduction.edit');
