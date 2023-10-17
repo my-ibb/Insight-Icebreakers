@@ -51,7 +51,7 @@
     document.addEventListener('DOMContentLoaded', (event) => {
         document.querySelectorAll('.btn-danger').forEach((button) => {
             button.addEventListener('click', (event) => {
-                if (!confirm('本当にこの問題・解答を削除しますか？')) {
+                if (!confirm('本当にこの設問を削除しますか？')) {
                     event.preventDefault();
                 }
             });
