@@ -134,6 +134,8 @@ Route::post('/admin/login', [AdminController::class, 'authenticate'])->name('adm
 Route::get('/admin/dashboard/users', [AdminController::class, 'dashboardUsers'])->name('admin.dashboard.users');
 Route::delete('/user/{id}/delete', [UserController::class, 'delete'])->name('user.delete');
 Route::get('/user/{id}/edit', [UserController::class, 'editUser'])->name('user.edit');
+Route::put('/user/{id}', [UserController::class, 'update'])->name('user.update');
+
 
 // 管理者 - Question関連
 Route::get('/admin/dashboard/questions', [AdminController::class, 'dashboardQuestions'])->name('admin.dashboard.questions');
