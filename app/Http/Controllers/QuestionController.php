@@ -745,4 +745,35 @@ class QuestionController extends Controller
         }
     }
 
+    public function update(Request $request, $id)
+{
+    // 入力値のバリデーション
+    $request->validate([
+        'question_content' => 'required',
+        'answer_content' => 'required',
+        'genre' => 'required',
+        'difficulty' => 'required',
+        // 他のバリデーションルールもここに追加...
+    ]);
+
+    // IDに基づいて質問を取得
+    $question = SoupGameQuestion::find($id);
+    if (!$question) {
+        // IDがデータベースにない場合、リダイレクトしてエラーメッセージを表示
+        return redirect()->route('questions.index')->with('error', 'Question not found.');
+    }
+
+    // リクエストデータから値を取得し、質問の属性を更新
+    $question->question_content = $request->input('question_content');
+    $question->answer_content = $request->input('answer_content');
+    $question->genre = $request->input('genre');
+    $question->difficulty = $request->input('difficulty');
+    // 他のフィールドもここで更新...
+
+    // 変更をデータベースに保存
+    $question->save();
+
+    // 更新が成功したことを示すメッセージとともに、質問の一覧画面にリダイレクト
+    return redirect()->route('questions.index')->with('success', 'Question updated successfully.');
+}
 }
