@@ -237,9 +237,23 @@ class SelfIntroductionLieGameController extends Controller
     }
 
 //-------------ダッシュボードはここから-------------------
-public function edit($id) //QuestionController.phpに移動する
+public function edit($id)
 {
-    $introQuestions = IntroGameQuestion::find($id);  // idで問題を取得
-    return view('introduction_edit', ['introQuestions' => $introQuestions]);  // 編集ビューにデータを渡す
+    $question = IntroGameQuestion::find($id); // or use findOrFail($id) to throw an exception if the ID doesn't exist
+    // ビューファイル名を 'self_introduction_edit' に変更しました
+    return view('auth.passwords.admin.self_introduction_edit', compact('question'));
+}
+
+public function update(Request $request, $id)
+{
+    $request->validate([
+        'content' => 'required', // Add other validation rules as needed
+    ]);
+
+    $question = IntroGameQuestion::find($id); // or use findOrFail($id)
+    $question->content = $request->input('content');
+    $question->save();
+
+    return redirect()->route('admin.dashboard.self_introduction_questions')->with('success', 'Question updated successfully.');
 }
 }

@@ -146,4 +146,5 @@ Route::put('/questions/{id}', [QuestionController::class, 'update'])->name('ques
 // 管理者 - SelfIntroductionLieGame関連
 Route::get('/admin/dashboard/self-introduction-questions', [AdminController::class, 'dashboardSelfIntroductionQuestions'])->name('admin.dashboard.self_introduction_questions');
 Route::delete('/self-introduction/{id}/delete', [SelfIntroductionLieGameController::class, 'delete'])->name('self-introduction.delete');
-Route::get('/self-introduction/{id}/edit', [SelfIntroductionController::class, 'edit'])->name('self-introduction.edit');
+Route::get('/self-introduction/{id}/edit', [SelfIntroductionLieGameController::class, 'edit'])->name('self-introduction.edit');
+Route::put('/self-introduction/{id}/update', [SelfIntroductionLieGameController::class, 'update'])->name('self-introduction.update');
