@@ -33,29 +33,23 @@ class UserController extends Controller
 
     public function update(Request $request, $id)
     {
-    // バリデーションルールを定義
+         // バリデーションルールを定義
     $request->validate([
         'username' => 'required|string|max:255',
         'email' => 'required|email|max:255|unique:users,email,' . $id,
-        // 必要に応じて他のフィールドに対するバリデーションルールを追加
+        'role' => 'required|string', // ロールに対するバリデーションを追加
+        // 他のフィールドに対するバリデーションルールがあれば追加...
     ]);
 
     $user = User::findOrFail($id); // 該当するIDのユーザーを取得
     $user->fill($request->all()); // ユーザー情報を更新
+
+    if (!$user->isDirty()) {
+        return redirect()->back()->with('error', 'You need to specify different value to update.'); // 新しいデータが提供されていない場合のエラー
+    }
+
     $user->save(); // DBに保存
 
-    return redirect()->route('admin.dashboard.users'); // ユーザー一覧ページにリダイレクト
+    return redirect()->route('admin.dashboard.users')->with('success', 'User updated successfully.'); // 成功メッセージと共にリダイレクト
     }
-
-    public function editUser($id)
-{
-    try {
-        $user = User::findOrFail($id);
-    } catch (ModelNotFoundException $e) {
-        return redirect()->back()->with('error', 'User not found.');
-    }
-
-    return view('auth.passwords.user_edit', compact('user'));
-}
-
 }
