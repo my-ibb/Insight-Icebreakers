@@ -41,6 +41,7 @@
                     </form>
                 </div>
             @endforeach
+            {{ $questions->links() }} <!-- ページネーションリンクの追加 -->
         </section>
     </div>
 @endsection

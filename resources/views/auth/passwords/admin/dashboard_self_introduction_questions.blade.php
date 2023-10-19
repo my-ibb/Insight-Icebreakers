@@ -43,6 +43,7 @@
                         </div>
                     </li>
                 @endforeach
+                {{ $introQuestions->links() }} <!-- ページネーションリンクの追加 -->
             </ul>
         </section>
     </div>

@@ -37,25 +37,24 @@ class AdminController extends Controller
 
     public function dashboardUsers()
     {
-        $users = User::all();  // 全てのユーザーを取得    
+        $users = User::paginate(5); // 5個ずつのページングを適用
         return view('auth.passwords.admin.dashboard_users', [
             'users' => $users,
         ]);
     }
-    
+        
     public function dashboardQuestions()
     {
-        $questions = SoupGameQuestion::all();
+        $questions = SoupGameQuestion::paginate(5); // 5個ずつのページングを適用
         return view('auth.passwords.admin.dashboard_questions', [
             'questions' => $questions,
         ]);
     }
-
     public function dashboardSelfIntroductionQuestions()
     {
-        $introQuestions = IntroGameQuestion::all();  // 全ての自己紹介の質問を取得
+        $introQuestions = IntroGameQuestion::paginate(5); // 10個ずつのページングを適用
         return view('auth.passwords.admin.dashboard_self_introduction_questions', [
             'introQuestions' => $introQuestions
         ]);
     }
-}
+    }

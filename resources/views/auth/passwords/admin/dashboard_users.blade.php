@@ -25,7 +25,7 @@
             <h2 class="h4 mb-3">
                 Users
             </h2>
-            @foreach($users as $user)
+            @foreach($users as $user)            
                 <ul class="list-group mb-5"> <!-- Added more bottom margin -->
                     <li class="list-group-item d-flex justify-content-between align-items-center">
                         User Name： {{ $user['username'] }}
@@ -49,6 +49,7 @@
                     </li>
                 </ul>
             @endforeach
+            {{ $users->links() }} <!-- ページネーションリンクの追加 -->
         </section>
     </div>
 @endsection

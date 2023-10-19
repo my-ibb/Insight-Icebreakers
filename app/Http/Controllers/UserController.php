@@ -12,7 +12,6 @@ class UserController extends Controller
 {
     // 新規登録は RegisterController にて処理している
     // ログインは LoginController にて処理している
-
     public function delete($id) 
     {
         $user = User::findOrFail($id); // 指定されたIDのユーザーを取得
