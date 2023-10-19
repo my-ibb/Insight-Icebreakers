@@ -148,3 +148,6 @@ Route::get('/admin/dashboard/self-introduction-questions', [AdminController::cla
 Route::delete('/self-introduction/{id}/delete', [SelfIntroductionLieGameController::class, 'delete'])->name('self-introduction.delete');
 Route::get('/self-introduction/{id}/edit', [SelfIntroductionLieGameController::class, 'edit'])->name('self-introduction.edit');
 Route::put('/self-introduction/{id}/update', [SelfIntroductionLieGameController::class, 'update'])->name('self-introduction.update');
+
+Route::get('/admin/questions/create', [SelfIntroductionLieGameController::class, 'createQuestionForm'])->name('admin.questions.create');
+Route::post('/admin/questions', [SelfIntroductionLieGameController::class, 'storeQuestion'])->name('admin.questions.store');

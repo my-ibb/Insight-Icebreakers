@@ -24,7 +24,7 @@
         <section id="self-introductions" class="mb-4">
             <h2 class="h4 mb-3">
                 Self Introduction Questions
-                <a href="{{ route('self-introductions.create') }}" class="btn btn-primary btn-sm">Create New</a>
+                <a href="{{ route('admin.questions.create') }}" class="btn btn-primary btn-sm">Create New</a>
             </h2>
             
             <ul class="list-group mb-5"> <!-- Added more bottom margin -->

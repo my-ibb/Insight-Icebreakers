@@ -256,4 +256,20 @@ public function update(Request $request, $id)
 
     return redirect()->route('admin.dashboard.self_introduction_questions')->with('success', 'Question updated successfully.');
 }
+public function createQuestionForm()
+{
+return view('auth.passwords.admin.create_self_introductionquestion');
+}
+public function storeQuestion(Request $request)
+{
+$request->validate([
+    'content' => 'required', // 必要に応じて他のバリデーションルールを追加
+]);
+
+$question = new IntroGameQuestion();
+$question->content = $request->input('content');
+$question->save();
+
+return redirect()->route('admin.dashboard.self_introduction_questions')->with('success', 'Question created successfully.');
+}
 }
