@@ -19,7 +19,7 @@
         background-color: lightgreen;
     }
     .lie-color {
-        background-color: lightyellow;
+        background-color: lightgoldenrodyellow;
     }
     .custom-btn {
         width: 100%; /* or 100% for full width */
@@ -46,7 +46,7 @@
                 <h3 class="adjust-text">ウミガメのスープ</h3>
                 <a href="{{ route('questions.index') }}" class="btn custom-btn align-self-center">
                     <!-- ウミガメのスープのイラスト追加 -->
-                    <img src="{{ asset('images/23048191.jpg') }}" alt="ウミガメのスープ" class="img-fluid" width="170">
+                    <img src="{{ asset('images/23048191.jpg') }}" alt="ウミガメのスープ" class="img-fluid" width="175">
                     <span class="adjust-text">このゲームであそぶ</span>
                 </a>
             </div>
@@ -74,7 +74,7 @@
                 <h3 class="adjust-text">自己紹介嘘当てゲーム</h3>
                 <a href="{{ route('selfIntroductionLieGame.index') }}" class="btn custom-btn align-self-center"> <!-- Change deep-cyan-btn to lie-btn for consistency -->
                     <!-- 自己紹介嘘当てゲームのイラスト追加 -->
-                    <img src="{{ asset('images/24220784.jpg') }}" alt="自己紹介嘘当てゲーム" class="img-fluid">
+                    <img src="{{ asset('images/24220784.jpg') }}" alt="自己紹介嘘当てゲーム" class="img-fluid" width="175">
                 <span class="adjust-text">このゲームであそぶ</span>
                 </a>
             </div>
