@@ -15,44 +15,85 @@
         color: blue;
         font-weight: bold;
     }
-    .turtle-btn {
+    .turtle-color {
         background-color: lightgreen;
     }
-    .lie-btn {
+    .lie-color {
         background-color: lightyellow;
     }
     .custom-btn {
-        width: 200px;
-        height: 200px;
+        width: 100%; /* or 100% for full width */
+        height: 80%; /* Adds space between the buttons when stacked */
+
+    }
+    /* Optional: Adjust text alignment */
+    .adjust-text {
+        display: block;
+        text-align: center;
     }
 </style>
 
 <!-- ヘッダータイトル -->
 <h1 class="header-title text-center mt-5">Insight Icebreakers</h1>
 <h2 class="text-center">Welcome to the Games!</h2>
-<div class="container text-center mt-4">
 
+<div class="container text-center mt-4">
     <!-- ゲーム選択ボタン -->
-    <h2>Select a Game</h2>
     <div class="row justify-content-center mt-5">
-        <div class="col-md-4">
+        <div class="col-5"> <!-- Change col-md-4 to col-md-12 to stack buttons vertically -->
             <!-- ウミガメのスープゲームへのリンク -->
-            <a href="{{ route('questions.index') }}" class="btn turtle-btn custom-btn">
-                <!-- ウミガメのスープのイラスト追加 -->
-                <img src="{{ asset('images/23048191.jpg') }}" alt="ウミガメのスープ" class="img-fluid" width="170">
-                <span class="adjust-text">ウミガメのスープ</span>
-            </a>
-                        </a>
+            <div class="card turtle-color">
+                <h3 class="adjust-text">ウミガメのスープ</h3>
+                <a href="{{ route('questions.index') }}" class="btn custom-btn align-self-center">
+                    <!-- ウミガメのスープのイラスト追加 -->
+                    <img src="{{ asset('images/23048191.jpg') }}" alt="ウミガメのスープ" class="img-fluid" width="170">
+                    <span class="adjust-text">このゲームであそぶ</span>
+                </a>
+            </div>
         </div>
-        <div class="col-md-4">
-            <!-- 自己紹介嘘当てゲーム -->
-    <a href="{{ route('selfIntroductionLieGame.index') }}" class="btn deep-cyan-btn custom-btn">
-        <!-- 自己紹介嘘当てゲームのイラスト追加 -->
-        <img src="{{ asset('images/24220784.jpg') }}" alt="自己紹介嘘当てゲーム" class="img-fluid">
-        <span class="adjust-text">自己紹介嘘当てゲーム</span>
-    </a>
+
+        <!-- ウミガメのスープの説明文 -->
+        <div class="col-7 align-self-center"> <!-- 上部からのマージンを追加 -->
+            <h3>ウミガメのスープとは</h3>
+            <p>
+                出題者が回答者に対し一見不可解な問題を出し、<br>
+                回答者たちは質問を投げ、<br>
+                それに対する“はい”、“いいえ”、“どちらでもない”<br>
+                という返答から問題の答えを導き出すという<br>
+                推理ゲームです。
+            </p>
         </div>
     </div>
+
+    <br>
+
+    <div class="row justify-content-center mt-2">
+        <div class="col-5">
+            <div class="card align-self-center lie-color">
+                <!-- 自己紹介嘘当てゲーム -->
+                <h3 class="adjust-text">自己紹介嘘当てゲーム</h3>
+                <a href="{{ route('selfIntroductionLieGame.index') }}" class="btn custom-btn align-self-center"> <!-- Change deep-cyan-btn to lie-btn for consistency -->
+                    <!-- 自己紹介嘘当てゲームのイラスト追加 -->
+                    <img src="{{ asset('images/24220784.jpg') }}" alt="自己紹介嘘当てゲーム" class="img-fluid">
+                <span class="adjust-text">このゲームであそぶ</span>
+                </a>
+            </div>
+        </div>
+
+        <div class="col-7 align-self-center">
+            <!-- 自己紹介嘘当てゲームの説明文 -->
+            <div class="mt-3"> <!-- 上部からのマージンを追加 -->
+                <h3>自己紹介嘘当てゲームとは</h3>
+                <p>
+                    設問に対して参加者が答え、<br>
+                    その回答を元にAIで自己紹介文を生成します。<br>
+                    自己紹介文は参加者の個人的な情報を述べるもので、その中には必ず一つだけ嘘の内容が含まれている。<br>
+                    生成された自己紹介文を他の参加者に公開し、彼らにどの情報が嘘かを推測してもらい、参加者同士で話し合いながら嘘の内容を探し出すことができます。
+                </p>
+            </div>
+        </div>
+    </div>
+
     <!-- ログアウトボタン（ログインしている場合のみ表示） -->
     @if(isset($isLoggedIn) && $isLoggedIn)
     <div class="mt-4">
@@ -63,5 +104,6 @@
     </div>
     @endif
 </div>
+
 <!-- メインコンテンツの終了 -->
 @endsection
