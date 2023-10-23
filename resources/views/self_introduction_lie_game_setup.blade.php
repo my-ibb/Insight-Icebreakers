@@ -20,6 +20,7 @@
         </div>
 
         <!-- 送信ボタン -->
+        <br>
         <button type="submit" class="btn btn-primary">次へ</button>
     </form>
 </div>

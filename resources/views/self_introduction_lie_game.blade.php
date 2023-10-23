@@ -34,6 +34,7 @@
         </div>
 
         <!-- 送信ボタン -->
+        <br>
         <button type="submit" class="btn btn-primary">開始</button>
     </form>
 </div>
