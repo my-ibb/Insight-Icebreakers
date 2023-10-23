@@ -3,6 +3,7 @@
 
 @section('content')
 <div class="container">
+    <br>
     <h1 class="text-center">自己紹介設定画面</h1>
     <!-- 現在のプレイヤー名を表示 -->
     <h2 class="text-center">{{ session('current_player_name', 'Player') }}の番です</h2>

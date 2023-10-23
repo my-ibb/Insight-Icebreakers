@@ -3,6 +3,7 @@
 
 @section('content')
 <div class="container">
+    <br>
     <h1 class="text-center">自己紹介文表示</h1>
     @foreach($summaries as $index => $summary)
         <h2>{{ $summary['player_name'] }}</h2>
