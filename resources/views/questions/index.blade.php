@@ -32,7 +32,7 @@
                     <!-- 問題の詳細ページへのリンク -->
                     <a href="{{ route('questions.detail', ['id' => $question->id]) }}" class="btn btn-primary">この問題であそぶ</a>
                     <!-- 答えを見るボタン -->
-                    <button id="showAnswerButton-{{ $question->id }}" class="btn btn-warning" onclick="showAnswer({{ $question->id }})">答えを見る</button>
+                    {{-- <button id="showAnswerButton-{{ $question->id }}" class="btn btn-warning" onclick="showAnswer({{ $question->id }})">答えを見る</button> --}}
 
                     <!-- 答え表示エリア（最初は非表示） -->
                     <div id="answerArea-{{ $question->id }}" style="display:none;">

@@ -41,7 +41,12 @@
         </div>
         <!-- 送信ボタン -->
         <div class="text-center">
+            <br>
             <button type="submit" class="btn btn-primary">ChatGPTで問題を作る</button>
+            <br>
+            <br>
+            <button type="button" class="btn btn-info" onclick="location.href='{{ route('questions.index') }}' ">問題一覧から問題を解く</button>
+
         </div>
     </form>
 
