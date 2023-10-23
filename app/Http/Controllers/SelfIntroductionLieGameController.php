@@ -182,6 +182,27 @@ class SelfIntroductionLieGameController extends Controller
         Even if the answer to the question, 'What was your major in your student days?' is 'English', it does not necessarily mean they are working in a job related to English, so do not exaggerate the story.
         The false information can be something other than experience.";
 
+
+        //  "#インストラクション
+        //自己紹介はお任せします。
+        
+        #手順
+        
+        //事前にいくつかの質問を用意し、一人ずつ入力してもらう。
+        //最後に、GPTが作成した自己紹介文を使って、各プレイヤーが自己紹介を行う。
+        #例
+        //例えば、1つ目はコナンの好きなキャラクターについて、2つ目は好きな食べ物について、3つ目は無人島に持っていくものについて......など。GPTがこれらを素敵な自己紹介文にまとめますので、その上で、質問で聞かれなかった情報（言い換えれば嘘の情報）を1つ入れてください。
+        
+        #禁止事項
+        
+        //虚偽の情報について、「この情報は虚偽です」と宣言しないこと。
+        //質問で答えた内容から誇張した話をしないこと。
+        //例
+        //質問2：学生時代の専攻は何ですか？
+        //回答2：英語です。
+        //学生時代の専攻は何ですか」という質問の答えが「英語」であったとしても、必ずしも英語に関係する仕事をしているとは限らないので、誇張して話をしないこと。
+        //虚偽の情報は経験以外のものでも構いません」；
+
         // GPTにAPI連携して問題文を生成したものを$responseとして受け取っている
         $response = $client->post($endpoint, [
             'headers' => [
