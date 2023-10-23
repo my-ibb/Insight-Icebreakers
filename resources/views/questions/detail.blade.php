@@ -3,12 +3,19 @@
 @section('title', '問題詳細ページ')
 
 @section('content')
-<div class="col-12 mb-4">  
-    <div class="card">
+<div class="col-12 ">  
+    <div class="card border-dark m-4" style="border-radius: 20px">
         <div class="card-body">
             <h5 class="card-title">{{ $question->genre }} - 難易度：{{ $question->difficulty }}</h5>
             <p class="card-subtitle mb-2 text-muted">作成者：{{ $question->user ? $question->user->username : '名無しの太郎' }}</p>
             <p class="card-text">{{ $question->question_content }}</p>
+
+            <button id="hintBtn" href="javascript:void(0);" onclick="showHint()" class="btn btn-info">ヒントをもらう</button>
+            <div id="hint" style="display: none;"></div>
+            <div id="hintContainer"></div>
+            <div id="hintCountContainer">ヒント使用回数： 未使用</div>
+
+            <br>
             <button id="showAnswerButton-{{ $question->id }}" class="btn btn-warning" onclick="showAnswer({{ $question->id }})">ギブアップ（答えを見る）</button>
 
             <div id="answerArea-{{ $question->id }}" style="display:none;">
@@ -20,21 +27,20 @@
     </div>
 </div>
 
-<div id="chatContainer">
-    <textarea id="userQuestion" rows="4" cols="50"></textarea>
-    <button onclick="sendQuestion()">質問をする</button>
-    <div id="questionCountContainer">質問回数：未使用</div>
-    <div id="previousQuestionsContainer"></div>
-    <div id="chatResponse"></div>
+<div class="col-6">
+    <div class="m-4" id="chatContainer">
+        <textarea id="userQuestion" rows="4" cols="98" style="width: 100%" placeholder="質問をここに入力 &#13; (例)その人物は男ですか？"></textarea>
+            <br>
+        <div class="row">
+            <div class="col-6" id="questionCountContainer">質問回数：未使用</div>
+            <button id="questionBtn" class="col-6" onclick="sendQuestion()">質問をする</button>
+        </div>
+        <div id="previousQuestionsContainer"></div>
+        <div id="chatResponse"></div>
+    </div>
 </div>
-
 <!-- フィードバック表示エリア -->
 <div id="feedbackMessage"></div>
-
-<a href="javascript:void(0);" onclick="showHint()" class="btn btn-info">ヒントをもらう</a>
-<div id="hint" style="display: none;"></div>
-<div id="hintContainer"></div>
-<div id="hintCountContainer">ヒント使用回数： 未使用</div>
 
 <!-- 回答フォームエリア -->
 <div id="answerFormArea">
@@ -44,7 +50,7 @@
             <label for="user_answer">あなたの回答：</label>
             <input type="text" class="form-control" id="user_answer" name="user_answer" style="height: 70px;" required>
         </div>
-        <button type="submit" class="btn btn-primary">回答を送信</button>
+        <button id="answerBtn" type="submit" class="btn btn-primary">回答を送信</button>
     </form>
     <a href="{{ url('questions/' . $question->id . '/ranking') }}">ランキングを確認する</a>
 </div>
@@ -64,6 +70,9 @@
     let previousHints = [];
 
     async function showHint() {
+        const hintButton = document.getElementById('hintBtn'); // "ヒントをもらう" ボタンを特定
+        hintButton.disabled = true; // ボタンを無効化
+
         hintCount++;
         const questionId = {{ $question->id }};
         const previousHintsString = previousHints.join(',');
@@ -71,30 +80,41 @@
          // localStorage に hintCount を保存
         localStorage.setItem(`hintCount_${questionId}`, hintCount);
 
-        const response = await fetch(`/getHint/${questionId}?previousHints=${previousHintsString}&hintCount=${hintCount}`);
-        const data = await response.json();
+        try {
+            const response = await fetch(`/getHint/${questionId}?previousHints=${previousHintsString}&hintCount=${hintCount}`);
+            const data = await response.json();
 
-        previousHints.push(data.hint);
+            previousHints.push(data.hint);
 
-        const hintContainer = document.getElementById("hintContainer");
-        const newHintElement = document.createElement("div");
-        newHintElement.textContent = data.hint;
-        hintContainer.appendChild(newHintElement);
+            const hintContainer = document.getElementById("hintContainer");
+            const newHintElement = document.createElement("div");
+            newHintElement.textContent = data.hint;
+            hintContainer.appendChild(newHintElement);
 
-        const hintCountContainer = document.getElementById("hintCountContainer");
-        hintCountContainer.textContent = "ヒント使用回数： " + hintCount + "回目";
+            const hintCountContainer = document.getElementById("hintCountContainer");
+            hintCountContainer.textContent = "ヒント使用回数： " + hintCount + "回目";
+        } catch (error) {
+            console.error("There was an error when showing the hint: ", error);
+        } finally {
+            hintButton.disabled = false; // 処理が完了したらボタンを再び有効化
     }
+}
 
     let questionCount = 0;
     let previousQuestions = [];
 
     document.addEventListener('DOMContentLoaded', (event) => {
-        const form = document.querySelector('#answerFormArea form');
-        form.addEventListener('submit', async function(e) {
-            e.preventDefault();
+    const form = document.querySelector('#answerFormArea form');
+    const answerBtn = document.getElementById('answerBtn'); // "回答を送信" ボタンを特定
 
-            const userAnswer = document.getElementById('user_answer').value;
+    form.addEventListener('submit', async function(e) {
+        e.preventDefault();
 
+        answerBtn.disabled = true; // ボタンを無効化
+
+        const userAnswer = document.getElementById('user_answer').value;
+
+        try {
             // サーバーに回答を送信
             const response = await fetch(form.action, {
                 method: 'POST',
@@ -109,18 +129,25 @@
 
             // フィードバック表示
             let feedbackMessage = document.createElement('div');
-        feedbackMessage.innerText = result.isCorrect ? '正解です！' : '不正解です';
-        
-        if (result.isCorrect) {
-            saveScore(); // 正解だった場合にスコアを保存
+            feedbackMessage.innerText = result.isCorrect ? '正解です！' : '不正解です';
+
+            if (result.isCorrect) {
+                saveScore(); // 正解だった場合にスコアを保存
+            }
+
+            document.getElementById('answerFormArea').appendChild(feedbackMessage);
+        } catch (error) {
+            console.error("回答の送信中にエラーが発生しました: ", error);
+            // エラーメッセージを表示するなど、エラー時のハンドリングをここで行うことができます。
+        } finally {
+            answerBtn.disabled = false; // 処理が完了したらボタンを再び有効化
         }
-        
-        document.getElementById('answerFormArea').appendChild(feedbackMessage);
     });
 });
 
 async function sendQuestion() {
-    const sendButton = document.querySelector('button[onclick="sendQuestion()"]'); // 質問を送信するボタンを特定
+
+    const sendButton = document.getElementById('questionBtn'); // 質問を送信するボタンを特定
     sendButton.disabled = true;  // ボタンを無効化
     const userQuestion = document.getElementById("userQuestion").value;
     const questionId = {{ $question->id }};
