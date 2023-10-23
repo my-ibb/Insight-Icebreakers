@@ -3,6 +3,7 @@
 @section('title', '問題詳細ページ')
 
 @section('content')
+<div class="container-fluid">
 <div class="col-12 ">  
     <div class="card border-dark m-4" style="border-radius: 20px">
         <div class="card-body">
@@ -27,34 +28,44 @@
     </div>
 </div>
 
+<div class="row">
 <div class="col-6">
-    <div class="m-4" id="chatContainer">
-        <textarea id="userQuestion" rows="4" cols="98" style="width: 100%" placeholder="質問をここに入力 &#13; (例)その人物は男ですか？"></textarea>
+    <div class="card border-dark m-4" style="border-radius: 20px"> 
+        <div class="card-body"> <!-- ここが変更された部分です -->
+            <textarea id="userQuestion" rows="4" class="form-control" placeholder="質問をここに入力 &#13; (例)その人物は男ですか？" style="border-radius: 15px;"></textarea>
             <br>
-        <div class="row">
-            <div class="col-6" id="questionCountContainer">質問回数：未使用</div>
-            <button id="questionBtn" class="col-6" onclick="sendQuestion()">質問をする</button>
+            <div class="row">
+                <div class="col-6" id="questionCountContainer">質問回数：未使用</div>
+                <button id="questionBtn" class="col-5 btn btn-primary me-2" style="border-radius: 10px;" onclick="sendQuestion()">質問をする</button>
+            </div>
+            <div id="previousQuestionsContainer"></div>
+            <div id="chatResponse"></div>
         </div>
-        <div id="previousQuestionsContainer"></div>
-        <div id="chatResponse"></div>
     </div>
 </div>
-<!-- フィードバック表示エリア -->
-<div id="feedbackMessage"></div>
 
 <!-- 回答フォームエリア -->
-<div id="answerFormArea">
-    <form action="{{ route('checkAnswer', ['id' => $question->id]) }}" method="POST">
-        @csrf
-        <div class="form-group col-md-6">
-            <label for="user_answer">あなたの回答：</label>
-            <input type="text" class="form-control" id="user_answer" name="user_answer" style="height: 70px;" required>
-        </div>
-        <button id="answerBtn" type="submit" class="btn btn-primary">回答を送信</button>
-    </form>
-    <a href="{{ url('questions/' . $question->id . '/ranking') }}">ランキングを確認する</a>
-</div>
+<div class="col-6" id="answerFormArea">
+    <div class="card border-dark m-4" style="border-radius: 20px; padding: 20px;">
+        <form action="{{ route('checkAnswer', ['id' => $question->id]) }}" method="POST">
+            @csrf
+            <div class="form-group">
+                <textarea class="form-control" id="user_answer" name="user_answer" placeholder="回答をここに入力 &#13; (例)男は〜だったから" rows="4" style="width: 100%; border-radius: 20px;" required></textarea>
+            </div>
 
+            <!-- 正解・不正解のフィードバック表示エリア -->
+            <div id="feedbackMessage" class="pt-4">
+                <div id="feedbackMessageArea"></div>
+            </div>
+
+            <!-- ここで border-radius を追加してボタンの枠を丸くしています -->
+            <div class="d-flex justify-content-end" style="margin-top: 10px;"> <!-- ボタンの位置を調整 -->
+                <button id="answerBtn" type="submit" class="btn btn-primary" style="border-radius: 10px;">回答を送信</button>
+            </div>
+        </form>        
+    </div>
+</div>
+</div>
 
 <script>
     function showAnswer(id) {
@@ -135,7 +146,7 @@
                 saveScore(); // 正解だった場合にスコアを保存
             }
 
-            document.getElementById('answerFormArea').appendChild(feedbackMessage);
+            document.getElementById('feedbackMessageArea').appendChild(feedbackMessage);
         } catch (error) {
             console.error("回答の送信中にエラーが発生しました: ", error);
             // エラーメッセージを表示するなど、エラー時のハンドリングをここで行うことができます。
