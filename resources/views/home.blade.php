@@ -93,16 +93,6 @@
             </div>
         </div>
     </div>
-
-    <!-- ログアウトボタン（ログインしている場合のみ表示） -->
-    @if(isset($isLoggedIn) && $isLoggedIn)
-    <div class="mt-4">
-        <form method="POST" action="{{ route('logout') }}" class="mt-2">
-            @csrf
-            <button type="submit" class="btn btn-success">Logout</button>
-        </form>
-    </div>
-    @endif
 </div>
 
 <!-- メインコンテンツの終了 -->
