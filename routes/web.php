@@ -42,21 +42,15 @@ Route::post('/generate-question', [QuestionController::class, 'generateQuestion'
 // create.bladeのボタンからPOST送信される
 Route::post('/save-question', [QuestionController::class, 'saveQuestion'])->name('save-question');
 
-
-// 生成した問題のプレビュー画面（DB保存前）
-Route::get('/questions/generated',  [QuestionController::class, 'showGenerated'])->name('questions.generated');
-
 //質問のチャット、ヒントのページ
 Route::post('/generate-hint', [QuestionController::class, 'generateHint'])->name('generate-hint');
 Route::post('/generate-chat-response', [QuestionController::class, 'generateChatResponse'])->name('generate-chat-response');
 
-// 回答フォーム
+// 回答フォームから正解かどうか判定する
 Route::post('/checkAnswer/{id}', [QuestionController::class, 'checkAnswer'])->name('checkAnswer');
 
-//新しくつくった正解確認画面
-Route::get('/check/{id}', [QuestionController::class, 'checkAnswer'])->name('check-answer');
-
-Route::get('/questions/{id}/check', [QuestionController::class, 'checkAnswer'])->name('questions.check');//問題一覧の問題のこたえのやつ？？
+// 正解だった場合にresult画面に遷移する
+Route::get('/questions/{questionId}/result/{questionCount}/{hintCount}', [ScoreController::class, 'result'])->name('result');
 
 // 下記あとで消すかも（detail or question）
 Route::get('/questions/{id}/detail', [QuestionController::class, 'detail'])->name('questions.detail');
@@ -67,7 +61,6 @@ Route::get('/questions/{id}/hint', [QuestionController::class, 'showHintForm'])-
 Route::get('/getHint/{questionId}', [QuestionController::class, 'getHint'])->name('questions.hint');
 
 
-//
 Route::post('/questions/storeAnswer', [QuestionController::class, 'storeAnswer'])->name('questions.storeAnswer');
 
 Route::get('/questions/{id}/input', [QuestionController::class, 'inputQuestion'])->name('questions.input');
@@ -135,7 +128,6 @@ Route::get('/admin/dashboard/users', [AdminController::class, 'dashboardUsers'])
 Route::delete('/user/{id}/delete', [UserController::class, 'delete'])->name('user.delete');
 Route::get('/user/{id}/edit', [UserController::class, 'edit'])->name('user.edit');
 Route::put('/user/{id}', [UserController::class, 'update'])->name('user.update');
-
 
 // 管理者 - Question関連
 Route::get('/admin/dashboard/questions', [AdminController::class, 'dashboardQuestions'])->name('admin.dashboard.questions');

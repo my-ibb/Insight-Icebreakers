@@ -140,10 +140,11 @@
 
             // フィードバック表示
             let feedbackMessage = document.createElement('div');
-            feedbackMessage.innerText = result.isCorrect ? '正解です！' : '不正解です';
+            feedbackMessage.innerText = result.isCorrect ? '正解です！' : '不正解です'; //ここの正解です別になくても可
 
-            if (result.isCorrect) {
-                saveScore(); // 正解だった場合にスコアを保存
+            if (result.isCorrect) { //isCorrectがある場合に下記の処理が実行される
+                saveScore(); // 正解だった場合にスコアをつくる処理
+                redirectResult(); //正解だった場合結果とランキング画面遷移
             }
 
             document.getElementById('feedbackMessageArea').appendChild(feedbackMessage);
@@ -248,6 +249,15 @@ async function saveScore() {
     } catch (error) {
         console.error("There was an error saving the score", error);
     }
+}
+//正解後の画面遷移
+async function redirectResult() { // 下記数字で渡してる
+    const questionId = {{ $question->id }};
+    const questionCount = localStorage.getItem(`questionCount_${questionId}`) || 0;
+    const hintCount = localStorage.getItem(`hintCount_${questionId}`) || 0;
+    window.location.href = `{{ route('result', ['questionId' => $question->id, 'questionCount' => 'QUESTION_COUNT_VALUE', 'hintCount' => 'HINT_COUNT_VALUE']) }}`
+        .replace('QUESTION_COUNT_VALUE', questionCount)
+        .replace('HINT_COUNT_VALUE', hintCount);
 }
 
 </script>

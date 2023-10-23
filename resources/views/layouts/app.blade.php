@@ -10,6 +10,9 @@
     <!-- カスタムCSSの読み込み -->
     <link rel="stylesheet" href="{{ asset('css/custom.css') }}">
 
+    <!-- favicon -->
+    <link rel="shortcut icon" href="{{ asset('images/favicon_turtle.png') }}"> 
+
     {{-- Googleフォント --}}
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>

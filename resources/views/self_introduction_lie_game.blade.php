@@ -3,6 +3,7 @@
 
 @section('content')
 <div class="container">
+    <br>
     <h1 class="text-center">プレイヤー設定画面</h1>
 
     <form method="POST" action="{{ route('selfIntroductionLieGame.start') }}">
