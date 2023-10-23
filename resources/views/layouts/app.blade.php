@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="ja">
 <head>
     <!-- 文字コードの設定 -->
     <meta charset="UTF-8">
@@ -21,7 +21,40 @@
 </head>
 <body class="bg-light-cyan"> <!-- 背景色を設定するカスタムクラス -->
     <header>
-        <!-- ヘッダーのコンテンツをここに追加 -->
+        <nav class="navbar navbar-expand-lg navbar-dark" style="background-color: #387cd0;">
+            <div class="container-fluid">
+                <!-- ナビゲーションバーブランド（ロゴやサイト名） -->
+                <a class="navbar-brand" href="{{ route('home') }}">Insight Icebreaker</a> <!-- サイト名またはロゴへのパスを指定 -->
+                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+                    <span class="navbar-toggler-icon"></span>
+                </button>
+                <div class="collapse navbar-collapse" id="navbarNav">
+                    <!-- 右側のナビゲーションメニュー -->
+                    <ul class="navbar-nav ms-auto">
+                        @if (Auth::check())
+                            <li class="nav-item">
+                                <span class="navbar-text me-3">
+                                    {{ Auth::user()->username }} さん、こんにちは！
+                                </span>
+                            </li>
+                            <li class="nav-item">
+                                <form method="POST" action="{{ route('logout') }}">
+                                    @csrf
+                                    <button type="submit" class="btn btn-primary">ログアウト</button>
+                                </form>
+                            </li>
+                        @else
+                            <li class="nav-item">
+                                <a class="nav-link" href="{{ route('login') }}">ログイン</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link" href="{{ route('register') }}">新規登録</a>
+                            </li>
+                        @endif
+                    </ul>
+                </div>
+            </div>
+        </nav>    
     </header>
 
     <main>

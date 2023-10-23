@@ -7,21 +7,15 @@
 <!-- メインコンテンツの開始 -->
 @section('content')
 
-<!-- ナビゲーションバー -->
-<nav class="navbar navbar-expand-lg navbar-light bg-light">
-    <div class="container-fluid">
-      {{-- <a class="navbar-brand" href="#">ウミガメのスープ</a> --}}
-      <div class="collapse navbar-collapse" id="navbarNav">
-        <ul class="navbar-nav ml-auto">
-          <li class="nav-item">
-            {{-- <a class="nav-link" href="{{ route('admin.login') }}">管理者ログイン</a> --}}
-          </li>
-        </ul>
-      </div>
-    </div>
-  </nav>
 <!-- ページのタイトル -->  
-<h1>問題一覧ページ</h1>  
+<h1 class="header-title text-center mt-5">🐢 ウミガメのスープ 🐢</h1>
+<h2 class="text-center">問題一覧</h2>
+<br>
+<!-- 問題作成ページへのリンク -->
+<div class="text-center">
+  <a href="{{ route('questions.create') }}" class="btn btn-primary">問題を作成する</a>
+</div>
+<br>
 
 <div class="container">
     <div class="row">
@@ -53,8 +47,6 @@
     </div>
 </div>
 
-<!-- 問題作成ページへのリンク -->
-<a href="{{ route('questions.create') }}" class="btn btn-primary">問題を作成する</a>
 
 <!-- ボタンをクリックしたときに答えを表示するスクリプト -->
 <script>
