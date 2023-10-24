@@ -49,7 +49,24 @@
             div.appendChild(label);
             div.appendChild(input);
             container.appendChild(div);
-        }
+            
+            document.getElementById('submitBtn').addEventListener('click', async function(e) {
+            e.preventDefault(); // デフォルトのフォーム送信を防ぐ
+            const submitButton = e.target;
+            submitButton.disabled = true; // ボタンを無効化
+
+            try {
+                // ここで非同期処理またはバリデーションを行うことができます。
+                // 例えば、入力値の確認、外部APIへの問い合わせなど。
+
+                // 問題がなければ、フォームを手動で送信
+                document.getElementById('truthAndLieForm').submit();
+            } catch (error) {
+                console.error("Error during form submission: ", error);
+                // エラーが発生した場合（例：バリデーションエラー）、ボタンを再度有効にする
+                submitButton.disabled = false;
+            }
+        });
     });
     </script>
     
