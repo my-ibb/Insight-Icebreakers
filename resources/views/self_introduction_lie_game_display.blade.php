@@ -6,17 +6,25 @@
     <br>
     <h1 class="text-center">自己紹介文表示</h1>
     @foreach($summaries as $index => $summary)
-        <h2>{{ $summary['player_name'] }}</h2>
-        <div style="display:none;" id="answerArea-{{ $index }}">
-            <p>{{ $summary['summary'] }}</p>
+        <div class="my-4">
+            <h2 class="text-center">{{ $summary['player_name'] }}の自己紹介文</h2>
+            <br>
+            <div style="display:none;" id="answerArea-{{ $index }}">
+                <p>{{ $summary['summary'] }}</p>
+            </div>
+            <div class="text-center"> {{-- text-center classを追加してボタンを中央に配置 --}}
+                <button class="btn btn-primary" onclick="showAnswer({{ $index }})">表示/非表示</button> {{-- btn btn-primary classを追加してボタンデザインを統一 --}}
+            </div>
         </div>
-        <button onclick="showAnswer({{ $index }})">表示/非表示</button>
     @endforeach
 
     {{-- トップページに戻るボタンを追加 --}}
     <form action="{{ route('selfIntroductionLieGame.reset') }}" method="POST" class="mt-4">
         @csrf
-        <button type="submit" class="btn btn-primary">トップページに戻る</button>
+        <div class="text-center"> {{-- ここでもtext-center classを使用 --}}
+            <br>
+            <button type="submit" class="btn btn-primary">トップページに戻る</button>
+        </div>
     </form>
 </div>
 
