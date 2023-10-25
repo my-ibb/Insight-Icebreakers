@@ -49,7 +49,9 @@
             div.appendChild(label);
             div.appendChild(input);
             container.appendChild(div);
-            
+        }
+    });
+
             document.getElementById('submitBtn').addEventListener('click', async function(e) {
             e.preventDefault(); // デフォルトのフォーム送信を防ぐ
             const submitButton = e.target;
@@ -67,7 +69,6 @@
                 submitButton.disabled = false;
             }
         });
-    });
     </script>
     
 @endsection

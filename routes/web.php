@@ -74,7 +74,7 @@ Route::post('questions/{questionId}/store-score', [ScoreController::class, 'stor
 //　ユーザー関連
 Route::get('/mypage', [UserController::class, 'index'])->name('mypage');
 //　新規登録
-Route::get('register', [RegisterController::class, 'showRegistrationForm'])->name('register');
+Route::get('/register', [RegisterController::class, 'showRegistrationForm'])->name('register');
 
 Route::post('register', [RegisterController::class, 'register']);
 

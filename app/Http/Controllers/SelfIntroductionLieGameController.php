@@ -247,7 +247,7 @@ class SelfIntroductionLieGameController extends Controller
     public function reset()
     {
          session()->flush();  // セッションをクリア
-         return redirect()->route('selfIntroductionLieGame.index');  // トップページへリダイレクト
+         return redirect()->route('home');  // トップページへリダイレクト
     }
     public function destroy($id)
     {

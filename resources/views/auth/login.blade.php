@@ -29,11 +29,14 @@
                         <label for="password" class="form-label">パスワード:</label>
                         <input type="password" class="form-control" id="password" name="password" required>
                     </div>
+                    <div class="row">
                     <div class="text-center">
                         <input type="submit" class="btn btn-primary" value="ログイン">
-                        <a href="{{ route('register') }}" class="btn btn-secondary ml-2">新規登録</a>
-                    </div>
+    
                 </form>
+                <a href="{{ route('register') }}" class="btn btn-secondary ml-2">新規登録</a>
+                    </div>
+                    </div>
             </div>
         </div>
     </div>
