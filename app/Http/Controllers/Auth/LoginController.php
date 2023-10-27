@@ -6,10 +6,28 @@ namespace App\Http\Controllers\Auth;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Validator;
+
 
 // LoginControllerクラスの定義
 class LoginController extends Controller
 {
+        // 入力データのバリデーションルール
+    protected function validator(array $data)
+    {
+        return Validator::make($data, [
+            'email' => ['required', 'string', 'email', 'max:100'],
+            'password' => ['required', 'string', 'min:8', 'max:255'],
+        ], [
+            'email.required' => 'メールアドレスは必須です。',
+            'email.email' => '有効なメールアドレスを入力してください。',
+            'email.max' => 'メールアドレスは100文字以内で入力してください。',
+            'password.required' => 'パスワードは必須です。',
+            'password.max' => 'パスワードは255文字以内で入力してください。',
+            'password.min' => 'パスワードは最低8文字必要です。',
+        ]);
+    }
+
     // ログインフォームを表示するためのメソッド
     public function showLoginForm()
     {
@@ -21,6 +39,9 @@ class LoginController extends Controller
     {
         // リクエストからメールアドレスとパスワードを取得
         $credentials = $request->only('email', 'password');
+
+         // バリデーション
+        $this->validator($credentials)->validate();
     
         // 認証試行
         if (Auth::attempt($credentials)) {

@@ -37,12 +37,14 @@
                         パスワードをお忘れですか？
                         </button>
                     </div>               
-                </form>
+
                     <div class="row">
                         <div class="text-center">
                             <input type="submit" class="btn btn-primary" value="ログイン">
                         </div>
                     </div>
+
+                </form>
 
                 <div class="text-center mt-2">
                     <a href="{{ route('register') }}" class="btn btn-secondary">新規登録</a>
