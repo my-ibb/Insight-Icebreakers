@@ -1,3 +1,5 @@
+{{-- resources/views/auth/login.blade.php --}}
+
 @extends('layouts.app')
 
 @section('title', 'Login Page')
@@ -29,14 +31,22 @@
                         <label for="password" class="form-label">パスワード:</label>
                         <input type="password" class="form-control" id="password" name="password" required>
                     </div>
-                    <div class="row">
-                    <div class="text-center">
-                        <input type="submit" class="btn btn-primary" value="ログイン">
-    
+                <!-- パスワードリセットリンクの代わりにボタンを追加 -->
+                    <div class="mt-3 text-center">
+                        <button type="button" class="btn btn-link">
+                        パスワードをお忘れですか？
+                        </button>
+                    </div>               
                 </form>
-                <a href="{{ route('register') }}" class="btn btn-secondary ml-2">新規登録</a>
+                    <div class="row">
+                        <div class="text-center">
+                            <input type="submit" class="btn btn-primary" value="ログイン">
+                        </div>
                     </div>
-                    </div>
+
+                <div class="text-center mt-2">
+                    <a href="{{ route('register') }}" class="btn btn-secondary">新規登録</a>
+                </div>
             </div>
         </div>
     </div>

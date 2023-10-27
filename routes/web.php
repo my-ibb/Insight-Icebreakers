@@ -143,3 +143,4 @@ Route::put('/self-introduction/{id}/update', [SelfIntroductionLieGameController:
 
 Route::get('/admin/questions/create', [SelfIntroductionLieGameController::class, 'createQuestionForm'])->name('admin.questions.create');
 Route::post('/admin/questions', [SelfIntroductionLieGameController::class, 'storeQuestion'])->name('admin.questions.store');
+
