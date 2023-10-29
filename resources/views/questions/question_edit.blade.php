@@ -5,6 +5,15 @@
 @section('content')
     <br>
     <h2>問題編集</h2>
+        
+        <!-- エラーメッセージの表示 -->
+    @if ($errors->any())
+        <div class="alert alert-danger">
+            @foreach ($errors->all() as $error)
+                <p>{{ $error }}</p>
+            @endforeach
+        </div>
+    @endif
 
     <form action="{{ route('questions.update', $question->id) }}" method="post">
         @csrf
