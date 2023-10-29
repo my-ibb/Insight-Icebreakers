@@ -32,9 +32,19 @@
 <div class="col-6">
     <div class="card border-dark m-4" style="border-radius: 20px"> 
         <div class="card-body"> <!-- ここが変更された部分です -->
-            <textarea id="userQuestion" rows="4" class="form-control" placeholder="質問をここに入力 &#13; (例)その人物は男ですか？" style="border-radius: 15px;"></textarea>
+            <textarea id="userQuestion" rows="4" name="userQuestion" class="form-control" placeholder="質問をここに入力 &#13; (例)その人物は男ですか？" style="border-radius: 15px;"></textarea>
             <br>
             <div class="row">
+
+                <!-- エラーメッセージの表示 -->
+                @if ($errors->any())
+                    <div class="alert alert-danger">
+                        @foreach ($errors->all() as $error)
+                            <p>{{ $error }}</p>
+                        @endforeach
+                    </div>
+                @endif
+
                 <div class="col-6" id="questionCountContainer">質問回数：未使用</div>
                 <button id="questionBtn" class="col-5 btn btn-primary me-2" style="border-radius: 10px;" onclick="sendQuestion()">質問をする</button>
             </div>
@@ -47,7 +57,8 @@
 <!-- 回答フォームエリア -->
 <div class="col-6" id="answerFormArea">
     <div class="card border-dark m-4" style="border-radius: 20px; padding: 20px;">
-        <form action="{{ route('checkAnswer', ['id' => $question->id]) }}" method="POST">
+        <form id="answerForm" action="{{ route('checkAnswer', ['id' => $question->id]) }}" method="POST">
+
             @csrf
             <div class="form-group">
                 <textarea class="form-control" id="user_answer" name="user_answer" placeholder="回答をここに入力 &#13; (例)男は〜だったから" rows="4" style="width: 100%; border-radius: 20px;" required></textarea>
@@ -114,16 +125,23 @@
     let questionCount = 0;
     let previousQuestions = [];
 
-    document.addEventListener('DOMContentLoaded', (event) => {
+document.addEventListener('DOMContentLoaded', (event) => {
     const form = document.querySelector('#answerFormArea form');
     const answerBtn = document.getElementById('answerBtn'); // "回答を送信" ボタンを特定
-
+        
     form.addEventListener('submit', async function(e) {
         e.preventDefault();
 
         answerBtn.disabled = true; // ボタンを無効化
 
         const userAnswer = document.getElementById('user_answer').value;
+
+        if (userAnswer.length > 500) {
+            alert('回答は500文字以内で入力してください。');
+            answerBtn.disabled = false;  // ボタンを再有効化
+            event.preventDefault();  // フォームの送信を中止
+            return; // 処理を中断
+        }
 
         try {
             // サーバーに回答を送信
@@ -160,8 +178,15 @@
 async function sendQuestion() {
 
     const sendButton = document.getElementById('questionBtn'); // 質問を送信するボタンを特定
-    sendButton.disabled = true;  // ボタンを無効化
     const userQuestion = document.getElementById("userQuestion").value;
+// 文字数チェック
+    if (userQuestion.length > 300) {
+            alert("質問文は300文字以内で入力してください。");
+            sendButton.disabled = false;  // ボタンを再有効化
+            return; // 処理を中断
+        }
+
+    sendButton.disabled = true;  // ボタンを無効化
     const questionId = {{ $question->id }};
 
     try {
@@ -259,6 +284,7 @@ async function redirectResult() { // 下記数字で渡してる
         .replace('QUESTION_COUNT_VALUE', questionCount)
         .replace('HINT_COUNT_VALUE', hintCount);
 }
+
 
 </script>
 @endsection

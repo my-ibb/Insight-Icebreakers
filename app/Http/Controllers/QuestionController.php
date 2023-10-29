@@ -8,9 +8,22 @@ use Illuminate\Support\Facades\Auth;
 use GuzzleHttp\Client;
 use App\Models\SoupGameQuestion;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Validator;
+
 // QuestionController クラスの定義。Controller クラスを継承。
 class QuestionController extends Controller
 {
+    // 入力データのバリデーションルール
+    protected function validator(array $data)
+    {
+        return Validator::make($data, [
+            'question' => ['required', 'string', 'max:300'],
+        ], [
+            'question.required' => '質問を入力してください。',
+            'question.max' => '質問は300文字以内で入力してください。'
+        ]);
+    }
+
     // 問題一覧ページを表示
     public function index()
     {
@@ -634,6 +647,7 @@ class QuestionController extends Controller
     // OpenAI APIを使って問題に対する回答を生成するメソッド
     public function generateChatResponse(Request $request)
     {
+
         $chatQuestionContent = $request->input('chatQuestionContent');
 
         $questionId = $request->input('questionId');  // 質問IDも取得

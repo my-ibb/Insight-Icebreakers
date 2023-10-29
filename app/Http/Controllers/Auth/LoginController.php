@@ -12,7 +12,7 @@ use Illuminate\Support\Facades\Validator;
 // LoginControllerクラスの定義
 class LoginController extends Controller
 {
-        // 入力データのバリデーションルール
+    // 入力データのバリデーションルール
     protected function validator(array $data)
     {
         return Validator::make($data, [
