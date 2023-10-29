@@ -5,11 +5,27 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Models\User;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
+use Illuminate\Support\Facades\Validator;
 
 
 // UserControllerクラスの定義
 class UserController extends Controller
 {
+
+    // 入力データのバリデーションルール
+    protected function validator(array $data)
+    {
+        return Validator::make($data, [
+            'username' => ['required', 'string', 'max:30'],
+            'email' => ['required', 'string', 'email', 'max:100'],
+        ], [
+            'username.required' => 'ユーザーネームは必須です。',
+            'username.max' => 'ユーザーネームは30文字以内で入力してください。',
+            'email.required' => 'メールアドレスは必須です。',
+            'email.max' => 'メールアドレスは100文字以内で入力してください。',
+        ]);
+    }
+
     // 新規登録は RegisterController にて処理している
     // ログインは LoginController にて処理している
     public function delete($id) 
@@ -32,13 +48,10 @@ class UserController extends Controller
 
     public function update(Request $request, $id)
     {
-         // バリデーションルールを定義
-    $request->validate([
-        'username' => 'required|string|max:255',
-        'email' => 'required|email|max:255|unique:users,email,' . $id,
-        'role' => 'required|string', // ロールに対するバリデーションを追加
-        // 他のフィールドに対するバリデーションルールがあれば追加...
-    ]);
+    // リクエストから全データを取得
+    $data = $request->all();
+    // バリデーション
+    $this->validator($data)->validate();
 
     $user = User::findOrFail($id); // 該当するIDのユーザーを取得
     $user->fill($request->all()); // ユーザー情報を更新

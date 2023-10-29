@@ -1,5 +1,5 @@
 <!-- /Applications/MAMP/htdocs/InsightIcebreakers/resources/views/introduction_edit.blade.php -->
-
+{{-- つかってない --}}
 @extends('layouts.app')
 
 @section('content')
