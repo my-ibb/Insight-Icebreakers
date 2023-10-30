@@ -41,7 +41,8 @@ MAMP/Apache/Laravel/MySQL
 
 サイト利用は新規登録の上でログインしてください。
 管理者ログインは別ルートになるので
-http://localhost:8888/admin/login　と入力
+http://localhost:8888/admin/login　
+と入力
 管理者メールアドレス:test@example.com
 管理者パスワード:password
 
