@@ -26,13 +26,39 @@ use App\Http\Controllers\AdminController;
 //　トップページ
 Route::get('/', [HomeController::class, 'index'])->name('home');
 
+Route::middleware(['auth'])->group(function () {
+    // 新規問題作成ページは下記
+    Route::get('/questions/create', [QuestionController::class, 'create'])->name('questions.create');
+    //質問のチャット、ヒントのページ
+    Route::post('/generate-hint', [QuestionController::class, 'generateHint'])->name('generate-hint'); 
+    Route::post('/generate-chat-response', [QuestionController::class, 'generateChatResponse'])->name('generate-chat-response');
+    
+    // 回答フォームから正解かどうか判定する
+    Route::post('/checkAnswer/{id}', [QuestionController::class, 'checkAnswer'])->name('checkAnswer');
+    
+    // 正解だった場合にresult画面に遷移する
+    Route::get('/questions/{questionId}/result/{questionCount}/{hintCount}', [ScoreController::class, 'result'])->name('result');
+    //　問題解くページ？
+    Route::get('/questions/{id}/detail', [QuestionController::class, 'detail'])->name('questions.detail');
+    Route::get('/questions/{id}/question', [QuestionController::class, 'showQuestionForm'])->name('questions.question_form');
+
+    Route::post('/questions/storeAnswer', [QuestionController::class, 'storeAnswer'])->name('questions.storeAnswer');
+
+    Route::get('/questions/{id}/input', [QuestionController::class, 'inputQuestion'])->name('questions.input');
+
+    Route::post('/questions/{id}/storeQuestion', [QuestionController::class, 'storeQuestion'])->name('questions.storeQuestion');
+
+    //　ランキング関連　//RankingControllerのshowメソッドにルーティング
+    Route::get('questions/{questionId}/ranking', [RankingController::class, 'show']);
+    Route::post('questions/{questionId}/store-score', [ScoreController::class, 'store'])->name('storeScore');
+    
+});
+
+
 //　ーーーここからウミガメの問題関連ーーー
 
 // ウミガメの問題一覧ページは下記
 Route::get('/questions', [QuestionController::class, 'index'])->name('questions.index');
-
-// 新規問題作成ページは下記
-Route::get('/questions/create', [QuestionController::class, 'create'])->name('questions.create');
 
 // 問題文をGPTのAPIを叩いて作成しているのは下記
 // create.bladeのフォームからPOST送信される
@@ -42,34 +68,10 @@ Route::post('/generate-question', [QuestionController::class, 'generateQuestion'
 // create.bladeのボタンからPOST送信される
 Route::post('/save-question', [QuestionController::class, 'saveQuestion'])->name('save-question');
 
-//質問のチャット、ヒントのページ
-Route::post('/generate-hint', [QuestionController::class, 'generateHint'])->name('generate-hint');
-Route::post('/generate-chat-response', [QuestionController::class, 'generateChatResponse'])->name('generate-chat-response');
-
-// 回答フォームから正解かどうか判定する
-Route::post('/checkAnswer/{id}', [QuestionController::class, 'checkAnswer'])->name('checkAnswer');
-
-// 正解だった場合にresult画面に遷移する
-Route::get('/questions/{questionId}/result/{questionCount}/{hintCount}', [ScoreController::class, 'result'])->name('result');
-
-// 下記あとで消すかも（detail or question）
-Route::get('/questions/{id}/detail', [QuestionController::class, 'detail'])->name('questions.detail');
-Route::get('/questions/{id}/question', [QuestionController::class, 'showQuestionForm'])->name('questions.question_form');
+Route::get('/questions/{id}/hint', [QuestionController::class, 'showHintForm'])->name('questions.hint_form'); //つかってないかも
+Route::get('/getHint/{questionId}', [QuestionController::class, 'getHint'])->name('questions.hint'); //つかってないかも
 
 
-Route::get('/questions/{id}/hint', [QuestionController::class, 'showHintForm'])->name('questions.hint_form');
-Route::get('/getHint/{questionId}', [QuestionController::class, 'getHint'])->name('questions.hint');
-
-
-Route::post('/questions/storeAnswer', [QuestionController::class, 'storeAnswer'])->name('questions.storeAnswer');
-
-Route::get('/questions/{id}/input', [QuestionController::class, 'inputQuestion'])->name('questions.input');
-
-Route::post('/questions/{id}/storeQuestion', [QuestionController::class, 'storeQuestion'])->name('questions.storeQuestion');
-
-//　ランキング関連　//RankingControllerのshowメソッドにルーティング
-Route::get('questions/{questionId}/ranking', [RankingController::class, 'show']);
-Route::post('questions/{questionId}/store-score', [ScoreController::class, 'store'])->name('storeScore');
 
 //　ユーザー関連
 Route::get('/mypage', [UserController::class, 'index'])->name('mypage');
@@ -119,28 +121,33 @@ Route::delete('/self-introductions/{id}', [SelfIntroductionLieGameController::cl
 
 
 // ーーー管理者関連はここからーーー
+Route::middleware(['admin'])->group(function () {
+    // 管理者 - User関連
+    Route::get('/admin/dashboard/users', [AdminController::class, 'dashboardUsers'])->name('admin.dashboard.users');
+    Route::delete('/user/{id}/delete', [UserController::class, 'delete'])->name('user.delete');
+    Route::get('/user/{id}/edit', [UserController::class, 'edit'])->name('user.edit');
+    Route::put('/user/{id}', [UserController::class, 'update'])->name('user.update');
+    
+    // 管理者 - Question関連
+    Route::get('/admin/dashboard/questions', [AdminController::class, 'dashboardQuestions'])->name('admin.dashboard.questions');
+    Route::delete('/question/{id}/delete', [QuestionController::class, 'delete'])->name('question.delete');
+    Route::get('/questions/{id}/edit', [QuestionController::class, 'edit'])->name('questions.edit');
+    Route::put('/questions/{id}', [QuestionController::class, 'update'])->name('questions.update');
+    
+    // 管理者 - SelfIntroductionLieGame関連
+    Route::get('/admin/dashboard/self-introduction-questions', [AdminController::class, 'dashboardSelfIntroductionQuestions'])->name('admin.dashboard.self_introduction_questions');
+    Route::delete('/self-introduction/{id}/delete', [SelfIntroductionLieGameController::class, 'delete'])->name('self-introduction.delete');
+    Route::get('/self-introduction/{id}/edit', [SelfIntroductionLieGameController::class, 'edit'])->name('self-introduction.edit');
+    Route::put('/self-introduction/{id}/update', [SelfIntroductionLieGameController::class, 'update'])->name('self-introduction.update');
+    
+    Route::get('/admin/questions/create', [SelfIntroductionLieGameController::class, 'createQuestionForm'])->name('admin.questions.create');
+    Route::post('/admin/questions', [SelfIntroductionLieGameController::class, 'storeQuestion'])->name('admin.questions.store');
+        
+});
+
+
 // 管理者 - ログイン処理
 Route::get('/admin/login', [AdminController::class, 'login'])->name('admin.login');
 Route::post('/admin/login', [AdminController::class, 'authenticate'])->name('admin.authenticate');
 
-// 管理者 - User関連
-Route::get('/admin/dashboard/users', [AdminController::class, 'dashboardUsers'])->name('admin.dashboard.users');
-Route::delete('/user/{id}/delete', [UserController::class, 'delete'])->name('user.delete');
-Route::get('/user/{id}/edit', [UserController::class, 'edit'])->name('user.edit');
-Route::put('/user/{id}', [UserController::class, 'update'])->name('user.update');
-
-// 管理者 - Question関連
-Route::get('/admin/dashboard/questions', [AdminController::class, 'dashboardQuestions'])->name('admin.dashboard.questions');
-Route::delete('/question/{id}/delete', [QuestionController::class, 'delete'])->name('question.delete');
-Route::get('/questions/{id}/edit', [QuestionController::class, 'edit'])->name('questions.edit');
-Route::put('/questions/{id}', [QuestionController::class, 'update'])->name('questions.update');
-
-// 管理者 - SelfIntroductionLieGame関連
-Route::get('/admin/dashboard/self-introduction-questions', [AdminController::class, 'dashboardSelfIntroductionQuestions'])->name('admin.dashboard.self_introduction_questions');
-Route::delete('/self-introduction/{id}/delete', [SelfIntroductionLieGameController::class, 'delete'])->name('self-introduction.delete');
-Route::get('/self-introduction/{id}/edit', [SelfIntroductionLieGameController::class, 'edit'])->name('self-introduction.edit');
-Route::put('/self-introduction/{id}/update', [SelfIntroductionLieGameController::class, 'update'])->name('self-introduction.update');
-
-Route::get('/admin/questions/create', [SelfIntroductionLieGameController::class, 'createQuestionForm'])->name('admin.questions.create');
-Route::post('/admin/questions', [SelfIntroductionLieGameController::class, 'storeQuestion'])->name('admin.questions.store');
 
