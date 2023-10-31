@@ -40,9 +40,8 @@ MAMP/Apache/Laravel/MySQL
 お使いのphpMyAdminに上のデータベースを作り、入っているDB.sqlをインポートしていただければお使いいただけるようになると思います。
 
 サイト利用は新規登録の上でログインしてください。
-管理者ログインは別ルートになるので
-http://localhost:8888/admin/login　
-と入力
+管理者ログインは下記ルートになります
+http://localhost:8888/admin/login
 管理者メールアドレス:test@example.com
 管理者パスワード:password
 
