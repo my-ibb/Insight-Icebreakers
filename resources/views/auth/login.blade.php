@@ -43,7 +43,6 @@
                         </div>
                     </div>
                 </form>
-
                 <div class="text-center mt-2">
                     <a href="{{ route('register') }}" class="btn btn-secondary">新規登録</a>
                 </div>

@@ -8,9 +8,12 @@ use Illuminate\Support\Facades\Auth;
 use GuzzleHttp\Client;
 use App\Models\SoupGameQuestion;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Validator;
+
 // QuestionController クラスの定義。Controller クラスを継承。
 class QuestionController extends Controller
 {
+
     // 問題一覧ページを表示
     public function index()
     {
@@ -634,6 +637,7 @@ class QuestionController extends Controller
     // OpenAI APIを使って問題に対する回答を生成するメソッド
     public function generateChatResponse(Request $request)
     {
+
         $chatQuestionContent = $request->input('chatQuestionContent');
 
         $questionId = $request->input('questionId');  // 質問IDも取得
@@ -774,17 +778,27 @@ class QuestionController extends Controller
         }
     }
 
+
+    // 入力データのバリデーションルール
+    protected function validator(array $data)
+    {
+        return Validator::make($data, [
+            'question_content' => ['required', 'string', 'max:1000'],
+            'answer_content' => ['required', 'string', 'max:1000'],
+        ], [
+            'question_content.required' => '問題文は必須です。',
+            'answer_content.required' => '解答文は必須です。',
+            'question_content.max' => '問題文は1000文字以内です。',
+            'answer_content.max' => '解答は1000文字以内で入力してください。',
+        ]);
+    }
     public function update(Request $request, $id)
 {
-    // 入力値のバリデーション
-    $request->validate([
-        'question_content' => 'required',
-        'answer_content' => 'required',
-        'genre' => 'required',
-        'difficulty' => 'required',
-        // 他のバリデーションルールもここに追加...
-    ]);
-
+        // リクエストから全データを取得
+        $data = $request->all();
+        // バリデーション
+        $this->validator($data)->validate();
+    
     // IDに基づいて質問を取得
     $question = SoupGameQuestion::find($id);
     if (!$question) {

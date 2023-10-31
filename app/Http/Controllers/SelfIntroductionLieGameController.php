@@ -5,6 +5,8 @@ use Illuminate\Http\Request;
 use App\Models\IntroGameQuestion; // IntroGameQuestionモデルをインポート
 use GuzzleHttp\Client;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Validator;
+
 
 
 class SelfIntroductionLieGameController extends Controller
@@ -265,11 +267,23 @@ public function edit($id)
     return view('auth.passwords.admin.self_introduction_edit', compact('question'));
 }
 
+    // 入力データのバリデーションルール
+    protected function validator(array $data)
+    {
+        return Validator::make($data, [
+            'content' => ['required', 'string', 'max:50'],
+        ], [
+            'content.required' => '設問は必須です。',
+            'content.max' => '設問は50文字以内で入力してください。',
+        ]);
+    }
+
 public function update(Request $request, $id)
 {
-    $request->validate([
-        'content' => 'required', // Add other validation rules as needed
-    ]);
+    // リクエストから全データを取得
+    $data = $request->all();
+    // バリデーション
+    $this->validator($data)->validate();
 
     $question = IntroGameQuestion::find($id); // or use findOrFail($id)
     $question->content = $request->input('content');
