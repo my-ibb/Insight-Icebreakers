@@ -12,7 +12,11 @@ class AdminController extends Controller
 {
     public function login()
     {
+        if (Auth::user()) {
+            return redirect()->route('home');
+        }
         return view('auth.passwords.admin.adminlogin');
+        
     }
     
     public function authenticate(Request $request)

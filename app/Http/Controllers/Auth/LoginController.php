@@ -31,6 +31,9 @@ class LoginController extends Controller
     // ログインフォームを表示するためのメソッド
     public function showLoginForm()
     {
+        if (Auth::user()) {
+            return redirect()->route('home');
+        }
         return view('auth.login'); // ログインフォームのビューを返す
     }
 

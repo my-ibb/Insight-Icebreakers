@@ -14,12 +14,6 @@ use Illuminate\Support\Facades\Auth;
 // RegisterControllerクラスの定義
 class RegisterController extends Controller
 {
-    // コンストラクタ：未ログインユーザーのみがこのコントローラを使えるようにする
-    public function __construct()
-    {
-        $this->middleware('guest');
-    }
-
     // 入力データのバリデーションルール
     protected function validator(array $data)
     {
@@ -45,6 +39,9 @@ class RegisterController extends Controller
     // 登録フォームを表示するためのメソッド
     public function showRegistrationForm()
     {
+        if (Auth::user()) {
+            return redirect()->route('home');  // トップページへリダイレクト
+        }
         return view('auth.register');
     }
 

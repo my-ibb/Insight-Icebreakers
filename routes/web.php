@@ -75,13 +75,21 @@ Route::get('/getHint/{questionId}', [QuestionController::class, 'getHint'])->nam
 
 //　ユーザー関連
 Route::get('/mypage', [UserController::class, 'index'])->name('mypage');
-//　新規登録
-Route::get('/register', [RegisterController::class, 'showRegistrationForm'])->name('register');
 
 Route::post('register', [RegisterController::class, 'register']);
 
-Route::get('login', [LoginController::class, 'showLoginForm'])->name('login');
 // ログイン処理
+Route::middleware([
+    'cache.headers:no_store;max_age=0',
+])->group(function (): void {
+    Route::get('login', [LoginController::class, 'showLoginForm'])->name('login');
+    //　新規登録
+    Route::get('/register', [RegisterController::class, 'showRegistrationForm'])->name('register');
+    // 管理者 - ログイン処理
+    Route::get('/admin/login', [AdminController::class, 'login'])->name('admin.login');
+});
+
+Route::post('/admin/login', [AdminController::class, 'authenticate'])->name('admin.authenticate');
 Route::post('login', [LoginController::class, 'login']);
 
 Route::post('/logout', function () {
@@ -146,8 +154,5 @@ Route::middleware(['admin'])->group(function () {
 });
 
 
-// 管理者 - ログイン処理
-Route::get('/admin/login', [AdminController::class, 'login'])->name('admin.login');
-Route::post('/admin/login', [AdminController::class, 'authenticate'])->name('admin.authenticate');
 
 
