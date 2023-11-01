@@ -76,6 +76,9 @@
         </form>        
     </div>
 </div>
+    <div class="d-flex justify-content-end pe-5" style="margin-top: 10px;"> <!-- ボタンの位置を調整 -->
+    <button  type="button" class="btn btn-primary" style="border-radius: 10px;" onClick="history.back()">戻る</button>
+    </div>
 </div>
 
 <script>
