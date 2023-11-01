@@ -12,11 +12,12 @@ class AdminController extends Controller
 {
     public function login()
     {
-        if (Auth::user()) {
+        if (Auth::check() && Auth::user()->role === 'admin') {
+            return redirect()->route('admin.dashboard.users');
+        } elseif (Auth::user()) {
             return redirect()->route('home');
         }
-        return view('auth.passwords.admin.adminlogin');
-        
+        return view('auth.passwords.admin.adminlogin'); 
     }
     
     public function authenticate(Request $request)
