@@ -59,8 +59,8 @@ class LoginController extends Controller
                 return redirect()->route('questions.detail', ['id' => $selectedQuestionId]);
             }
 
-            // 通常は質問作成ページへリダイレクト
-            return redirect()->to('/questions/create');
+            // 通常はトップページへリダイレクト
+            return redirect()->route('home');
         }
     
         // 認証失敗：エラーメッセージとともに前のページへ戻る
