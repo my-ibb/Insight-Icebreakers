@@ -3,6 +3,7 @@
 @extends('layouts.app')
 
 @section('content')
+<div class="container">
     <br>
     <h2>問題編集</h2>
         
@@ -55,4 +56,5 @@
         <br>
         <button type="submit" class="btn btn-primary">Update</button>
     </form>
+</div>
 @endsection
