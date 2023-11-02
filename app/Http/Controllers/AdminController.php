@@ -7,9 +7,25 @@ use Illuminate\Support\Facades\Auth; // Authファサードを使用
 use App\Models\User;
 use App\Models\SoupGameQuestion; 
 use App\Models\IntroGameQuestion;
+use Illuminate\Support\Facades\Validator;
 
 class AdminController extends Controller
 {
+    protected function validator(array $data)
+    {
+        return Validator::make($data, [
+            'email' => ['required', 'string', 'email', 'max:100'],
+            'password' => ['required', 'string', 'min:8', 'max:255'],
+        ], [
+            'email.required' => 'メールアドレスは必須です。',
+            'email.email' => '有効なメールアドレスを入力してください。',
+            'email.max' => 'メールアドレスは100文字以内で入力してください。',
+            'password.required' => 'パスワードは必須です。',
+            'password.max' => 'パスワードは255文字以内で入力してください。',
+            'password.min' => 'パスワードは最低8文字必要です。',
+        ]);
+    }
+
     public function login()
     {
         if (Auth::check() && Auth::user()->role === 'admin') {
@@ -22,22 +38,20 @@ class AdminController extends Controller
     
     public function authenticate(Request $request)
     {
+        // リクエストからメールアドレスとパスワードを取得
+        $credentials = $request->only('email', 'password');
+
         // バリデーション
-        $request->validate([
-            'email' => ['required', 'email'],
-            'password' => ['required'],
-        ]);
+        $this->validator($credentials)->validate();
 
         // 認証チェック
-        if (Auth::attempt(['email' => $request->email, 'password' => $request->password])) {
+        if (Auth::attempt($credentials)) {
             // 認証に成功したらダッシュボードへリダイレクト
             return redirect()->route('admin.dashboard.users');
         }
 
-        // 認証に失敗したら、ログインフォームに戻る
-        return back()->withErrors([
-            'email' => 'The provided credentials do not match our records.',
-        ]);
+        // 認証失敗：エラーメッセージとともに前のページへ戻る
+        return back()->withErrors(['email' => '認証に失敗しました。']); 
     }
 
     public function dashboardUsers()

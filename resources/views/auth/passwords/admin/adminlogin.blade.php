@@ -5,6 +5,14 @@
 @section('content')
 <div class="container">
     <h1 class="mb-4">管理者ログイン</h1>
+        <!-- エラーメッセージの表示 -->
+        @if ($errors->any())
+            <div class="alert alert-danger">
+                @foreach ($errors->all() as $error)
+                    <p>{{ $error }}</p>
+                @endforeach
+            </div>
+        @endif
     <form method="POST" action="{{ route('admin.login') }}">
         @csrf  <!-- CSRFトークンを生成 -->
 
