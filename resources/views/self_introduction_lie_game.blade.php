@@ -8,9 +8,17 @@
 
     <form method="POST" action="{{ route('selfIntroductionLieGame.start') }}">
         @csrf
-        <div id="playerNamesContainer">
-            <!-- JavaScriptによりここにプレイヤー名の入力欄が動的に生成される -->
+        <!-- 設問数選択 -->
+        <div class="form-group">
+            <label for="number_of_questions">設問数</label>
+            <select class="form-control" id="number_of_questions" name="number_of_questions">
+                @foreach ($numberOfQuestionsOptions as $option)
+                    <option value="{{ $option }}">{{ $option }}問</option>
+                @endforeach
+            </select>
         </div>
+
+        <br>
 
         <!-- 参加人数選択 -->
         <div class="form-group">
@@ -23,18 +31,14 @@
             </select>
         </div>
 
-        <!-- 設問数選択 -->
-        <div class="form-group">
-            <label for="number_of_questions">設問数</label>
-            <select class="form-control" id="number_of_questions" name="number_of_questions">
-                @foreach ($numberOfQuestionsOptions as $option)
-                    <option value="{{ $option }}">{{ $option }}問</option>
-                @endforeach
-            </select>
+        <br>
+
+        <div id="playerNamesContainer">
+            <!-- JavaScriptによりここにプレイヤー名の入力欄が動的に生成される -->
         </div>
 
         <!-- 送信ボタン -->
-        <br>
+
         <button type="submit" class="btn btn-primary">開始</button>
     </form>
 </div>
@@ -57,16 +61,18 @@
             console.log('Number of players:', numberOfPlayers);
             console.log('Player names from session:', playerNames);
 
-
             const input = document.createElement('input');
             input.type = 'text';
             input.className = 'form-control';
             input.id = `player_name${i}`;
             input.name = 'player_names[]';
             input.value = playerNames[i] || ''; // 既存のプレイヤー名をセット、存在しなければ空文字列
+
+            const br = document.createElement('br');
             
             div.appendChild(label);
             div.appendChild(input);
+            div.appendChild(br);
             container.appendChild(div);
         }
     });
