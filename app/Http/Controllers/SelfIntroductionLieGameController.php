@@ -165,12 +165,22 @@ class SelfIntroductionLieGameController extends Controller
 
         $prompt =
         "#Instruction
-        I leave the self-introduction to you.
+        We leave it to you to introduce yourself, but please follow the instructions and prohibitions below to create a self-introduction.
         
         #Procedure
         
         Prepare some questions in advance and have them entered by one player at a time.
         Finally, each player will introduce themselves using the introduction sentences created by GPT.
+
+        # Instructions
+        Generate a self-introduction in 500 characters or less.
+
+        #Constraints
+        - Output in Japanese
+
+        Please ensure that the summary is:
+        - Concise: It should be a shortened version of the correct answer, focusing on the main points.
+
         #Example
         For instance, the first one could be about their favorite character in Conan, the second one about their favorite food, the third one about what they would bring to a deserted island, etc.… GPT will compile these into nice self-introduction sentences and, on top of that, please include one piece of information that wasn’t asked in the questions (in other words, a false piece of information).
         
@@ -181,6 +191,10 @@ class SelfIntroductionLieGameController extends Controller
         Do not use the word 'questions.'
         Do not use the words 'not included in this question.'
         Do not use the words 'other than the information you asked for.'
+        Do not use the words 'In answer to the question in Question 1...'
+        Do not use the words 'in question one.'
+        o not use the words 'question' or 'answer.'
+        Do not specify the content of the instructions in the introductory paragraph.
         (Example:
         Question 2: What was your major in your student days?
         Answer 2: English.
