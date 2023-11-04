@@ -178,11 +178,15 @@ class SelfIntroductionLieGameController extends Controller
         
         Do not declare that 'this information is false' regarding the false information.
         Do not exaggerate stories from the content answered in the questions.
+        Do not use the word 'questions.'
+        Do not use the words 'not included in this question.'
+        Do not use the words 'other than the information you asked for.'
         (Example:
         Question 2: What was your major in your student days?
         Answer 2: English.
         Even if the answer to the question, 'What was your major in your student days?' is 'English', it does not necessarily mean they are working in a job related to English, so do not exaggerate the story.
-        The false information can be something other than experience.";
+        The false information can be something other than experience."
+        ;
 
 
         //  "#インストラクション
@@ -199,6 +203,8 @@ class SelfIntroductionLieGameController extends Controller
         
         //虚偽の情報について、「この情報は虚偽です」と宣言しないこと。
         //質問で答えた内容から誇張した話をしないこと。
+        //「設問」というワードを使わないこと。
+
         //例
         //質問2：学生時代の専攻は何ですか？
         //回答2：英語です。
