@@ -17,6 +17,7 @@
                     <label for="content{{ $index }}">設問{{ $index + 1 }}: {{ $question->content }}</label>
                     <input type="text" class="form-control" id="content{{ $index }}" name="content[]">
                 </div>
+                <br>
             @endforeach
         </div>
 

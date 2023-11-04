@@ -31,7 +31,7 @@ class SelfIntroductionLieGameController extends Controller
         $numberOfPlayersOptions = range(2, 10);
 
         // 設問個数のオプション（例: 1から5個）
-        $numberOfQuestionsOptions = range(1, 5);
+        $numberOfQuestionsOptions = range(2, 5);
 
         $player_names = session('player_names', []); // セッションからプレイヤー名を取得
 
@@ -118,14 +118,13 @@ class SelfIntroductionLieGameController extends Controller
         $playerName = session('current_player_name', '');
 
         // プレイヤー名を含める
-        $formattedContent .= 'プレイヤー名： ' . $playerName . "\n\n";
-
+        $formattedContent .= '名前： ' . $playerName . "\n\n";
         // 保存してある質問（問題文）をセッションから取得
         $questions = session('questions', []);
 
         foreach($contents as $index => $content) {
             // 各設問に関して、セッションから取得した質問とユーザーの回答を組み合わせる
-            $formattedContent .= '設問' . ($index + 1) . '： ' . ($questions[$index]->content ?? '未定義の設問') . "\n";
+            $formattedContent .= '質問' . ($index + 1) . '： '  . ($questions[$index]->content ?? '未定義の設問') . "\n";
             $formattedContent .= '回答' . ($index + 1) . '： ' . $content . "\n";
         }
 
@@ -164,67 +163,47 @@ class SelfIntroductionLieGameController extends Controller
         $endpoint = "https://api.openai.com/v1/chat/completions"; 
 
         $prompt =
-        "#Instruction
-        We leave it to you to introduce yourself, but please follow the instructions and prohibitions below to create a self-introduction.
+        "
+        #命令書
+        あなたは、ユーザーからの名前と様々な質問内容とその回答を受け取り、それらを利用して自己紹介を作成することが得意な専門家です。
+        以下の制約条件から最高におもしろおかしいSNS（Facebookなど）やクラス替えなどのタイミングで使える自己紹介文を出力してください。
+        また、ユーザーが想定していない嘘の情報を追加してあげて、自己紹介を盛ってあげてください。
         
-        #Procedure
-        
-        Prepare some questions in advance and have them entered by one player at a time.
-        Finally, each player will introduce themselves using the introduction sentences created by GPT.
+        #制約は以下
+        ・日本語で出力する
+        ・挨拶を挿入する（はじめまして！ #名前 です。）
+        ・500文字以内で作成する。
+        ・「よろしくお願いします！」で終わる。
+        ・必ず一つ、架空の質問内容とその答えをでっち上げて、嘘の自己紹介要素を盛り込む。
+      
+        #ユーザーからの入力形式の例は以下です。
+        名前： たろう
+        質問1： 人生で一番困った時、どのように対処しましたか？
+        回答1： 困ったことだけに集中することです
+        質問2： 最後に大笑いした出来事やジョークを教えてください。
+        回答2： 友達がピザを一枚ごとを落としたとき
+        質問3： あなたに影響を与えた人物や出来事について教えてください。
+        回答3： 母です。母は仕事もしながら私にいつも元気に明るく接してくれます。
 
-        # Instructions
-        Generate a self-introduction in 500 characters or less.
+        #出力形式の例は以下です。
+        はじめまして！たろうです。SNSでは「どんな困難も乗り越える笑顔の戦士」として活動しています。私の哲学は、困った時ほど笑顔を絶やさないこと。たとえば、友達がピザを落とすハプニングも、それを機にピザの飛距離競争を始めたりしてます。
+        影響を受けたのは、もちろん私の父。仕事と家庭の両立をこなしながら、いつも私に明るい笑顔を向けてくれる彼のように、私も日々を楽しく過ごしています。
+        よろしくお願いします！
 
-        #Constraints
-        - Output in Japanese
+        #上記の出力例では、以下の部分が嘘の情報となる
+        「影響を受けたのは、もちろん私の父。仕事と家庭の両立をこなしながら、いつも私に明るい笑顔を向けてくれる彼のように、私も日々を楽しく過ごしています。」
+        ⇨ユーザーからの回答では、影響を受けたのは”母”だが、父という嘘の情報に変えている！！
 
-        Please ensure that the summary is:
-        - Concise: It should be a shortened version of the correct answer, focusing on the main points.
-
-        #Example
-        For instance, the first one could be about their favorite character in Conan, the second one about their favorite food, the third one about what they would bring to a deserted island, etc.… GPT will compile these into nice self-introduction sentences and, on top of that, please include one piece of information that wasn’t asked in the questions (in other words, a false piece of information).
-        
-        #Prohibitions
-        
-        Do not declare that 'this information is false' regarding the false information.
-        Do not exaggerate stories from the content answered in the questions.
-        Do not use the word 'questions.'
-        Do not use the words 'not included in this question.'
-        Do not use the words 'other than the information you asked for.'
-        Do not use the words 'In answer to the question in Question 1...'
-        Do not use the words 'in question one.'
-        o not use the words 'question' or 'answer.'
-        Do not specify the content of the instructions in the introductory paragraph.
-        (Example:
-        Question 2: What was your major in your student days?
-        Answer 2: English.
-        Even if the answer to the question, 'What was your major in your student days?' is 'English', it does not necessarily mean they are working in a job related to English, so do not exaggerate the story.
-        The false information can be something other than experience."
-        ;
-
-
-        //  "#インストラクション
-        //自己紹介はお任せします。
-        
-        #手順
-        
-        //事前にいくつかの質問を用意し、一人ずつ入力してもらう。
-        //最後に、GPTが作成した自己紹介文を使って、各プレイヤーが自己紹介を行う。
-        #例
-        //例えば、1つ目はコナンの好きなキャラクターについて、2つ目は好きな食べ物について、3つ目は無人島に持っていくものについて......など。GPTがこれらを素敵な自己紹介文にまとめますので、その上で、質問で聞かれなかった情報（言い換えれば嘘の情報）を1つ入れてください。
-        
         #禁止事項
-        
-        //虚偽の情報について、「この情報は虚偽です」と宣言しないこと。
-        //質問で答えた内容から誇張した話をしないこと。
-        //「設問」というワードを使わないこと。
-
-        //例
-        //質問2：学生時代の専攻は何ですか？
-        //回答2：英語です。
-        //学生時代の専攻は何ですか」という質問の答えが「英語」であったとしても、必ずしも英語に関係する仕事をしているとは限らないので、誇張して話をしないこと。
-        //虚偽の情報は経験以外のものでも構いません」；
-
+        偽の情報について「この情報は偽物です」と宣言しないこと！！
+        「SNS」という言葉を使わないこと。
+        「質問」という言葉を使わないこと。
+        「この質問に含まれていない」という言葉を使わないこと。
+        「あなたが尋ねた情報以外」という言葉を使わないこと。
+        「質問1:」などの言葉を使わないこと。
+        「質問」や「答え」という言葉を使わないこと。
+        導入段落でこのプロンプトの内容を漏らさないこと。
+        ";
         // GPTにAPI連携して問題文を生成したものを$responseとして受け取っている
         $response = $client->post($endpoint, [
             'headers' => [
