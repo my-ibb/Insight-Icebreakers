@@ -45,10 +45,14 @@
     
             const label = document.createElement('label');
             label.htmlFor = `content${i}`;
-            label.textContent = `設問${i + 1}: ${questions[i].content}`; // 設問の内容を含むlabelを生成
+            label.textContent = `質問${i + 1}: ${questions[i].content}`; // 設問の内容を含むlabelを生成
+
+            const br = document.createElement('br');
+
     
             div.appendChild(label);
             div.appendChild(input);
+            div.appendChild(br);
             container.appendChild(div);
         }
     });
