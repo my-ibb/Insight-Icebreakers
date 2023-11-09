@@ -4,7 +4,7 @@
 
 @section('content')
     <div class="container mt-4">
-        <h1 class="mb-4">設問編集</h1>
+        <h1 class="mb-4">質問編集</h1>
 
         <!-- エラーメッセージ -->
         @if ($errors->any())
@@ -22,7 +22,7 @@
             @method('PUT')
 
             <div class="form-group">
-                <label for="content">設問</label>
+                <label for="content">質問</label>
                 <input type="text" class="form-control" id="content" name="content" value="{{ $question->content }}">
             </div>
             <br>

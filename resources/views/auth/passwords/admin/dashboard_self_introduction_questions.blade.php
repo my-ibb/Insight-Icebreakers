@@ -13,7 +13,7 @@
               <a class="nav-link" href="{{ route('admin.dashboard.questions') }}">問題</a>
             </li>
             <li class="nav-item">
-              <a class="nav-link active" aria-current="page" href="{{ route('admin.dashboard.self_introduction_questions') }}">自己紹介設問</a>
+              <a class="nav-link active" aria-current="page" href="{{ route('admin.dashboard.self_introduction_questions') }}">自己紹介質問</a>
             </li>
         </ul>
 
@@ -23,14 +23,14 @@
         <!-- Self Introduction Questions Section -->
         <section id="self-introductions" class="mb-4">
             <h2 class="h4 mb-3">
-                自己紹介設問
-                <a href="{{ route('admin.questions.create') }}" class="btn btn-primary btn-sm">設問を作成する</a>
+                自己紹介質問
+                <a href="{{ route('admin.questions.create') }}" class="btn btn-primary btn-sm">質問を作成する</a>
             </h2>
             
             <ul class="list-group mb-5"> <!-- Added more bottom margin -->
                 @foreach($introQuestions as $question)
                     <li class="list-group-item d-flex justify-content-between align-items-center">
-                        設問： {{ $question->content }}
+                        質問： {{ $question->content }}
 
                         <!-- 削除・編集ボタン -->
                         <div class="badge">

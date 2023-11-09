@@ -10,7 +10,7 @@
         @csrf
         <!-- 設問数選択 -->
         <div class="form-group">
-            <label for="number_of_questions">設問数</label>
+            <label for="number_of_questions">質問数</label>
             <select class="form-control" id="number_of_questions" name="number_of_questions">
                 @foreach ($numberOfQuestionsOptions as $option)
                     <option value="{{ $option }}">{{ $option }}問</option>
